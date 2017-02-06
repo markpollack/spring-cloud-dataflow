@@ -16,11 +16,7 @@
 
 package org.springframework.cloud.dataflow.server.controller;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +39,8 @@ import org.springframework.cloud.dataflow.server.support.CannotDetermineApplicat
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.AppStatus;
 import org.springframework.cloud.deployer.spi.app.DeploymentState;
+import org.springframework.cloud.deployer.spi.app.MultipleStatusAppDeployer;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -151,7 +149,22 @@ public class StreamDefinitionController {
 			return assembler.toResource(repository.search(searchPageable), streamDefinitionAssembler);
 		}
 		else {
-			return assembler.toResource(repository.findAll(pageable), streamDefinitionAssembler);
+			if (deployer instanceof MultipleStatusAppDeployer) {
+				List<String> streamIds = new ArrayList<String>();
+				Page<StreamDefinition> streamDefinitions = repository.findAll(pageable);
+				streamDefinitions.forEach(streamDefinition ->{
+					streamDefinition.getAppDefinitions().forEach(streamAppDefinition -> {
+						String key = DeploymentKey.forStreamAppDefinition(streamAppDefinition);
+						streamIds.add(deploymentIdRepository.findOne(key));
+					});
+				} );
+				MultipleStatusAppDeployer multipleStatusAppDeployer = (MultipleStatusAppDeployer)deployer;
+				Map<String, AppStatus> statusMap = multipleStatusAppDeployer.statuses(streamIds.toArray(new String[streamIds.size()]));
+
+
+			} else {
+				return assembler.toResource(repository.findAll(pageable), streamDefinitionAssembler);
+			}
 		}
 	}
 
