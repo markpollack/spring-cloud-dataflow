@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -53,64 +52,65 @@ import org.springframework.util.StreamUtils;
  */
 public class JobExecutionDeserializationTests {
 
-	@Test
-	public void testDeserializationOfMultipleJobExecutions() throws IOException {
+    @Test
+    public void testDeserializationOfMultipleJobExecutions() throws IOException {
 
-		final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper = new ObjectMapper();
 
-		final InputStream inputStream =
-				JobExecutionDeserializationTests.class.getResourceAsStream("/JobExecutionJson.txt");
+        final InputStream inputStream =
+                JobExecutionDeserializationTests.class.getResourceAsStream("/JobExecutionJson.txt");
 
-		final String json = new String(StreamUtils.copyToByteArray(inputStream));
+        final String json = new String(StreamUtils.copyToByteArray(inputStream));
 
-		objectMapper.registerModule(new Jackson2HalModule());
-		objectMapper.addMixIn(JobExecution.class, JobExecutionJacksonMixIn.class);
-		objectMapper.addMixIn(JobParameters.class, JobParametersJacksonMixIn.class);
-		objectMapper.addMixIn(JobParameter.class, JobParameterJacksonMixIn.class);
-		objectMapper.addMixIn(JobInstance.class, JobInstanceJacksonMixIn.class);
-		objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
-		objectMapper.addMixIn(StepExecutionHistory.class, StepExecutionHistoryJacksonMixIn.class);
-		objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
-		objectMapper.addMixIn(ExitStatus.class, ExitStatusJacksonMixIn.class);
+        objectMapper.registerModule(new Jackson2HalModule());
+        objectMapper.addMixIn(JobExecution.class, JobExecutionJacksonMixIn.class);
+        objectMapper.addMixIn(JobParameters.class, JobParametersJacksonMixIn.class);
+        objectMapper.addMixIn(JobParameter.class, JobParameterJacksonMixIn.class);
+        objectMapper.addMixIn(JobInstance.class, JobInstanceJacksonMixIn.class);
+        objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
+        objectMapper.addMixIn(StepExecutionHistory.class, StepExecutionHistoryJacksonMixIn.class);
+        objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
+        objectMapper.addMixIn(ExitStatus.class, ExitStatusJacksonMixIn.class);
 
-		PagedResources<Resource<JobExecutionResource>> paged = objectMapper.readValue(json,
-				new TypeReference<PagedResources<Resource<JobExecutionResource>>>() {});
-		JobExecutionResource jobExecutionResource = paged.getContent().iterator().next().getContent();
-		Assert.assertEquals("Expect 1 JobExecutionInfoResource", 6, paged.getContent().size());
-		Assert.assertEquals(Long.valueOf(6), jobExecutionResource.getJobId());
-		Assert.assertEquals("job200616815", jobExecutionResource.getName());
-		Assert.assertEquals("COMPLETED", jobExecutionResource.getJobExecution().getStatus().name());
+        PagedResources<Resource<JobExecutionResource>> paged = objectMapper.readValue(json,
+                new TypeReference<PagedResources<Resource<JobExecutionResource>>>() {
+                });
+        JobExecutionResource jobExecutionResource = paged.getContent().iterator().next().getContent();
+        Assert.assertEquals("Expect 1 JobExecutionInfoResource", 6, paged.getContent().size());
+        Assert.assertEquals(Long.valueOf(6), jobExecutionResource.getJobId());
+        Assert.assertEquals("job200616815", jobExecutionResource.getName());
+        Assert.assertEquals("COMPLETED", jobExecutionResource.getJobExecution().getStatus().name());
 
-	}
+    }
 
-	@Test
-	public void testDeserializationOfSingleJobExecution() throws IOException {
+    @Test
+    public void testDeserializationOfSingleJobExecution() throws IOException {
 
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new Jackson2HalModule());
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new Jackson2HalModule());
 
-		final InputStream inputStream = JobExecutionDeserializationTests.class.getResourceAsStream("/SingleJobExecutionJson.txt");
+        final InputStream inputStream = JobExecutionDeserializationTests.class.getResourceAsStream("/SingleJobExecutionJson.txt");
 
-		final String json = new String(StreamUtils.copyToByteArray(inputStream));
+        final String json = new String(StreamUtils.copyToByteArray(inputStream));
 
-		objectMapper.addMixIn(JobExecution.class, JobExecutionJacksonMixIn.class);
-		objectMapper.addMixIn(JobParameters.class, JobParametersJacksonMixIn.class);
-		objectMapper.addMixIn(JobParameter.class, JobParameterJacksonMixIn.class);
-		objectMapper.addMixIn(JobInstance.class, JobInstanceJacksonMixIn.class);
-		objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
-		objectMapper.addMixIn(StepExecutionHistory.class, StepExecutionHistoryJacksonMixIn.class);
-		objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
-		objectMapper.addMixIn(ExitStatus.class, ExitStatusJacksonMixIn.class);
-		objectMapper.setDateFormat(new ISO8601DateFormatWithMilliSeconds());
+        objectMapper.addMixIn(JobExecution.class, JobExecutionJacksonMixIn.class);
+        objectMapper.addMixIn(JobParameters.class, JobParametersJacksonMixIn.class);
+        objectMapper.addMixIn(JobParameter.class, JobParameterJacksonMixIn.class);
+        objectMapper.addMixIn(JobInstance.class, JobInstanceJacksonMixIn.class);
+        objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
+        objectMapper.addMixIn(StepExecutionHistory.class, StepExecutionHistoryJacksonMixIn.class);
+        objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
+        objectMapper.addMixIn(ExitStatus.class, ExitStatusJacksonMixIn.class);
+        objectMapper.setDateFormat(new ISO8601DateFormatWithMilliSeconds());
 
-		final JobExecutionResource jobExecutionInfoResource = objectMapper.readValue(json,
-				JobExecutionResource.class);
+        final JobExecutionResource jobExecutionInfoResource = objectMapper.readValue(json,
+                JobExecutionResource.class);
 
-		Assert.assertNotNull(jobExecutionInfoResource);
-		Assert.assertEquals(Long.valueOf(1), jobExecutionInfoResource.getJobId());
-		Assert.assertEquals("ff.job", jobExecutionInfoResource.getName());
-		Assert.assertEquals("COMPLETED", jobExecutionInfoResource.getJobExecution().getStatus().name());
+        Assert.assertNotNull(jobExecutionInfoResource);
+        Assert.assertEquals(Long.valueOf(1), jobExecutionInfoResource.getJobId());
+        Assert.assertEquals("ff.job", jobExecutionInfoResource.getName());
+        Assert.assertEquals("COMPLETED", jobExecutionInfoResource.getJobExecution().getStatus().name());
 
-	}
+    }
 
 }

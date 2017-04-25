@@ -28,18 +28,19 @@ import org.springframework.web.client.RestTemplate;
  */
 public class AboutTemplate implements AboutOperations {
 
-	static final String ABOUT_REL = "about";
+    static final String ABOUT_REL = "about";
 
-	private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-	private final Link link;
+    private final Link link;
 
-	public AboutTemplate(RestTemplate restTemplate, Link link) {
-		this.restTemplate = restTemplate;
-		this.link = link;
-	}
-	@Override
-	public AboutResource get() {
-		return restTemplate.getForObject(link.getHref(), AboutResource.class);
-	}
+    public AboutTemplate(RestTemplate restTemplate, Link link) {
+        this.restTemplate = restTemplate;
+        this.link = link;
+    }
+
+    @Override
+    public AboutResource get() {
+        return restTemplate.getForObject(link.getHref(), AboutResource.class);
+    }
 }

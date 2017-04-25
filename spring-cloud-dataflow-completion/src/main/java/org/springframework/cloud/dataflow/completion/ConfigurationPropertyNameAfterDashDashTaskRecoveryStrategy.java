@@ -35,57 +35,58 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
 /**
  * Provides completion proposals when the user has typed the two dashes that
  * precede an app configuration property.
+ *
  * @author Eric Bottard
  * @author Mark Fisher
  * @author Andy Clement
  */
 class ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy
-		extends StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
+        extends StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	private final ApplicationConfigurationMetadataResolver metadataResolver;
+    private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(AppRegistry appRegistry,
-	                                                       ApplicationConfigurationMetadataResolver metadataResolver) {
-		super(CheckPointedParseException.class, "file --");
-		this.appRegistry = appRegistry;
-		this.metadataResolver = metadataResolver;
-	}
+    ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(AppRegistry appRegistry,
+                                                               ApplicationConfigurationMetadataResolver metadataResolver) {
+        super(CheckPointedParseException.class, "file --");
+        this.appRegistry = appRegistry;
+        this.metadataResolver = metadataResolver;
+    }
 
-	@Override
-	public void addProposals(String dsl, CheckPointedParseException exception,
-	                         int detailLevel, List<CompletionProposal> collector) {
+    @Override
+    public void addProposals(String dsl, CheckPointedParseException exception,
+                             int detailLevel, List<CompletionProposal> collector) {
 
-		String safe = exception.getExpressionStringUntilCheckpoint();
-		TaskDefinition taskDefinition = new TaskDefinition("__dummy", safe);
+        String safe = exception.getExpressionStringUntilCheckpoint();
+        TaskDefinition taskDefinition = new TaskDefinition("__dummy", safe);
 
-		String appName = taskDefinition.getRegisteredAppName();
-		AppRegistration appRegistration = appRegistry.find(appName, ApplicationType.task);
-		if (appRegistration == null) {
-			// Not a valid app name, do nothing
-			return;
-		}
-		Set<String> alreadyPresentOptions = new HashSet<>(taskDefinition.getProperties().keySet());
-		
-		Resource metadataResource = appRegistration.getMetadataResource();
+        String appName = taskDefinition.getRegisteredAppName();
+        AppRegistration appRegistration = appRegistry.find(appName, ApplicationType.task);
+        if (appRegistration == null) {
+            // Not a valid app name, do nothing
+            return;
+        }
+        Set<String> alreadyPresentOptions = new HashSet<>(taskDefinition.getProperties().keySet());
 
-		CompletionProposal.Factory proposals = expanding(dsl);
+        Resource metadataResource = appRegistration.getMetadataResource();
 
-		// For whitelisted properties, use their shortname
-		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
-			if (!alreadyPresentOptions.contains(property.getName())) {
-				collector.add(proposals.withSuffix(property.getName() + "=", property.getShortDescription()));
-			}
-		}
+        CompletionProposal.Factory proposals = expanding(dsl);
 
-		// For other properties, use their fully qualified name
-		if (detailLevel > 1) {
-			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-				if (!alreadyPresentOptions.contains(property.getId())) {
-					collector.add(proposals.withSuffix(property.getId() + "=", property.getShortDescription()));
-				}
-			}
-		}
-	}
+        // For whitelisted properties, use their shortname
+        for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
+            if (!alreadyPresentOptions.contains(property.getName())) {
+                collector.add(proposals.withSuffix(property.getName() + "=", property.getShortDescription()));
+            }
+        }
+
+        // For other properties, use their fully qualified name
+        if (detailLevel > 1) {
+            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+                if (!alreadyPresentOptions.contains(property.getId())) {
+                    collector.add(proposals.withSuffix(property.getId() + "=", property.getShortDescription()));
+                }
+            }
+        }
+    }
 }

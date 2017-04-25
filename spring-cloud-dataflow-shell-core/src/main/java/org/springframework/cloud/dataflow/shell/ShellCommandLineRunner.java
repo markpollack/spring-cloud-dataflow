@@ -37,7 +37,7 @@ import org.springframework.util.StopWatch;
  * This does basically the same thing as {@link org.springframework.shell.Bootstrap} in Spring Shell,
  * but using Spring Boot's {@link CommandLineRunner} as a callback hook for initialization, instead
  * of squatting on the application's one {@code main(String[] args)} method.
- *
+ * <p>
  * This configuration also uses Spring Boot to parse command line arguments instead of
  * {@link org.springframework.shell.SimpleShellCommandLineOptions#parseCommandLine(String[])}.  This means that
  * command line arguments use a different syntax than in Spring Shell.  Key value pairs for arguments need to be
@@ -45,7 +45,6 @@ import org.springframework.util.StopWatch;
  *
  * @author Josh Long
  * @author Mark Pollack
- *
  */
 public class ShellCommandLineRunner implements CommandLineRunner, ApplicationContextAware {
 
@@ -61,20 +60,6 @@ public class ShellCommandLineRunner implements CommandLineRunner, ApplicationCon
 
     @Autowired
     private ApplicationArguments applicationArguments;
-
-    private static class ShellExitCodeGenerator implements ExitCodeGenerator {
-
-        private final ExitShellRequest exitShellRequest;
-
-        public ShellExitCodeGenerator(ExitShellRequest exitShellRequest) {
-            this.exitShellRequest = exitShellRequest;
-        }
-
-        @Override
-        public int getExitCode() {
-            return this.exitShellRequest.getExitCode();
-        }
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -105,8 +90,7 @@ public class ShellCommandLineRunner implements CommandLineRunner, ApplicationCon
                 if (successful) {
                     exitShellRequest = ExitShellRequest.NORMAL_EXIT;
                 }
-            }
-            else if (this.applicationArguments.containsOption("help")) {
+            } else if (this.applicationArguments.containsOption("help")) {
                 System.out.println(FileUtils.readBanner(ShellCommandLineRunner.class, "/usage.txt"));
                 exitShellRequest = ExitShellRequest.NORMAL_EXIT;
             } else {
@@ -130,6 +114,20 @@ public class ShellCommandLineRunner implements CommandLineRunner, ApplicationCon
         } finally {
             HandlerUtils.flushAllHandlers(this.logger);
             this.stopWatch.stop();
+        }
+    }
+
+    private static class ShellExitCodeGenerator implements ExitCodeGenerator {
+
+        private final ExitShellRequest exitShellRequest;
+
+        public ShellExitCodeGenerator(ExitShellRequest exitShellRequest) {
+            this.exitShellRequest = exitShellRequest;
+        }
+
+        @Override
+        public int getExitCode() {
+            return this.exitShellRequest.getExitCode();
         }
     }
 }

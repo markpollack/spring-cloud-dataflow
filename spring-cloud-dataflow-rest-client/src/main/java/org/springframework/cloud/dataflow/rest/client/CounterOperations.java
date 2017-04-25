@@ -21,27 +21,30 @@ import org.springframework.hateoas.PagedResources;
 
 /**
  * Interface defining operations available when dealing with Counters.
- * 
+ *
  * @author Eric Bottard
  */
 public interface CounterOperations {
 
-	/**
-	 * Retrieve information about the given named counter.
-	 * @param name the name of the counter
-	 * @return the counter
-	 */
-	CounterResource retrieve(String name);
+    /**
+     * Retrieve information about the given named counter.
+     *
+     * @param name the name of the counter
+     * @return the counter
+     */
+    CounterResource retrieve(String name);
 
-	/**
-	 * Retrieve basic information (i.e. names) for existing counters.
-	 * @return the paged list of counters
-	 */
-	PagedResources<MetricResource> list();
+    /**
+     * Retrieve basic information (i.e. names) for existing counters.
+     *
+     * @return the paged list of counters
+     */
+    PagedResources<MetricResource> list();
 
-	/**
-	 * Delete the counter with given name.
-	 * @param name the name of the counter
-	 */
-	void reset(String name);
+    /**
+     * Delete the counter with given name.
+     *
+     * @param name the name of the counter
+     */
+    void reset(String name);
 }

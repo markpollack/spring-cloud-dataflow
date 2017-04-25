@@ -20,22 +20,20 @@ import org.springframework.cloud.deployer.spi.app.DeploymentState;
 import org.springframework.util.Assert;
 
 /**
- *
  * @author Gunnar Hillert
- *
  */
 public class ControllerUtils {
 
-	/**
-	 * Maps the {@link DeploymentState} from the Deployer SPI to a {@link DeploymentStateResource}
-	 * which is used by the REST API.
-	 *
-	 * @param state Must not be null
-	 * @return a DeploymentStateResource, never null
-	 */
-	public static DeploymentStateResource mapState(DeploymentState state) {
-		DeploymentStateResource result = DeploymentStateResource.fromKey(state.name());
-		Assert.notNull(result, "Trying to display a DeploymentState that should not appear here: " + state);
-		return result;
-	}
+    /**
+     * Maps the {@link DeploymentState} from the Deployer SPI to a {@link DeploymentStateResource}
+     * which is used by the REST API.
+     *
+     * @param state Must not be null
+     * @return a DeploymentStateResource, never null
+     */
+    public static DeploymentStateResource mapState(DeploymentState state) {
+        DeploymentStateResource result = DeploymentStateResource.fromKey(state.name());
+        Assert.notNull(result, "Trying to display a DeploymentState that should not appear here: " + state);
+        return result;
+    }
 }

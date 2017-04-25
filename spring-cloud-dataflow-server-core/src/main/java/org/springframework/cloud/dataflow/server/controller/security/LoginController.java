@@ -40,27 +40,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class LoginController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    ApplicationContext applicationContext;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	ApplicationContext applicationContext;
+    @RequestMapping(value = "/authenticate", method = {RequestMethod.POST})
+    @ResponseBody
+    public String authorize(
+            @RequestBody AuthenticationRequest authenticationRequest,
+            HttpServletRequest request) {
 
-	@RequestMapping(value = "/authenticate", method = { RequestMethod.POST })
-	@ResponseBody
-	public String authorize(
-			@RequestBody AuthenticationRequest authenticationRequest,
-			HttpServletRequest request) {
+        final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        final Authentication authentication = this.authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        final HttpSession session = request.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
 
-		final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				authenticationRequest.getUsername(), authenticationRequest.getPassword());
-		final Authentication authentication = this.authenticationManager.authenticate(token);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		final HttpSession session = request.getSession(true);
-		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-				SecurityContextHolder.getContext());
-
-		return session.getId();
-	}
+        return session.getId();
+    }
 
 }

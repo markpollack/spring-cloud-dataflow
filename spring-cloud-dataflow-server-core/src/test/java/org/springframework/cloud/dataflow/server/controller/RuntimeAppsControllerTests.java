@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.core.StreamDefinition;
@@ -56,111 +55,111 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RuntimeAppsControllerTests {
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	@Autowired
-	private AppRegistry appRegistry;
+    @Autowired
+    private AppRegistry appRegistry;
 
-	@Autowired
-	private AppDeployer appDeployer;
+    @Autowired
+    private AppDeployer appDeployer;
 
-	@Autowired
-	private StreamDefinitionRepository streamDefinitionRepository;
+    @Autowired
+    private StreamDefinitionRepository streamDefinitionRepository;
 
-	@Autowired
-	private DeploymentIdRepository deploymentIdRepository;
+    @Autowired
+    private DeploymentIdRepository deploymentIdRepository;
 
-	@Before
-	public void setupMocks() throws Exception {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
-				get("/").accept(MediaType.APPLICATION_JSON)).build();
-		for (AppRegistration appRegistration : this.appRegistry.findAll()) {
-			this.appRegistry.delete(appRegistration.getName(), appRegistration.getType());
-		}
+    @Before
+    public void setupMocks() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
+                get("/").accept(MediaType.APPLICATION_JSON)).build();
+        for (AppRegistration appRegistration : this.appRegistry.findAll()) {
+            this.appRegistry.delete(appRegistration.getName(), appRegistration.getType());
+        }
 
 
-		StreamDefinition streamDefinition1 = new StreamDefinition("ticktock1", "time|log");
-		StreamDefinition streamDefinition2 = new StreamDefinition("ticktock2", "time|log");
-		streamDefinitionRepository.save(streamDefinition1);
-		streamDefinitionRepository.save(streamDefinition2);
+        StreamDefinition streamDefinition1 = new StreamDefinition("ticktock1", "time|log");
+        StreamDefinition streamDefinition2 = new StreamDefinition("ticktock2", "time|log");
+        streamDefinitionRepository.save(streamDefinition1);
+        streamDefinitionRepository.save(streamDefinition2);
 
-		deploymentIdRepository.save("ticktock1.time", "ticktock1.time");
-		deploymentIdRepository.save("ticktock1.log", "ticktock1.log");
-		deploymentIdRepository.save("ticktock2.time", "ticktock2.time");
-		deploymentIdRepository.save("ticktock2.log", "ticktock2.log");
+        deploymentIdRepository.save("ticktock1.time", "ticktock1.time");
+        deploymentIdRepository.save("ticktock1.log", "ticktock1.log");
+        deploymentIdRepository.save("ticktock2.time", "ticktock2.time");
+        deploymentIdRepository.save("ticktock2.log", "ticktock2.log");
 
-		when(appDeployer.status("ticktock1.time")).thenReturn(AppStatus.of("ticktock1.time").generalState(DeploymentState.deployed).build());
-		when(appDeployer.status("ticktock1.log")).thenReturn(AppStatus.of("ticktock1.log").generalState(DeploymentState.deployed).build());
-		when(appDeployer.status("ticktock2.time")).thenReturn(AppStatus.of("ticktock2.time").generalState(DeploymentState.deployed).build());
-		when(appDeployer.status("ticktock2.log")).thenReturn(AppStatus.of("ticktock2.log").generalState(DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock1.time")).thenReturn(AppStatus.of("ticktock1.time").generalState(DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock1.log")).thenReturn(AppStatus.of("ticktock1.log").generalState(DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock2.time")).thenReturn(AppStatus.of("ticktock2.time").generalState(DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock2.log")).thenReturn(AppStatus.of("ticktock2.log").generalState(DeploymentState.deployed).build());
 
-		when(appDeployer.status("foo")).thenReturn(AppStatus.of("foo").generalState(DeploymentState.unknown).build());
-		AppStatus validAppStatus = AppStatus.of("a1.valid").generalState(DeploymentState.failed).build();
-		when(appDeployer.status("valid")).thenReturn(validAppStatus);
-	}
+        when(appDeployer.status("foo")).thenReturn(AppStatus.of("foo").generalState(DeploymentState.unknown).build());
+        AppStatus validAppStatus = AppStatus.of("a1.valid").generalState(DeploymentState.failed).build();
+        when(appDeployer.status("valid")).thenReturn(validAppStatus);
+    }
 
-	@Test
-	public void testFindNonExistentApp() throws Exception {
-		MockHttpServletResponse responseString = mockMvc.perform(
-				get("/runtime/apps/foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().is4xxClientError()).andReturn().getResponse();
-		Assert.assertTrue(responseString.getContentAsString().contains("NoSuchAppException"));
-	}
+    @Test
+    public void testFindNonExistentApp() throws Exception {
+        MockHttpServletResponse responseString = mockMvc.perform(
+                get("/runtime/apps/foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().is4xxClientError()).andReturn().getResponse();
+        Assert.assertTrue(responseString.getContentAsString().contains("NoSuchAppException"));
+    }
 
-	@Test
-	public void testFindNonExistentAppInstance() throws Exception {
-		MockHttpServletResponse responseString = mockMvc.perform(
-				get("/runtime/apps/valid/instances/valid-0").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().is4xxClientError()).andReturn().getResponse();
-		Assert.assertTrue(responseString.getContentAsString().contains("NoSuchAppInstanceException"));
-	}
+    @Test
+    public void testFindNonExistentAppInstance() throws Exception {
+        MockHttpServletResponse responseString = mockMvc.perform(
+                get("/runtime/apps/valid/instances/valid-0").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().is4xxClientError()).andReturn().getResponse();
+        Assert.assertTrue(responseString.getContentAsString().contains("NoSuchAppInstanceException"));
+    }
 
-	@Test
-	public void testListRuntimeApps() throws Exception {
-		MockHttpServletResponse responseString = mockMvc.perform(
-				get("/runtime/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(true));
-	}
+    @Test
+    public void testListRuntimeApps() throws Exception {
+        MockHttpServletResponse responseString = mockMvc.perform(
+                get("/runtime/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(true));
+    }
 
-	@Test
-	public void testListRuntimeAppsPageSizes() throws Exception {
-		MockHttpServletResponse responseString = mockMvc.perform(
-				get("/runtime/apps?page=0&size=1").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(false));
+    @Test
+    public void testListRuntimeAppsPageSizes() throws Exception {
+        MockHttpServletResponse responseString = mockMvc.perform(
+                get("/runtime/apps?page=0&size=1").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(false));
 
-		responseString = mockMvc.perform(
-				get("/runtime/apps?page=0&size=2").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(false));
+        responseString = mockMvc.perform(
+                get("/runtime/apps?page=0&size=2").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(false));
 
-		responseString = mockMvc.perform(
-				get("/runtime/apps?page=1&size=2").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(true));
-		assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
+        responseString = mockMvc.perform(
+                get("/runtime/apps?page=1&size=2").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(true));
+        assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
 
-		responseString = mockMvc.perform(
-				get("/runtime/apps?page=3&size=1").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
-		assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
-	}
+        responseString = mockMvc.perform(
+                get("/runtime/apps?page=3&size=1").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        assertThat(responseString.getContentAsString().contains("ticktock1.log"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock1.time"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.log"), is(false));
+        assertThat(responseString.getContentAsString().contains("ticktock2.time"), is(true));
+    }
 }

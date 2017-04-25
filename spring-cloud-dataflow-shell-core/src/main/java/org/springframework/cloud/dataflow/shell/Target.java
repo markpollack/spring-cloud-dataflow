@@ -27,218 +27,200 @@ import org.springframework.util.StringUtils;
  *
  * @author Gunnar Hillert
  * @since 1.0
- *
  */
 public class Target {
 
-	public enum TargetStatus {
-		SUCCESS, ERROR
-	}
+    public static final String DEFAULT_SCHEME = "http";
+    public static final String DEFAULT_HOST = "localhost";
+    public static final int DEFAULT_PORT = 9393;
+    public static final String DEFAULT_USERNAME = "";
+    public static final String DEFAULT_SPECIFIED_PASSWORD = "";
+    public static final String DEFAULT_UNSPECIFIED_PASSWORD = "__NULL__";
+    public static final String DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION = "true";
+    public static final String DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION = "false";
+    public static final String DEFAULT_TARGET = DEFAULT_SCHEME + "://" + DEFAULT_HOST + ":" + DEFAULT_PORT + "/";
+    private final URI targetUri;
+    private final boolean skipSslValidation;
+    private TargetCredentials targetCredentials;
+    private Exception targetException;
+    private String targetResultMessage;
+    private TargetStatus status;
+    private boolean authenticationEnabled;
+    private boolean authorizationEnabled = true;
+    private boolean authenticated;
+    /**
+     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
+     * This method allows for providing a username and password for authentication.
+     *
+     * @param targetUriAsString the data flow server URI, must not be empty
+     * @param targetUsername    the username, may be empty, if access is unauthenticated
+     * @param targetPassword    the password, may be empty
+     * @param skipSslValidation whether or not we skip SSL validation.
+     * @throws IllegalArgumentException if the given URI string violates RFC 2396.
+     */
+    public Target(String targetUriAsString, String targetUsername, String targetPassword, boolean skipSslValidation) {
+        Assert.hasText(targetUriAsString, "The provided targetUriAsString must neither be null nor empty.");
+        this.targetUri = URI.create(targetUriAsString);
+        this.skipSslValidation = skipSslValidation;
 
-	public static final String DEFAULT_SCHEME = "http";
+        if (StringUtils.isEmpty(targetUsername)) {
+            this.targetCredentials = null;
+        } else {
+            this.targetCredentials = new TargetCredentials(targetUsername, targetPassword);
+        }
+    }
 
-	public static final String DEFAULT_HOST = "localhost";
+    /**
+     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
+     *
+     * @param targetUriAsString Must not be empty
+     * @throws IllegalArgumentException if the given string violates RFC 2396
+     */
+    public Target(String targetUriAsString) {
+        this(targetUriAsString, null, null, false);
+    }
 
-	public static final int DEFAULT_PORT = 9393;
+    /**
+     * Return the target status, which is either Success or Error.
+     *
+     * @return The {@link TargetStatus}. May be null.
+     */
+    public TargetStatus getStatus() {
+        return status;
+    }
 
-	public static final String DEFAULT_USERNAME = "";
+    /**
+     * If during targeting an error occurred, the resulting {@link Exception} is made available for further
+     * introspection.
+     *
+     * @return If present, returns the Exception, otherwise null is returned.
+     */
+    public Exception getTargetException() {
+        return targetException;
+    }
 
-	public static final String DEFAULT_SPECIFIED_PASSWORD = "";
+    /**
+     * Sets the exception in case an error occurred during targeting. Will also set the respective {@link TargetStatus}
+     * to {@link TargetStatus#ERROR}.
+     *
+     * @param targetException Must not be null.
+     */
+    public void setTargetException(Exception targetException) {
+        Assert.notNull(targetException, "The provided targetException must not be null.");
+        this.targetException = targetException;
+        this.status = TargetStatus.ERROR;
+    }
 
-	public static final String DEFAULT_UNSPECIFIED_PASSWORD = "__NULL__";
+    /**
+     * Provides a result message indicating whether the provide {@link #getTargetUri()} was successfully targeted or
+     * not.
+     *
+     * @return The formatted result message.
+     */
+    public String getTargetResultMessage() {
+        return targetResultMessage;
+    }
 
-	public static final String DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION = "true";
+    /**
+     * Set the result messages indicating the success or failure while targeting the Spring XD Admin Server.
+     *
+     * @param targetResultMessage Must not be empty.
+     */
+    public void setTargetResultMessage(String targetResultMessage) {
+        Assert.hasText(targetResultMessage, "The provided targetResultMessage must neither be null nor empty.");
+        this.targetResultMessage = targetResultMessage;
+    }
 
-	public static final String DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION = "false";
+    /**
+     * @return The Target Uri. Will never be null.
+     */
+    public URI getTargetUri() {
+        return targetUri;
+    }
 
-	public static final String DEFAULT_TARGET = DEFAULT_SCHEME + "://" + DEFAULT_HOST + ":" + DEFAULT_PORT + "/";
+    /**
+     * Returns the target URI as a String.
+     *
+     * @return Never null and will always return a valid URI value
+     */
+    public String getTargetUriAsString() {
+        return targetUri.toString();
+    }
 
-	private final URI targetUri;
+    /**
+     * Returns if sslValidation should be skipped
+     *
+     * @return Return whether or not we skip SSL validation.
+     */
+    public boolean isSkipSslValidation() {
+        return skipSslValidation;
+    }
 
-	private final boolean skipSslValidation;
+    /**
+     * Returns the target credentials
+     *
+     * @return The target credentials. May be null if there is no authentication
+     */
+    public TargetCredentials getTargetCredentials() {
+        return targetCredentials;
+    }
 
-	private TargetCredentials targetCredentials;
+    public void setTargetCredentials(TargetCredentials targetCredentials) {
+        this.targetCredentials = targetCredentials;
+    }
 
-	private Exception targetException;
+    /**
+     * Indicates whether authentication is enabled for this target.
+     *
+     * @return True if authentication is enabled, false otherwise
+     */
+    public boolean isAuthenticationEnabled() {
+        return authenticationEnabled;
+    }
 
-	private String targetResultMessage;
+    /**
+     * @param authenticationEnabled False by default
+     */
+    public void setAuthenticationEnabled(boolean authenticationEnabled) {
+        this.authenticationEnabled = authenticationEnabled;
+    }
 
-	private TargetStatus status;
+    /**
+     * @return True if authorization is enabled, false otherwise
+     */
+    public boolean isAuthorizationEnabled() {
+        return authorizationEnabled;
+    }
 
-	private boolean authenticationEnabled;
-	private boolean authorizationEnabled = true;
-	private boolean authenticated;
+    /**
+     * @param authorizationEnabled If not set, it defaults to true
+     */
+    public void setAuthorizationEnabled(boolean authorizationEnabled) {
+        this.authorizationEnabled = authorizationEnabled;
+    }
 
-	/**
-	 * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
-	 * This method allows for providing a username and password for authentication.
-	 *
-	 * @param targetUriAsString the data flow server URI, must not be empty
-	 * @param targetUsername    the username, may be empty, if access is unauthenticated
-	 * @param targetPassword    the password, may be empty
-	 * @param skipSslValidation whether or not we skip SSL validation.
-	 * @throws IllegalArgumentException if the given URI string violates RFC 2396.
-	 */
-	public Target(String targetUriAsString, String targetUsername, String targetPassword, boolean skipSslValidation) {
-		Assert.hasText(targetUriAsString, "The provided targetUriAsString must neither be null nor empty.");
-		this.targetUri = URI.create(targetUriAsString);
-		this.skipSslValidation = skipSslValidation;
+    /**
+     * @return True if the user is successfully authenticated with this Target
+     */
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
 
-		if (StringUtils.isEmpty(targetUsername)) {
-			this.targetCredentials = null;
-		} else {
-			this.targetCredentials = new TargetCredentials(targetUsername, targetPassword);
-		}
-	}
+    /**
+     * @param authenticated whether a user is successfully authenticated with the Target
+     */
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
 
-	public void setTargetCredentials(TargetCredentials targetCredentials) {
-		this.targetCredentials = targetCredentials;
-	}
+    @Override
+    public String toString() {
+        return "Target [targetUri=" + targetUri + ", targetException=" + targetException + ", targetResultMessage="
+                + targetResultMessage + ", status=" + status + "]";
+    }
 
-	/**
-	 * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
-	 *
-	 * @param targetUriAsString Must not be empty
-	 * @throws IllegalArgumentException if the given string violates RFC 2396
-	 */
-	public Target(String targetUriAsString) {
-		this(targetUriAsString, null, null, false);
-	}
-
-	/**
-	 * Return the target status, which is either Success or Error.
-	 *
-	 * @return The {@link TargetStatus}. May be null.
-	 */
-	public TargetStatus getStatus() {
-		return status;
-	}
-
-	/**
-	 * If during targeting an error occurred, the resulting {@link Exception} is made available for further
-	 * introspection.
-	 *
-	 * @return If present, returns the Exception, otherwise null is returned.
-	 */
-	public Exception getTargetException() {
-		return targetException;
-	}
-
-	/**
-	 * Provides a result message indicating whether the provide {@link #getTargetUri()} was successfully targeted or
-	 * not.
-	 *
-	 * @return The formatted result message.
-	 */
-	public String getTargetResultMessage() {
-		return targetResultMessage;
-	}
-
-	/**
-	 * @return The Target Uri. Will never be null.
-	 */
-	public URI getTargetUri() {
-		return targetUri;
-	}
-
-	/**
-	 * Returns the target URI as a String.
-	 *
-	 * @return Never null and will always return a valid URI value
-	 */
-	public String getTargetUriAsString() {
-		return targetUri.toString();
-	}
-
-	/**
-	 * Returns if sslValidation should be skipped
-	 * @return Return whether or not we skip SSL validation.
-	 */
-	public boolean isSkipSslValidation() {
-		return skipSslValidation;
-	}
-
-	/**
-	 * Returns the target credentials
-	 *
-	 * @return The target credentials. May be null if there is no authentication
-	 */
-	public TargetCredentials getTargetCredentials() {
-		return targetCredentials;
-	}
-
-	/**
-	 * Sets the exception in case an error occurred during targeting. Will also set the respective {@link TargetStatus}
-	 * to {@link TargetStatus#ERROR}.
-	 *
-	 * @param targetException Must not be null.
-	 */
-	public void setTargetException(Exception targetException) {
-		Assert.notNull(targetException, "The provided targetException must not be null.");
-		this.targetException = targetException;
-		this.status = TargetStatus.ERROR;
-	}
-
-	/**
-	 * Set the result messages indicating the success or failure while targeting the Spring XD Admin Server.
-	 *
-	 * @param targetResultMessage Must not be empty.
-	 */
-	public void setTargetResultMessage(String targetResultMessage) {
-		Assert.hasText(targetResultMessage, "The provided targetResultMessage must neither be null nor empty.");
-		this.targetResultMessage = targetResultMessage;
-	}
-
-	/**
-	 * Indicates whether authentication is enabled for this target.
-	 *
-	 * @return True if authentication is enabled, false otherwise
-	 */
-	public boolean isAuthenticationEnabled() {
-		return authenticationEnabled;
-	}
-
-	/**
-	 * @param authenticationEnabled False by default
-	 */
-	public void setAuthenticationEnabled(boolean authenticationEnabled) {
-		this.authenticationEnabled = authenticationEnabled;
-	}
-
-	/**
-	 * @return True if authorization is enabled, false otherwise
-	 */
-	public boolean isAuthorizationEnabled() {
-		return authorizationEnabled;
-	}
-
-	/**
-	 *
-	 * @param authorizationEnabled If not set, it defaults to true
-	 */
-	public void setAuthorizationEnabled(boolean authorizationEnabled) {
-		this.authorizationEnabled = authorizationEnabled;
-	}
-
-	/**
-	 *
-	 * @return True if the user is successfully authenticated with this Target
-	 */
-	public boolean isAuthenticated() {
-		return authenticated;
-	}
-
-	/**
-	 * @param authenticated whether a user is successfully authenticated with the Target
-	 */
-	public void setAuthenticated(boolean authenticated) {
-		this.authenticated = authenticated;
-	}
-
-	@Override
-	public String toString() {
-		return "Target [targetUri=" + targetUri + ", targetException=" + targetException + ", targetResultMessage="
-				+ targetResultMessage + ", status=" + status + "]";
-	}
+    public enum TargetStatus {
+        SUCCESS, ERROR
+    }
 
 }

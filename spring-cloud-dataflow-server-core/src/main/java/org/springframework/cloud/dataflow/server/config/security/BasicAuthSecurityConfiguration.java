@@ -21,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -59,163 +58,156 @@ import static org.springframework.cloud.dataflow.server.controller.UiController.
 /**
  * Setup Spring Security with Basic Authentication for the Rest Endpoints and the
  * Dashboard of Spring Cloud Data Flow.
- *
+ * <p>
  * For the OAuth2-specific configuration see {@link OAuthSecurityConfiguration}.
  *
  * @author Gunnar Hillert
- * @since 1.0
- *
  * @see OAuthSecurityConfiguration
- *
+ * @since 1.0
  */
 @Configuration
 @Conditional(OnSecurityEnabledAndOAuth2Disabled.class)
 @EnableWebSecurity
 public class BasicAuthSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BasicAuthSecurityConfiguration.class);
+    public static final Pattern AUTHORIZATION_RULE;
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BasicAuthSecurityConfiguration.class);
 
-	public static final Pattern AUTHORIZATION_RULE;
+    static {
+        String methodsRegex = StringUtils.arrayToDelimitedString(HttpMethod.values(),
+                "|");
+        AUTHORIZATION_RULE = Pattern
+                .compile("(" + methodsRegex + ")\\s+(.+)\\s+=>\\s+(.+)");
+    }
 
-	static {
-		String methodsRegex = StringUtils.arrayToDelimitedString(HttpMethod.values(),
-				"|");
-		AUTHORIZATION_RULE = Pattern
-				.compile("(" + methodsRegex + ")\\s+(.+)\\s+=>\\s+(.+)");
-	}
+    @Autowired
+    private ContentNegotiationStrategy contentNegotiationStrategy;
+    @Autowired
+    private SecurityProperties securityProperties;
+    @Autowired
+    private AuthorizationConfig authorizationConfig;
+    @Autowired
+    private SecurityStateBean securityStateBean;
 
-	@Bean
-	public SessionRepository<ExpiringSession> sessionRepository() {
-		return new MapSessionRepository();
-	}
+    @Bean
+    public SessionRepository<ExpiringSession> sessionRepository() {
+        return new MapSessionRepository();
+    }
 
-	@Autowired
-	private ContentNegotiationStrategy contentNegotiationStrategy;
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        final RequestMatcher textHtmlMatcher = new MediaTypeRequestMatcher(
+                contentNegotiationStrategy,
+                MediaType.TEXT_HTML);
 
-	@Autowired
-	private SecurityProperties securityProperties;
+        final String loginPage = dashboard("/#/login");
 
-	@Autowired
-	private AuthorizationConfig authorizationConfig;
+        final BasicAuthenticationEntryPoint basicAuthenticationEntryPoint = new BasicAuthenticationEntryPoint();
+        basicAuthenticationEntryPoint.setRealmName(securityProperties.getBasic().getRealm());
+        basicAuthenticationEntryPoint.afterPropertiesSet();
 
-	@Autowired
-	private SecurityStateBean securityStateBean;
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry security = http
+                .csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/")
+                .authenticated()
+                .antMatchers(
+                        dashboard("/**"),
+                        "/authenticate",
+                        "/security/info",
+                        "/dashboard",
+                        "/features",
+                        "/assets/**").permitAll();
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		final RequestMatcher textHtmlMatcher = new MediaTypeRequestMatcher(
-				contentNegotiationStrategy,
-				MediaType.TEXT_HTML);
+        if (authorizationConfig.isEnabled()) {
+            security = configureSimpleSecurity(security);
+        }
 
-		final String loginPage = dashboard("/#/login");
+        security.and()
+                .formLogin().loginPage(loginPage)
+                .loginProcessingUrl(dashboard("/login"))
+                .defaultSuccessUrl(dashboard("/")).permitAll()
+                .and()
+                .logout().logoutUrl(dashboard("/logout"))
+                .logoutSuccessUrl(dashboard("/logout-success.html"))
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).permitAll()
+                .and().httpBasic()
+                .and().exceptionHandling()
+                .defaultAuthenticationEntryPointFor(
+                        new LoginUrlAuthenticationEntryPoint(loginPage),
+                        textHtmlMatcher)
+                .defaultAuthenticationEntryPointFor(basicAuthenticationEntryPoint,
+                        AnyRequestMatcher.INSTANCE);
 
-		final BasicAuthenticationEntryPoint basicAuthenticationEntryPoint = new BasicAuthenticationEntryPoint();
-		basicAuthenticationEntryPoint.setRealmName(securityProperties.getBasic().getRealm());
-		basicAuthenticationEntryPoint.afterPropertiesSet();
+        if (authorizationConfig.isEnabled()) {
+            security.anyRequest().denyAll();
+        } else {
+            security.anyRequest().authenticated();
+        }
 
-		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry security = http
-			.csrf()
-			.disable()
-			.authorizeRequests()
-			.antMatchers("/")
-			.authenticated()
-			.antMatchers(
-					dashboard("/**"),
-					"/authenticate",
-					"/security/info",
-					"/dashboard",
-					"/features",
-					"/assets/**").permitAll();
+        final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter = new SessionRepositoryFilter<ExpiringSession>(
+                sessionRepository());
+        sessionRepositoryFilter
+                .setHttpSessionStrategy(new HeaderHttpSessionStrategy());
 
-		if (authorizationConfig.isEnabled()) {
-			security = configureSimpleSecurity(security);
-		}
+        http.addFilterBefore(sessionRepositoryFilter,
+                ChannelProcessingFilter.class).csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
 
-		security.and()
-			.formLogin().loginPage(loginPage)
-			.loginProcessingUrl(dashboard("/login"))
-			.defaultSuccessUrl(dashboard("/")).permitAll()
-		.and()
-			.logout().logoutUrl(dashboard("/logout"))
-				.logoutSuccessUrl(dashboard("/logout-success.html"))
-			.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).permitAll()
-		.and().httpBasic()
-			.and().exceptionHandling()
-			.defaultAuthenticationEntryPointFor(
-					new LoginUrlAuthenticationEntryPoint(loginPage),
-					textHtmlMatcher)
-			.defaultAuthenticationEntryPointFor(basicAuthenticationEntryPoint,
-					AnyRequestMatcher.INSTANCE);
+        securityStateBean.setAuthenticationEnabled(true);
+        securityStateBean.setAuthorizationEnabled(true);
+    }
 
-		if (authorizationConfig.isEnabled()) {
-			security.anyRequest().denyAll();
-		}
-		else {
-			security.anyRequest().authenticated();
-		}
+    /**
+     * Read the configuration for "simple" (that is, not ACL based) security and apply it.
+     */
+    private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureSimpleSecurity(
+            ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry security) {
+        for (String rule : authorizationConfig.getRules()) {
+            Matcher matcher = AUTHORIZATION_RULE.matcher(rule);
+            Assert.isTrue(matcher.matches(),
+                    String.format(
+                            "Unable to parse security rule [%s], expected format is 'HTTP_METHOD ANT_PATTERN => SECURITY_ATTRIBUTE(S)'",
+                            rule));
 
-		final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter = new SessionRepositoryFilter<ExpiringSession>(
-				sessionRepository());
-		sessionRepositoryFilter
-				.setHttpSessionStrategy(new HeaderHttpSessionStrategy());
+            HttpMethod method = HttpMethod.valueOf(matcher.group(1).trim());
+            String urlPattern = matcher.group(2).trim();
+            String attribute = matcher.group(3).trim();
 
-		http.addFilterBefore(sessionRepositoryFilter,
-				ChannelProcessingFilter.class).csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+            logger.info("Authorization '{}' | '{}' | '{}'", method, attribute, urlPattern);
+            security = security.antMatchers(method, urlPattern).access(attribute);
+        }
+        return security;
+    }
 
-		securityStateBean.setAuthenticationEnabled(true);
-		securityStateBean.setAuthorizationEnabled(true);
-	}
+    /**
+     * Holds configuration for the authorization aspects of security.
+     *
+     * @author Eric Bottard
+     * @author Gunnar Hillert
+     */
+    @ConfigurationProperties(prefix = DataFlowPropertyKeys.PREFIX + "security.authorization")
+    public static class AuthorizationConfig {
 
-	/**
-	 * Read the configuration for "simple" (that is, not ACL based) security and apply it.
-	 */
-	private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureSimpleSecurity(
-			ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry security) {
-		for (String rule : authorizationConfig.getRules()) {
-			Matcher matcher = AUTHORIZATION_RULE.matcher(rule);
-			Assert.isTrue(matcher.matches(),
-					String.format(
-							"Unable to parse security rule [%s], expected format is 'HTTP_METHOD ANT_PATTERN => SECURITY_ATTRIBUTE(S)'",
-							rule));
+        private boolean enabled = true;
+        private List<String> rules = new ArrayList<>();
 
-			HttpMethod method = HttpMethod.valueOf(matcher.group(1).trim());
-			String urlPattern = matcher.group(2).trim();
-			String attribute = matcher.group(3).trim();
+        public List<String> getRules() {
+            return rules;
+        }
 
-			logger.info("Authorization '{}' | '{}' | '{}'", method, attribute, urlPattern);
-			security = security.antMatchers(method, urlPattern).access(attribute);
-		}
-		return security;
-	}
+        public void setRules(List<String> rules) {
+            this.rules = rules;
+        }
 
-	/**
-	 * Holds configuration for the authorization aspects of security.
-	 *
-	 * @author Eric Bottard
-	 * @author Gunnar Hillert
-	 */
-	@ConfigurationProperties(prefix = DataFlowPropertyKeys.PREFIX + "security.authorization")
-	public static class AuthorizationConfig {
+        public boolean isEnabled() {
+            return enabled;
+        }
 
-		private boolean enabled = true;
-		private List<String> rules = new ArrayList<>();
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
-		public List<String> getRules() {
-			return rules;
-		}
-
-		public void setRules(List<String> rules) {
-			this.rules = rules;
-		}
-
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-	}
+    }
 }

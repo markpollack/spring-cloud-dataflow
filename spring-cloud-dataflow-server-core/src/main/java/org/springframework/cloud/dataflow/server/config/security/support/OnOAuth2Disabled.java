@@ -25,14 +25,14 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Gunnar Hillert
  * @since 1.1.0
- *
  */
 public class OnOAuth2Disabled extends NoneNestedConditions {
 
-	public OnOAuth2Disabled() {
-		super(ConfigurationPhase.REGISTER_BEAN);
-	}
+    public OnOAuth2Disabled() {
+        super(ConfigurationPhase.REGISTER_BEAN);
+    }
 
-	@Conditional(OnSecurityEnabledAndOAuth2Enabled.class)
-	static class OauthEnabled { }
+    @Conditional(OnSecurityEnabledAndOAuth2Enabled.class)
+    static class OauthEnabled {
+    }
 }

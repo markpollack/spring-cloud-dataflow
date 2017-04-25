@@ -28,47 +28,47 @@ import org.springframework.hateoas.Resources;
  */
 public class AppStatusResource extends ResourceSupport {
 
-	private String deploymentId;
+    private String deploymentId;
 
-	private String state;
+    private String state;
 
-	private Resources<AppInstanceStatusResource> instances;
+    private Resources<AppInstanceStatusResource> instances;
 
-	@SuppressWarnings("unused")
-	private AppStatusResource() {
-		// Noarg constructor for serialization;
-	}
+    @SuppressWarnings("unused")
+    private AppStatusResource() {
+        // Noarg constructor for serialization;
+    }
 
-	public AppStatusResource(String deploymentId, String state) {
-		this.deploymentId = deploymentId;
-		this.state = state;
-	}
+    public AppStatusResource(String deploymentId, String state) {
+        this.deploymentId = deploymentId;
+        this.state = state;
+    }
 
-	public String getDeploymentId() {
-		return deploymentId;
-	}
+    public String getDeploymentId() {
+        return deploymentId;
+    }
 
-	public String getState() {
-		return state;
-	}
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
 
-	public Resources<AppInstanceStatusResource> getInstances() {
-		return instances;
-	}
+    public String getState() {
+        return state;
+    }
 
-	public void setInstances(Resources<AppInstanceStatusResource> instances) {
-		this.instances = instances;
-	}
+    public void setState(String state) {
+        this.state = state;
+    }
 
-	public static class Page extends PagedResources<AppStatusResource> {
+    public Resources<AppInstanceStatusResource> getInstances() {
+        return instances;
+    }
 
-	}
+    public void setInstances(Resources<AppInstanceStatusResource> instances) {
+        this.instances = instances;
+    }
 
-	public void setDeploymentId(String deploymentId) {
-		this.deploymentId = deploymentId;
-	}
+    public static class Page extends PagedResources<AppStatusResource> {
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    }
 }

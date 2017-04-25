@@ -32,91 +32,94 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public abstract class TaskVisitor {
 
-	/**
-	 * The first call made to a visitor.
-	 * @param taskName the name of the task definition
-	 * @param taskDsl the textual definition of the AST being visited
-	 */
-	public void startVisit(String taskName, String taskDsl) {
-	}
+    /**
+     * The first call made to a visitor.
+     *
+     * @param taskName the name of the task definition
+     * @param taskDsl  the textual definition of the AST being visited
+     */
+    public void startVisit(String taskName, String taskDsl) {
+    }
 
-	/**
-	 * The last call made to a visitor.
-	 */
-	public void endVisit() {
-	}
+    /**
+     * The last call made to a visitor.
+     */
+    public void endVisit() {
+    }
 
-	/**
-	 * @param firstNode the first node in the sequence
-	 * @param sequenceNumber the sequence number, where the primary sequence is 0
-	 * @return false to skip visiting the specified sequence
-	 */
-	public boolean preVisitSequence(LabelledTaskNode firstNode, int sequenceNumber) {
-		return true;
-	}
+    /**
+     * @param firstNode      the first node in the sequence
+     * @param sequenceNumber the sequence number, where the primary sequence is 0
+     * @return false to skip visiting the specified sequence
+     */
+    public boolean preVisitSequence(LabelledTaskNode firstNode, int sequenceNumber) {
+        return true;
+    }
 
-	public void postVisitSequence(LabelledTaskNode firstNode, int sequenceNumber) {
-	}
+    public void postVisitSequence(LabelledTaskNode firstNode, int sequenceNumber) {
+    }
 
-	/**
-	 * @param flow the flow which represents things to execute in sequence
-	 * @return false to skip visiting this flow
-	 */
-	public boolean preVisit(FlowNode flow) {
-		return true;
-	}
+    /**
+     * @param flow the flow which represents things to execute in sequence
+     * @return false to skip visiting this flow
+     */
+    public boolean preVisit(FlowNode flow) {
+        return true;
+    }
 
-	public void visit(FlowNode flow) {
-	}
+    public void visit(FlowNode flow) {
+    }
 
-	public void postVisit(FlowNode flow) {
-	}
+    public void postVisit(FlowNode flow) {
+    }
 
-	/**
-	 * @param split the split which represents things to execute in parallel
-	 * @return false to skip visiting this split
-	 */
-	public boolean preVisit(SplitNode split) {
-		return true;
-	}
+    /**
+     * @param split the split which represents things to execute in parallel
+     * @return false to skip visiting this split
+     */
+    public boolean preVisit(SplitNode split) {
+        return true;
+    }
 
-	public void visit(SplitNode split) {
-	}
+    public void visit(SplitNode split) {
+    }
 
-	public void postVisit(SplitNode split) {
-	}
+    public void postVisit(SplitNode split) {
+    }
 
-	/**
-	 * <b>This preVisit/visit/postVisit sequence for taskApp is not invoked for inlined references to apps
-	 * in transitions, for example: <tt>appA 0->:foo 1->appB</tt>. The reference to <tt>appB</tt> would be
-	 * seen in the transition visit below.
-	 * @param taskApp the use of a task app in a task dsl
-	 * @return false to skip visiting this taskApp
-	 */
-	public boolean preVisit(TaskAppNode taskApp) {
-		return true;
-	}
+    /**
+     * <b>This preVisit/visit/postVisit sequence for taskApp is not invoked for inlined references to apps
+     * in transitions, for example: <tt>appA 0->:foo 1->appB</tt>. The reference to <tt>appB</tt> would be
+     * seen in the transition visit below.
+     *
+     * @param taskApp the use of a task app in a task dsl
+     * @return false to skip visiting this taskApp
+     */
+    public boolean preVisit(TaskAppNode taskApp) {
+        return true;
+    }
 
-	public void visit(TaskAppNode taskApp) {
-	}
+    public void visit(TaskAppNode taskApp) {
+    }
 
-	public void postVisit(TaskAppNode taskApp) {
-	}
+    public void postVisit(TaskAppNode taskApp) {
+    }
 
-	/**
-	 * After <tt>visit(TaskAppNode)</tt> and before <tt>postVisit(TaskAppNode)</tt> the transitions (if there
-	 * are any) are visited for that task app.
-	 * @param transition the transition
-	 * @return false to skip visiting this transition
-	 */
-	public boolean preVisit(TransitionNode transition) {
-		return true;
-	}
+    /**
+     * After <tt>visit(TaskAppNode)</tt> and before <tt>postVisit(TaskAppNode)</tt> the transitions (if there
+     * are any) are visited for that task app.
+     *
+     * @param transition the transition
+     * @return false to skip visiting this transition
+     */
+    public boolean preVisit(TransitionNode transition) {
+        return true;
+    }
 
-	public void visit(TransitionNode transition) {
-	}
-	
-	public void postVisit(TransitionNode transition) {
-	}
-	
+    public void visit(TransitionNode transition) {
+    }
+
+    public void postVisit(TransitionNode transition) {
+    }
+
 }

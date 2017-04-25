@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,292 +88,283 @@ import static org.springframework.shell.table.BorderSpecification.TOP;
 @Configuration
 @EnableHypermediaSupport(type = HypermediaType.HAL)
 public class ConfigCommands implements CommandMarker,
-				InitializingBean,
-				ApplicationListener<ApplicationReadyEvent>,
-				ApplicationContextAware
-{
+        InitializingBean,
+        ApplicationListener<ApplicationReadyEvent>,
+        ApplicationContextAware {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    public static final String HORIZONTAL_LINE = "-------------------------------------------------------------------------------\n";
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private DataFlowShell shell;
 
+    @Autowired
+    private RestTemplate restTemplate;
 
-	public static final String HORIZONTAL_LINE = "-------------------------------------------------------------------------------\n";
+    @Value("${dataflow.uri:" + Target.DEFAULT_TARGET + "}")
+    private String serverUri;
 
-	@Autowired
-	private DataFlowShell shell;
+    @Value("${dataflow.username:" + Target.DEFAULT_USERNAME + "}")
+    private String userName;
 
-	@Autowired
-	private RestTemplate restTemplate;
+    @Value("${dataflow.password:" + Target.DEFAULT_SPECIFIED_PASSWORD + "}")
+    private String password;
 
-	@Value("${dataflow.uri:" + Target.DEFAULT_TARGET + "}")
-	private String serverUri;
+    @Value("${dataflow.skip-ssl-validation:" + Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION + "}")
+    private boolean skipSslValidation;
 
-	@Value("${dataflow.username:" + Target.DEFAULT_USERNAME + "}")
-	private String userName;
+    private UserInput userInput;
 
-	@Value("${dataflow.password:" + Target.DEFAULT_SPECIFIED_PASSWORD + "}")
-	private String password;
+    private TargetHolder targetHolder;
 
-	@Value("${dataflow.skip-ssl-validation:" + Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION + "}")
-	private boolean skipSslValidation;
+    private ApplicationContext applicationContext;
 
-	private UserInput userInput;
+    private volatile boolean initialized;
 
-	private TargetHolder targetHolder;
+    @Autowired
+    public void setUserInput(UserInput userInput) {
+        this.userInput = userInput;
+    }
 
-	private ApplicationContext applicationContext;
+    @Autowired
+    public void setTargetHolder(TargetHolder targetHolder) {
+        this.targetHolder = targetHolder;
+    }
 
-	private volatile boolean initialized;
+    // These should be ctor injection
 
-	@Autowired
-	public void setUserInput(UserInput userInput) {
-		this.userInput = userInput;
-	}
+    @Autowired
+    public void setDataFlowShell(DataFlowShell shell) {
+        this.shell = shell;
+    }
 
-	@Autowired
-	public void setTargetHolder(TargetHolder targetHolder) {
-		this.targetHolder = targetHolder;
-	}
+    @Autowired
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-	// These should be ctor injection
+    @Bean
+    public RestTemplate restTemplate(Environment ev) {
+        return DataFlowTemplate.getDefaultDataflowRestTemplate();
+    }
 
-	@Autowired
-	public void setDataFlowShell(DataFlowShell shell) {
-		this.shell = shell;
-	}
+    // This is for unit testing
 
-	@Autowired
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    public void setServerUri(String serverUri) {
+        this.serverUri = serverUri;
+    }
 
-	@Bean
-	public RestTemplate restTemplate(Environment ev) {
-		return DataFlowTemplate.getDefaultDataflowRestTemplate();
-	}
+    @CliCommand(value = {"dataflow config server"}, help = "Configure the Spring Cloud Data Flow REST server to use")
+    public String target(
+            @CliOption(mandatory = false, key = {"", "uri"},
+                    help = "the location of the Spring Cloud Data Flow REST endpoint",
+                    unspecifiedDefaultValue = Target.DEFAULT_TARGET) String targetUriString,
+            @CliOption(mandatory = false, key = {"username"},
+                    help = "the username for authenticated access to the Admin REST endpoint",
+                    unspecifiedDefaultValue = Target.DEFAULT_USERNAME) String targetUsername,
+            @CliOption(mandatory = false, key = {"password"},
+                    help = "the password for authenticated access to the Admin REST endpoint (valid only with a username)",
+                    specifiedDefaultValue = Target.DEFAULT_SPECIFIED_PASSWORD,
+                    unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_PASSWORD) String targetPassword,
+            @CliOption(mandatory = false, key = {"skip-ssl-validation"},
+                    help = "accept any SSL certificate (even self-signed)",
+                    specifiedDefaultValue = Target.DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION,
+                    unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean skipSslValidation) {
+        if (!StringUtils.isEmpty(targetPassword) && StringUtils.isEmpty(targetUsername)) {
+            return "A password may be specified only together with a username";
+        }
 
-	// This is for unit testing
+        if (StringUtils.isEmpty(targetPassword) && !StringUtils.isEmpty(targetUsername)) {
+            // read password from the command line
+            targetPassword = userInput.prompt("Password", "", false);
+        }
 
-	public void setServerUri(String serverUri) {
-		this.serverUri = serverUri;
-	}
+        try {
+            this.targetHolder.setTarget(new Target(targetUriString, targetUsername, targetPassword, skipSslValidation));
 
-	@CliCommand(value = {"dataflow config server"}, help = "Configure the Spring Cloud Data Flow REST server to use")
-	public String target(
-			@CliOption(mandatory = false, key = {"", "uri"},
-					help = "the location of the Spring Cloud Data Flow REST endpoint",
-					unspecifiedDefaultValue =  Target.DEFAULT_TARGET) String targetUriString,
-			@CliOption(mandatory = false, key = {"username"},
-					help = "the username for authenticated access to the Admin REST endpoint",
-					unspecifiedDefaultValue = Target.DEFAULT_USERNAME) String targetUsername,
-			@CliOption(mandatory = false, key = {"password"},
-					help = "the password for authenticated access to the Admin REST endpoint (valid only with a username)",
-					specifiedDefaultValue = Target.DEFAULT_SPECIFIED_PASSWORD,
-					unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_PASSWORD) String targetPassword,
-			@CliOption(mandatory = false, key = {"skip-ssl-validation"},
-					help = "accept any SSL certificate (even self-signed)",
-					specifiedDefaultValue = Target.DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION,
-					unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean skipSslValidation){
-		if (!StringUtils.isEmpty(targetPassword) && StringUtils.isEmpty(targetUsername)) {
-				return "A password may be specified only together with a username";
-		}
+            HttpUtils.prepareRestTemplate(this.restTemplate, this.targetHolder.getTarget().getTargetUri(),
+                    targetUsername, targetPassword, skipSslValidation);
 
-		if (StringUtils.isEmpty(targetPassword) && !StringUtils.isEmpty(targetUsername)) {
-			// read password from the command line
-			targetPassword = userInput.prompt("Password", "", false);
-		}
+            this.shell.setDataFlowOperations(new DataFlowTemplate(targetHolder.getTarget().getTargetUri(), this.restTemplate));
+            this.targetHolder.getTarget().setTargetResultMessage(String.format("Successfully targeted %s", targetUriString));
 
-		try {
-			this.targetHolder.setTarget(new Target(targetUriString, targetUsername, targetPassword, skipSslValidation));
+            final SecurityInfoResource securityInfoResource = restTemplate.getForObject(targetUriString + "/security/info", SecurityInfoResource.class);
 
-			HttpUtils.prepareRestTemplate(this.restTemplate, this.targetHolder.getTarget().getTargetUri(),
-					targetUsername, targetPassword, skipSslValidation);
+            if (securityInfoResource.isAuthenticated() && this.targetHolder.getTarget().getTargetCredentials() != null) {
+                for (String roleAsString : securityInfoResource.getRoles()) {
+                    this.targetHolder.getTarget().getTargetCredentials().getRoles().add(RoleType.fromKey(roleAsString));
+                }
+            }
 
-			this.shell.setDataFlowOperations(new DataFlowTemplate(targetHolder.getTarget().getTargetUri(), this.restTemplate));
-			this.targetHolder.getTarget().setTargetResultMessage(String.format("Successfully targeted %s", targetUriString));
+            this.targetHolder.getTarget().setAuthenticated(securityInfoResource.isAuthenticated());
+            this.targetHolder.getTarget().setAuthenticationEnabled(securityInfoResource.isAuthenticationEnabled());
+            this.targetHolder.getTarget().setAuthorizationEnabled(securityInfoResource.isAuthorizationEnabled());
 
-			final SecurityInfoResource securityInfoResource = restTemplate.getForObject(targetUriString + "/security/info", SecurityInfoResource.class);
+        } catch (Exception e) {
+            this.targetHolder.getTarget().setTargetException(e);
+            this.shell.setDataFlowOperations(null);
+            handleTargetException(this.targetHolder.getTarget());
+        }
+        return (this.targetHolder.getTarget().getTargetResultMessage());
 
-			if (securityInfoResource.isAuthenticated() && this.targetHolder.getTarget().getTargetCredentials() != null) {
-				for (String roleAsString : securityInfoResource.getRoles()) {
-					this.targetHolder.getTarget().getTargetCredentials().getRoles().add(RoleType.fromKey(roleAsString));
-				}
-			}
+    }
 
-			this.targetHolder.getTarget().setAuthenticated(securityInfoResource.isAuthenticated());
-			this.targetHolder.getTarget().setAuthenticationEnabled(securityInfoResource.isAuthenticationEnabled());
-			this.targetHolder.getTarget().setAuthorizationEnabled(securityInfoResource.isAuthorizationEnabled());
+    @CliCommand(value = {"dataflow config info"}, help = "Show the Dataflow server being used")
+    public List<Object> info() {
+        Target target = targetHolder.getTarget();
+        if (target.getTargetException() != null) {
+            handleTargetException(target);
+            throw new DataFlowServerException(this.targetHolder.getTarget().getTargetResultMessage());
+        }
+        AboutResource about = this.shell.getDataFlowOperations().aboutOperation().get();
 
-		}
-		catch (Exception e) {
-			this.targetHolder.getTarget().setTargetException(e);
-			this.shell.setDataFlowOperations(null);
-			handleTargetException(this.targetHolder.getTarget());
-		}
-		return(this.targetHolder.getTarget().getTargetResultMessage());
+        List<Object> result = new ArrayList<>();
+        int rowIndex = 0;
+        List<Integer> rowsWithThinSeparators = new ArrayList<>();
 
-	}
+        TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
+        modelBuilder.addRow().addValue("Target").addValue(target.getTargetUriAsString());
+        rowIndex++;
 
-	@CliCommand(value = {"dataflow config info"}, help = "Show the Dataflow server being used")
-	public List<Object> info() {
-		Target target = targetHolder.getTarget();
-		if (target.getTargetException() != null) {
-			handleTargetException(target);
-			throw new DataFlowServerException(this.targetHolder.getTarget().getTargetResultMessage());
-		}
-		AboutResource about = this.shell.getDataFlowOperations().aboutOperation().get();
+        if (target.getTargetResultMessage() != null) {
+            modelBuilder.addRow().addValue("Result").addValue(target.getTargetResultMessage());
+            rowIndex++;
+        }
+        modelBuilder.addRow().addValue("Features").addValue(about.getFeatureInfo());
+        rowIndex++;
 
-		List<Object> result = new ArrayList<>();
-		int rowIndex = 0;
-		List<Integer> rowsWithThinSeparators = new ArrayList<>();
+        Map<String, String> versions = new LinkedHashMap<>();
+        modelBuilder.addRow().addValue("Versions").addValue(versions);
+        rowIndex++;
+        versions.compute(
+                about.getVersionInfo().getImplementation().getName(),
+                (k, v) -> about.getVersionInfo().getImplementation().getVersion()
+        );
+        versions.compute(
+                about.getVersionInfo().getCore().getName(),
+                (k, v) -> about.getVersionInfo().getCore().getVersion()
+        );
+        versions.compute(
+                about.getVersionInfo().getDashboard().getName(),
+                (k, v) -> about.getVersionInfo().getDashboard().getVersion()
+        );
 
-		TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
-		modelBuilder.addRow().addValue("Target").addValue(target.getTargetUriAsString());
-		rowIndex++;
+        SecurityInfo securityInfo = about.getSecurityInfo();
+        modelBuilder.addRow().addValue("Security").addValue(securityInfo);
+        rowIndex++;
 
-		if (target.getTargetResultMessage() != null) {
-			modelBuilder.addRow().addValue("Result").addValue(target.getTargetResultMessage());
-			rowIndex++;
-		}
-		modelBuilder.addRow().addValue("Features").addValue(about.getFeatureInfo());
-		rowIndex++;
+        if (securityInfo.isAuthorizationEnabled()) {
+            modelBuilder.addRow().addValue("Roles").addValue(securityInfo.getRoles());
+            rowsWithThinSeparators.add(rowIndex++);
+        }
 
-		Map<String, String> versions = new LinkedHashMap<>();
-		modelBuilder.addRow().addValue("Versions").addValue(versions);
-		rowIndex++;
-		versions.compute(
-			about.getVersionInfo().getImplementation().getName(),
-			(k, v) -> about.getVersionInfo().getImplementation().getVersion()
-		);
-		versions.compute(
-			about.getVersionInfo().getCore().getName(),
-			(k, v) -> about.getVersionInfo().getCore().getVersion()
-		);
-		versions.compute(
-			about.getVersionInfo().getDashboard().getName(),
-			(k, v) -> about.getVersionInfo().getDashboard().getVersion()
-		);
-
-		SecurityInfo securityInfo = about.getSecurityInfo();
-		modelBuilder.addRow().addValue("Security").addValue(securityInfo);
-		rowIndex++;
-
-		if (securityInfo.isAuthorizationEnabled()) {
-			modelBuilder.addRow().addValue("Roles").addValue(securityInfo.getRoles());
-			rowsWithThinSeparators.add(rowIndex++);
-		}
-
-		RuntimeEnvironmentDetails appDeployer = about.getRuntimeEnvironment().getAppDeployer();
-		RuntimeEnvironmentDetails taskLauncher = about.getRuntimeEnvironment().getTaskLauncher();
-		modelBuilder.addRow().addValue("App Deployer").addValue(appDeployer);
-		rowIndex++;
-		if (!appDeployer.getPlatformSpecificInfo().isEmpty()) {
-			modelBuilder.addRow().addValue("Platform Specific").addValue(appDeployer.getPlatformSpecificInfo());
-			rowsWithThinSeparators.add(rowIndex++);
-		}
-		modelBuilder.addRow().addValue("Task Launcher").addValue(taskLauncher);
-		rowIndex++;
-		if (!taskLauncher.getPlatformSpecificInfo().isEmpty()) {
-			modelBuilder.addRow().addValue("Platform Specific").addValue(taskLauncher.getPlatformSpecificInfo());
-			rowsWithThinSeparators.add(rowIndex++);
-		}
+        RuntimeEnvironmentDetails appDeployer = about.getRuntimeEnvironment().getAppDeployer();
+        RuntimeEnvironmentDetails taskLauncher = about.getRuntimeEnvironment().getTaskLauncher();
+        modelBuilder.addRow().addValue("App Deployer").addValue(appDeployer);
+        rowIndex++;
+        if (!appDeployer.getPlatformSpecificInfo().isEmpty()) {
+            modelBuilder.addRow().addValue("Platform Specific").addValue(appDeployer.getPlatformSpecificInfo());
+            rowsWithThinSeparators.add(rowIndex++);
+        }
+        modelBuilder.addRow().addValue("Task Launcher").addValue(taskLauncher);
+        rowIndex++;
+        if (!taskLauncher.getPlatformSpecificInfo().isEmpty()) {
+            modelBuilder.addRow().addValue("Platform Specific").addValue(taskLauncher.getPlatformSpecificInfo());
+            rowsWithThinSeparators.add(rowIndex++);
+        }
 
 
-		TableBuilder builder = new TableBuilder(modelBuilder.build());
-		builder
-			.addOutlineBorder(BorderStyle.fancy_double)
-			.paintBorder(BorderStyle.fancy_light, BorderSpecification.INNER).fromTopLeft().toBottomRight()
-			.on(CellMatchers.table())
-				.addAligner(SimpleHorizontalAligner.center)
-			.on(CellMatchers.table())
-				.addAligner(SimpleVerticalAligner.middle)
-		;
+        TableBuilder builder = new TableBuilder(modelBuilder.build());
+        builder
+                .addOutlineBorder(BorderStyle.fancy_double)
+                .paintBorder(BorderStyle.fancy_light, BorderSpecification.INNER).fromTopLeft().toBottomRight()
+                .on(CellMatchers.table())
+                .addAligner(SimpleHorizontalAligner.center)
+                .on(CellMatchers.table())
+                .addAligner(SimpleVerticalAligner.middle)
+        ;
 
-		Tables.configureKeyValueRendering(builder, ": ");
+        Tables.configureKeyValueRendering(builder, ": ");
 
-		builder.on(CellMatchers.ofType(FeatureInfo.class))
-			.addFormatter(new DataFlowTables.BeanWrapperFormatter(": "))
-			.addAligner(new KeyValueHorizontalAligner(":"))
-			.addSizer(new KeyValueSizeConstraints(": "))
-			.addWrapper(new KeyValueTextWrapper(": "));
-		List<String> excludes = securityInfo.isAuthenticated()
-			? Arrays.asList("roles", "class")
-			: Arrays.asList("roles", "class", "username");
-		builder.on(CellMatchers.ofType(SecurityInfo.class))
-			.addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, excludes))
-			.addAligner(new KeyValueHorizontalAligner(":"))
-			.addSizer(new KeyValueSizeConstraints(": "))
-			.addWrapper(new KeyValueTextWrapper(": "));
-		builder.on(CellMatchers.ofType(List.class)).addFormatter(value -> ((List<String>) value).toArray(new String[0]));
-		builder.on(CellMatchers.ofType(RuntimeEnvironmentDetails.class))
-			.addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, Arrays.asList("class", "platformSpecificInfo")))
-			.addAligner(new KeyValueHorizontalAligner(":"))
-			.addSizer(new KeyValueSizeConstraints(": "))
-			.addWrapper(new KeyValueTextWrapper(": "));
-		rowsWithThinSeparators.forEach(row -> builder.paintBorder(BorderStyle.fancy_light_quadruple_dash, TOP)
-			.fromRowColumn(row, 0).toRowColumn(row + 1, builder.getModel().getColumnCount()));
-
-
-		result.add(builder.build());
+        builder.on(CellMatchers.ofType(FeatureInfo.class))
+                .addFormatter(new DataFlowTables.BeanWrapperFormatter(": "))
+                .addAligner(new KeyValueHorizontalAligner(":"))
+                .addSizer(new KeyValueSizeConstraints(": "))
+                .addWrapper(new KeyValueTextWrapper(": "));
+        List<String> excludes = securityInfo.isAuthenticated()
+                ? Arrays.asList("roles", "class")
+                : Arrays.asList("roles", "class", "username");
+        builder.on(CellMatchers.ofType(SecurityInfo.class))
+                .addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, excludes))
+                .addAligner(new KeyValueHorizontalAligner(":"))
+                .addSizer(new KeyValueSizeConstraints(": "))
+                .addWrapper(new KeyValueTextWrapper(": "));
+        builder.on(CellMatchers.ofType(List.class)).addFormatter(value -> ((List<String>) value).toArray(new String[0]));
+        builder.on(CellMatchers.ofType(RuntimeEnvironmentDetails.class))
+                .addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, Arrays.asList("class", "platformSpecificInfo")))
+                .addAligner(new KeyValueHorizontalAligner(":"))
+                .addSizer(new KeyValueSizeConstraints(": "))
+                .addWrapper(new KeyValueTextWrapper(": "));
+        rowsWithThinSeparators.forEach(row -> builder.paintBorder(BorderStyle.fancy_light_quadruple_dash, TOP)
+                .fromRowColumn(row, 0).toRowColumn(row + 1, builder.getModel().getColumnCount()));
 
 
+        result.add(builder.build());
 
-		if (Target.TargetStatus.ERROR.equals(target.getStatus())) {
-			StringWriter stringWriter = new StringWriter();
-			stringWriter.write("\nAn exception occurred during targeting:\n");
-			target.getTargetException().printStackTrace(new PrintWriter(stringWriter));
 
-			result.add(stringWriter.toString());
-		}
-		return result;
-	}
+        if (Target.TargetStatus.ERROR.equals(target.getStatus())) {
+            StringWriter stringWriter = new StringWriter();
+            stringWriter.write("\nAn exception occurred during targeting:\n");
+            target.getTargetException().printStackTrace(new PrintWriter(stringWriter));
 
-	private void handleTargetException(Target target) {
-		Exception targetException = target.getTargetException();
-		Assert.isTrue(targetException != null, "TargetException must not be null");
-		if (targetException instanceof DataFlowServerException) {
-			String message = String.format("Unable to parse server response: %s - at URI '%s'.", targetException.getMessage(),
-					target.getTargetUriAsString());
-			if (logger.isDebugEnabled()) {
-				logger.debug(message, targetException);
-			}
-			else {
-				logger.warn(message);
-			}
-			this.targetHolder.getTarget().setTargetResultMessage(message);
-		}
-		else {
-			if (targetException instanceof HttpClientErrorException && targetException.getMessage().startsWith("401")) {
-				this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to access Data Flow Server at '%s': '%s'. Unauthorized, did you forget to authenticate?",
-						target.getTargetUriAsString(), targetException.toString()));
-			}
-			else {
-				this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to contact Data Flow Server at '%s': '%s'.",
-						target.getTargetUriAsString(), targetException.toString()));
-			}
-		}
+            result.add(stringWriter.toString());
+        }
+        return result;
+    }
 
-	}
+    private void handleTargetException(Target target) {
+        Exception targetException = target.getTargetException();
+        Assert.isTrue(targetException != null, "TargetException must not be null");
+        if (targetException instanceof DataFlowServerException) {
+            String message = String.format("Unable to parse server response: %s - at URI '%s'.", targetException.getMessage(),
+                    target.getTargetUriAsString());
+            if (logger.isDebugEnabled()) {
+                logger.debug(message, targetException);
+            } else {
+                logger.warn(message);
+            }
+            this.targetHolder.getTarget().setTargetResultMessage(message);
+        } else {
+            if (targetException instanceof HttpClientErrorException && targetException.getMessage().startsWith("401")) {
+                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to access Data Flow Server at '%s': '%s'. Unauthorized, did you forget to authenticate?",
+                        target.getTargetUriAsString(), targetException.toString()));
+            } else {
+                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to contact Data Flow Server at '%s': '%s'.",
+                        target.getTargetUriAsString(), targetException.toString()));
+            }
+        }
 
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
-		//Only invoke if the shell is executing in the same application context as the data flow server.
-		if (!initialized) {
-			target(this.serverUri, this.userName, this.password, this.skipSslValidation);
-		}
-	}
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		//Only invoke this lifecycle method if the shell is executing in stand-alone mode.
-		if (applicationContext != null && !applicationContext.containsBean("streamDefinitionRepository")) {
-			initialized = true;
-			target(this.serverUri, this.userName, this.password, this.skipSslValidation);
-		}
-	}
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+        //Only invoke if the shell is executing in the same application context as the data flow server.
+        if (!initialized) {
+            target(this.serverUri, this.userName, this.password, this.skipSslValidation);
+        }
+    }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        //Only invoke this lifecycle method if the shell is executing in stand-alone mode.
+        if (applicationContext != null && !applicationContext.containsBean("streamDefinitionRepository")) {
+            initialized = true;
+            target(this.serverUri, this.userName, this.password, this.skipSslValidation);
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
 }

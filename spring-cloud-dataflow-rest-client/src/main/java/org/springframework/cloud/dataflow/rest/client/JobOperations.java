@@ -29,58 +29,58 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface JobOperations {
 
-	/**
-	 * @return the list job executions known to the system.
-	 */
-	PagedResources<JobExecutionResource> executionList();
+    /**
+     * @return the list job executions known to the system.
+     */
+    PagedResources<JobExecutionResource> executionList();
 
-	/**
-	 * @return the list job instances for the specified jobName.
-	 * @param jobName the name of the job
-	 */
-	PagedResources<JobInstanceResource> instanceList(String jobName);
+    /**
+     * @param jobName the name of the job
+     * @return the list job instances for the specified jobName.
+     */
+    PagedResources<JobInstanceResource> instanceList(String jobName);
 
-	/**
-	 * List job executions known to the system filtered by job name.
-	 *
-	 * @param jobName of the executions.
-	 * @return the list of job executions
-	 */
-	PagedResources<JobExecutionResource> executionListByJobName(String jobName);
+    /**
+     * List job executions known to the system filtered by job name.
+     *
+     * @param jobName of the executions.
+     * @return the list of job executions
+     */
+    PagedResources<JobExecutionResource> executionListByJobName(String jobName);
 
-	/**
-	 * Return the {@link JobExecutionResource} for the id specified.
-	 *
-	 * @param id identifier of the job execution
-	 * @return {@link JobExecutionResource}
-	 */
-	JobExecutionResource jobExecution(long id);
+    /**
+     * Return the {@link JobExecutionResource} for the id specified.
+     *
+     * @param id identifier of the job execution
+     * @return {@link JobExecutionResource}
+     */
+    JobExecutionResource jobExecution(long id);
 
-	/**
-	 * Return the {@link JobInstanceResource} for the id specified.
-	 *
-	 * @param id identifier of the job instasnce
-	 * @return {@link JobInstanceResource}
-	 */
-	JobInstanceResource jobInstance(long id);
+    /**
+     * Return the {@link JobInstanceResource} for the id specified.
+     *
+     * @param id identifier of the job instasnce
+     * @return {@link JobInstanceResource}
+     */
+    JobInstanceResource jobInstance(long id);
 
-	/**
-	 * List step executions known for a specific job execution id.
-	 *
-	 * @param jobExecutionId the id of the job execution.
-	 * @return the paged list of step executions
-	 */
-	PagedResources<StepExecutionResource> stepExecutionList(long jobExecutionId);
+    /**
+     * List step executions known for a specific job execution id.
+     *
+     * @param jobExecutionId the id of the job execution.
+     * @return the paged list of step executions
+     */
+    PagedResources<StepExecutionResource> stepExecutionList(long jobExecutionId);
 
-	/**
-	 * Return StepExecutionProgressInfoResource for a specific job execution id and
-	 * step execution Id.
-	 *
-	 * @param jobExecutionId  the id of the job execution for the step to be returned.
-	 * @param stepExecutionId the id step execution to be returned.
-	 * @return the step execution progress info
-	 */
-	StepExecutionProgressInfoResource stepExecutionProgress(long jobExecutionId,
-			long stepExecutionId);
+    /**
+     * Return StepExecutionProgressInfoResource for a specific job execution id and
+     * step execution Id.
+     *
+     * @param jobExecutionId  the id of the job execution for the step to be returned.
+     * @param stepExecutionId the id step execution to be returned.
+     * @return the step execution progress info
+     */
+    StepExecutionProgressInfoResource stepExecutionProgress(long jobExecutionId,
+                                                            long stepExecutionId);
 
 }

@@ -26,58 +26,60 @@ import org.springframework.util.Assert;
  */
 public class StepExecutionResource extends ResourceSupport {
 
-	private final Long jobExecutionId;
+    private final Long jobExecutionId;
 
-	private final StepExecution stepExecution;
+    private final StepExecution stepExecution;
 
-	private final String stepType;
+    private final String stepType;
 
-	/**
-	 * Create a new StepExecutionResource
-	 * @param jobExecutionId the job execution id, must not be null
-	 * @param stepExecution  the step execution, must not be null
-	 * @param stepType the step type
-	 */
-	public StepExecutionResource(
-			Long jobExecutionId,
-			StepExecution stepExecution,
-			String stepType) {
+    /**
+     * Create a new StepExecutionResource
+     *
+     * @param jobExecutionId the job execution id, must not be null
+     * @param stepExecution  the step execution, must not be null
+     * @param stepType       the step type
+     */
+    public StepExecutionResource(
+            Long jobExecutionId,
+            StepExecution stepExecution,
+            String stepType) {
 
-		Assert.notNull(jobExecutionId, "jobExecutionId must not be null.");
-		Assert.notNull(stepExecution, "stepExecution must not be null.");
+        Assert.notNull(jobExecutionId, "jobExecutionId must not be null.");
+        Assert.notNull(stepExecution, "stepExecution must not be null.");
 
-		this.stepExecution = stepExecution;
-		this.jobExecutionId = jobExecutionId;
-		this.stepType = stepType;
-	}
+        this.stepExecution = stepExecution;
+        this.jobExecutionId = jobExecutionId;
+        this.stepType = stepType;
+    }
 
-	/**
-	 * Default constructor to be used by Jackson.
-	 */
-	private StepExecutionResource() {
-		this.stepExecution = null;
-		this.jobExecutionId = null;
-		this.stepType = null;
-	}
+    /**
+     * Default constructor to be used by Jackson.
+     */
+    private StepExecutionResource() {
+        this.stepExecution = null;
+        this.jobExecutionId = null;
+        this.stepType = null;
+    }
 
-	/**
-	 * @return The jobExecutionId, which will never be null
-	 */
-	public Long getJobExecutionId() {
-		return this.jobExecutionId;
-	}
+    /**
+     * @return The jobExecutionId, which will never be null
+     */
+    public Long getJobExecutionId() {
+        return this.jobExecutionId;
+    }
 
-	/**
-	 * @return The stepExecution, which will never be null
-	 */
-	public StepExecution getStepExecution() {
-		return stepExecution;
-	}
+    /**
+     * @return The stepExecution, which will never be null
+     */
+    public StepExecution getStepExecution() {
+        return stepExecution;
+    }
 
-	public String getStepType() {
-		return this.stepType;
-	}
+    public String getStepType() {
+        return this.stepType;
+    }
 
-	public static class Page extends PagedResources<StepExecutionResource> {}
+    public static class Page extends PagedResources<StepExecutionResource> {
+    }
 
 }

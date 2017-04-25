@@ -36,31 +36,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TaskServiceDependencies {
 
-	@Bean
-	public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
-		TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
-		taskRepositoryInitializer.setDataSource(dataSource);
-		return taskRepositoryInitializer;
-	}
+    @Bean
+    public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
+        TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
+        taskRepositoryInitializer.setDataSource(dataSource);
+        return taskRepositoryInitializer;
+    }
 
-	@Bean
-	public TaskDefinitionRepository taskDefinitionRepository() {
-		return new InMemoryTaskDefinitionRepository();
-	}
+    @Bean
+    public TaskDefinitionRepository taskDefinitionRepository() {
+        return new InMemoryTaskDefinitionRepository();
+    }
 
-	@Bean
-	public TaskRepository taskRepository() {
-		return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
-	}
+    @Bean
+    public TaskRepository taskRepository() {
+        return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
+    }
 
-	@Bean
-	public TaskExplorer taskExplorer(TaskExecutionDaoFactoryBean daoFactoryBean){
-		return new SimpleTaskExplorer(daoFactoryBean);
-	}
+    @Bean
+    public TaskExplorer taskExplorer(TaskExecutionDaoFactoryBean daoFactoryBean) {
+        return new SimpleTaskExplorer(daoFactoryBean);
+    }
 
-	@Bean
-	public TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean(DataSource dataSource){
-		return new TaskExecutionDaoFactoryBean(dataSource);
-	}
+    @Bean
+    public TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean(DataSource dataSource) {
+        return new TaskExecutionDaoFactoryBean(dataSource);
+    }
 
 }

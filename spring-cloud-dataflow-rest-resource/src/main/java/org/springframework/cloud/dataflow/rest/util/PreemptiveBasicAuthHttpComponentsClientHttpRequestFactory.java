@@ -25,37 +25,35 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 /**
  * @author Gunnar Hillert
- *
  */
 public class PreemptiveBasicAuthHttpComponentsClientHttpRequestFactory
-	extends HttpComponentsClientHttpRequestFactory {
+        extends HttpComponentsClientHttpRequestFactory {
 
-	private final HttpHost host;
+    private final HttpHost host;
 
-	public PreemptiveBasicAuthHttpComponentsClientHttpRequestFactory(HttpClient httpClient, HttpHost host) {
-		super(httpClient);
-		this.host = host;
-	}
+    public PreemptiveBasicAuthHttpComponentsClientHttpRequestFactory(HttpClient httpClient, HttpHost host) {
+        super(httpClient);
+        this.host = host;
+    }
 
-	@Override
-	protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-		return createHttpContext();
-	}
+    @Override
+    protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+        return createHttpContext();
+    }
 
-	private HttpContext createHttpContext() {
-		final AuthCache authCache = new BasicAuthCache();
+    private HttpContext createHttpContext() {
+        final AuthCache authCache = new BasicAuthCache();
 
-		final BasicScheme basicAuth = new BasicScheme();
-		authCache.put(host, basicAuth);
+        final BasicScheme basicAuth = new BasicScheme();
+        authCache.put(host, basicAuth);
 
-		final BasicHttpContext localcontext = new BasicHttpContext();
-		localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
-		return localcontext;
-	}
+        final BasicHttpContext localcontext = new BasicHttpContext();
+        localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
+        return localcontext;
+    }
 }

@@ -58,164 +58,163 @@ import org.springframework.util.StringUtils;
 // todo: reenable optionContext attributes
 public class TaskCommands implements CommandMarker {
 
-	private static final String LIST = "task list";
+    private static final String LIST = "task list";
 
-	private static final String CREATE = "task create";
+    private static final String CREATE = "task create";
 
-	private static final String LAUNCH = "task launch";
+    private static final String LAUNCH = "task launch";
 
-	private static final String DESTROY = "task destroy";
+    private static final String DESTROY = "task destroy";
 
-	private static final String TASK_EXECUTION_STATUS = "task execution status";
+    private static final String TASK_EXECUTION_STATUS = "task execution status";
 
-	private static final String TASK_EXECUTION_CLEANUP = "task execution cleanup";
+    private static final String TASK_EXECUTION_CLEANUP = "task execution cleanup";
 
-	private static final String PROPERTIES_OPTION = "properties";
+    private static final String PROPERTIES_OPTION = "properties";
 
-	private static final String PROPERTIES_FILE_OPTION = "propertiesFile";
+    private static final String PROPERTIES_FILE_OPTION = "propertiesFile";
 
-	private static final String ARGUMENTS_OPTION = "arguments";
+    private static final String ARGUMENTS_OPTION = "arguments";
 
-	private static final String EXECUTION_LIST = "task execution list";
+    private static final String EXECUTION_LIST = "task execution list";
 
 
-	@Autowired
-	private DataFlowShell dataFlowShell;
+    @Autowired
+    private DataFlowShell dataFlowShell;
 
-	@CliAvailabilityIndicator({ LIST, TASK_EXECUTION_STATUS, EXECUTION_LIST })
-	public boolean availableWithViewRole() {
-		return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.TASK);
-	}
+    @CliAvailabilityIndicator({LIST, TASK_EXECUTION_STATUS, EXECUTION_LIST})
+    public boolean availableWithViewRole() {
+        return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.TASK);
+    }
 
-	@CliAvailabilityIndicator({ CREATE, LAUNCH, TASK_EXECUTION_CLEANUP, DESTROY })
-	public boolean availableWithCreateRole() {
-		return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.TASK);
-	}
+    @CliAvailabilityIndicator({CREATE, LAUNCH, TASK_EXECUTION_CLEANUP, DESTROY})
+    public boolean availableWithCreateRole() {
+        return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.TASK);
+    }
 
-	@CliCommand(value = LIST, help = "List created tasks")
-	public Table list() {
-		final PagedResources<TaskDefinitionResource> tasks = taskOperations().list();
-		LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
-		headers.put("name", "Task Name");
-		headers.put("dslText", "Task Definition");
-		headers.put("status", "Task Status");
-		final TableBuilder builder = new TableBuilder(new BeanListTableModel<>(tasks, headers));
-		return DataFlowTables.applyStyle(builder).build();
-	}
+    @CliCommand(value = LIST, help = "List created tasks")
+    public Table list() {
+        final PagedResources<TaskDefinitionResource> tasks = taskOperations().list();
+        LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
+        headers.put("name", "Task Name");
+        headers.put("dslText", "Task Definition");
+        headers.put("status", "Task Status");
+        final TableBuilder builder = new TableBuilder(new BeanListTableModel<>(tasks, headers));
+        return DataFlowTables.applyStyle(builder).build();
+    }
 
-	@CliCommand(value = CREATE, help = "Create a new task definition")
-	public String create(
-			@CliOption(mandatory = true, key = { "", "name" }, help = "the name to give to the task") String name,
-			@CliOption(mandatory = true, key = { "definition" }, help = "a task definition, using the DSL (e.g. \"timestamp --format=YYYY\")", optionContext = "disable-string-converter completion-task") String dsl){
-		this.taskOperations().create(name, dsl);
-		return String.format("Created new task '%s'", name);
-	}
+    @CliCommand(value = CREATE, help = "Create a new task definition")
+    public String create(
+            @CliOption(mandatory = true, key = {"", "name"}, help = "the name to give to the task") String name,
+            @CliOption(mandatory = true, key = {"definition"}, help = "a task definition, using the DSL (e.g. \"timestamp --format=YYYY\")", optionContext = "disable-string-converter completion-task") String dsl) {
+        this.taskOperations().create(name, dsl);
+        return String.format("Created new task '%s'", name);
+    }
 
-	@CliCommand(value = LAUNCH, help = "Launch a previously created task")
-	public String launch(
-			@CliOption(key = { "", "name" }, help = "the name of the task to launch", mandatory = true) String name,
-			@CliOption(key = { PROPERTIES_OPTION }, help = "the properties for this launch", mandatory = false) String properties,
-			@CliOption(key = { PROPERTIES_FILE_OPTION }, help = "the properties for this launch (as a File)", mandatory = false) File propertiesFile,
-			@CliOption(key = { ARGUMENTS_OPTION }, help = "the commandline arguments for this launch", mandatory = false) String arguments
-			) throws IOException {
-		int which = Assertions.atMostOneOf(PROPERTIES_OPTION, properties, PROPERTIES_FILE_OPTION, propertiesFile);
-		Map<String, String> propertiesToUse;
-		switch (which) {
-			case 0:
-				propertiesToUse = DeploymentPropertiesUtils.parse(properties);
-				break;
-			case 1:
-				Properties props = new Properties();
-				try (FileInputStream fis = new FileInputStream(propertiesFile)) {
-					props.load(fis);
-				}
-				propertiesToUse = DeploymentPropertiesUtils.convert(props);
-				break;
-			case -1: // Neither option specified
-				propertiesToUse = Collections.emptyMap();
-				break;
-			default:
-				throw new AssertionError();
-		}
-		List<String> argumentsToUse = new ArrayList<String>();
-		if (StringUtils.hasText(arguments)) {
-			argumentsToUse.add(arguments);
-		}
-		DeploymentPropertiesUtils.ensureJustDeploymentProperties(propertiesToUse);
-		taskOperations().launch(name, propertiesToUse, argumentsToUse);
-		return String.format("Launched task '%s'", name);
-	}
+    @CliCommand(value = LAUNCH, help = "Launch a previously created task")
+    public String launch(
+            @CliOption(key = {"", "name"}, help = "the name of the task to launch", mandatory = true) String name,
+            @CliOption(key = {PROPERTIES_OPTION}, help = "the properties for this launch", mandatory = false) String properties,
+            @CliOption(key = {PROPERTIES_FILE_OPTION}, help = "the properties for this launch (as a File)", mandatory = false) File propertiesFile,
+            @CliOption(key = {ARGUMENTS_OPTION}, help = "the commandline arguments for this launch", mandatory = false) String arguments
+    ) throws IOException {
+        int which = Assertions.atMostOneOf(PROPERTIES_OPTION, properties, PROPERTIES_FILE_OPTION, propertiesFile);
+        Map<String, String> propertiesToUse;
+        switch (which) {
+            case 0:
+                propertiesToUse = DeploymentPropertiesUtils.parse(properties);
+                break;
+            case 1:
+                Properties props = new Properties();
+                try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+                    props.load(fis);
+                }
+                propertiesToUse = DeploymentPropertiesUtils.convert(props);
+                break;
+            case -1: // Neither option specified
+                propertiesToUse = Collections.emptyMap();
+                break;
+            default:
+                throw new AssertionError();
+        }
+        List<String> argumentsToUse = new ArrayList<String>();
+        if (StringUtils.hasText(arguments)) {
+            argumentsToUse.add(arguments);
+        }
+        DeploymentPropertiesUtils.ensureJustDeploymentProperties(propertiesToUse);
+        taskOperations().launch(name, propertiesToUse, argumentsToUse);
+        return String.format("Launched task '%s'", name);
+    }
 
-	@CliCommand(value = DESTROY, help = "Destroy an existing task")
-	public String destroy(
-			@CliOption(key = { "", "name" }, help = "the name of the task to destroy", mandatory = true) String name) {
-		taskOperations().destroy(name);
-		return String.format("Destroyed task '%s'", name);
-	}
+    @CliCommand(value = DESTROY, help = "Destroy an existing task")
+    public String destroy(
+            @CliOption(key = {"", "name"}, help = "the name of the task to destroy", mandatory = true) String name) {
+        taskOperations().destroy(name);
+        return String.format("Destroyed task '%s'", name);
+    }
 
-	@CliCommand(value = EXECUTION_LIST,
-			help = "List created task executions filtered by taskName")
-	public Table executionListByName(
-			@CliOption(key = { "name" },
-					help = "the task name to be used as a filter",
-					mandatory = false) String name) {
+    @CliCommand(value = EXECUTION_LIST,
+            help = "List created task executions filtered by taskName")
+    public Table executionListByName(
+            @CliOption(key = {"name"},
+                    help = "the task name to be used as a filter",
+                    mandatory = false) String name) {
 
-		final PagedResources<TaskExecutionResource> tasks;
-		if(name == null){
-			tasks = taskOperations().executionList();
-		}
-		else{
-			tasks = taskOperations().executionListByTaskName(name);
-		}
-		LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
-		headers.put("taskName", "Task Name");
-		headers.put("executionId", "ID");
-		headers.put("startTime", "Start Time");
-		headers.put("endTime", "End Time");
-		headers.put("exitCode", "Exit Code");
-		final TableBuilder builder = new TableBuilder(new BeanListTableModel<>(tasks, headers));
-		return DataFlowTables.applyStyle(builder).build();
-	}
+        final PagedResources<TaskExecutionResource> tasks;
+        if (name == null) {
+            tasks = taskOperations().executionList();
+        } else {
+            tasks = taskOperations().executionListByTaskName(name);
+        }
+        LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
+        headers.put("taskName", "Task Name");
+        headers.put("executionId", "ID");
+        headers.put("startTime", "Start Time");
+        headers.put("endTime", "End Time");
+        headers.put("exitCode", "Exit Code");
+        final TableBuilder builder = new TableBuilder(new BeanListTableModel<>(tasks, headers));
+        return DataFlowTables.applyStyle(builder).build();
+    }
 
-	@CliCommand(value = TASK_EXECUTION_STATUS, help = "Display the details of a specific task execution")
-	public Table display(
-			@CliOption(key = { "", "id" },
-					help = "the task execution id",
-					mandatory = true) long id) {
+    @CliCommand(value = TASK_EXECUTION_STATUS, help = "Display the details of a specific task execution")
+    public Table display(
+            @CliOption(key = {"", "id"},
+                    help = "the task execution id",
+                    mandatory = true) long id) {
 
-		TaskExecutionResource taskExecutionResource = taskOperations().taskExecutionStatus(id);
+        TaskExecutionResource taskExecutionResource = taskOperations().taskExecutionStatus(id);
 
-		TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
+        TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
 
-		modelBuilder.addRow().addValue("Key ").addValue("Value ");
-		modelBuilder.addRow().addValue("Id ").addValue(taskExecutionResource.getExecutionId());
-		modelBuilder.addRow().addValue("Name ").addValue(taskExecutionResource.getTaskName());
-		modelBuilder.addRow().addValue("Arguments ").addValue(taskExecutionResource.getArguments());
-		modelBuilder.addRow().addValue("Job Execution Ids ").addValue(taskExecutionResource.getJobExecutionIds());
-		modelBuilder.addRow().addValue("Start Time ").addValue(taskExecutionResource.getStartTime());
-		modelBuilder.addRow().addValue("End Time ").addValue(taskExecutionResource.getEndTime());
-		modelBuilder.addRow().addValue("Exit Code ").addValue(taskExecutionResource.getExitCode());
-		modelBuilder.addRow().addValue("Exit Message ").addValue(taskExecutionResource.getExitMessage());
-		modelBuilder.addRow().addValue("Error Message ").addValue(taskExecutionResource.getErrorMessage());
-		modelBuilder.addRow().addValue("External Execution Id ").addValue(taskExecutionResource.getExternalExecutionId());
+        modelBuilder.addRow().addValue("Key ").addValue("Value ");
+        modelBuilder.addRow().addValue("Id ").addValue(taskExecutionResource.getExecutionId());
+        modelBuilder.addRow().addValue("Name ").addValue(taskExecutionResource.getTaskName());
+        modelBuilder.addRow().addValue("Arguments ").addValue(taskExecutionResource.getArguments());
+        modelBuilder.addRow().addValue("Job Execution Ids ").addValue(taskExecutionResource.getJobExecutionIds());
+        modelBuilder.addRow().addValue("Start Time ").addValue(taskExecutionResource.getStartTime());
+        modelBuilder.addRow().addValue("End Time ").addValue(taskExecutionResource.getEndTime());
+        modelBuilder.addRow().addValue("Exit Code ").addValue(taskExecutionResource.getExitCode());
+        modelBuilder.addRow().addValue("Exit Message ").addValue(taskExecutionResource.getExitMessage());
+        modelBuilder.addRow().addValue("Error Message ").addValue(taskExecutionResource.getErrorMessage());
+        modelBuilder.addRow().addValue("External Execution Id ").addValue(taskExecutionResource.getExternalExecutionId());
 
-		TableBuilder builder = new TableBuilder(modelBuilder.build());
+        TableBuilder builder = new TableBuilder(modelBuilder.build());
 
-		DataFlowTables.applyStyle(builder);
+        DataFlowTables.applyStyle(builder);
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
-	@CliCommand(value = TASK_EXECUTION_CLEANUP, help = "Clean up any platform specific resources linked to a task execution")
-	public String cleanup(
-		@CliOption(key = { "", "id" },
-			help = "the task execution id",
-			mandatory = true) long id) {
-		taskOperations().cleanup(id);
-		return String.format("Request to clean up resources for task execution %s has been submitted", id);
-	}
+    @CliCommand(value = TASK_EXECUTION_CLEANUP, help = "Clean up any platform specific resources linked to a task execution")
+    public String cleanup(
+            @CliOption(key = {"", "id"},
+                    help = "the task execution id",
+                    mandatory = true) long id) {
+        taskOperations().cleanup(id);
+        return String.format("Request to clean up resources for task execution %s has been submitted", id);
+    }
 
-	private TaskOperations taskOperations() {
-		return dataFlowShell.getDataFlowOperations().taskOperations();
-	}
+    private TaskOperations taskOperations() {
+        return dataFlowShell.getDataFlowOperations().taskOperations();
+    }
 }

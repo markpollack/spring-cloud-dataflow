@@ -16,7 +16,6 @@
 package org.springframework.cloud.dataflow.server.config.security;
 
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -32,75 +31,72 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.util.StringUtils;
 
 /**
-* Activated if basic authentication is enabled and
-* neither {@link FileAuthenticationConfiguration}
-* nor {@link LdapAuthenticationConfiguration} are loaded. In that case the Spring Boot default user is used and if that
-* user was not explicitly customized by the user, the user will get full access to the application, assigning her all
-* applicable roles.
-*
-* @author Gunnar Hillert
-*
-* @since 1.2.0
-*/
+ * Activated if basic authentication is enabled and
+ * neither {@link FileAuthenticationConfiguration}
+ * nor {@link LdapAuthenticationConfiguration} are loaded. In that case the Spring Boot default user is used and if that
+ * user was not explicitly customized by the user, the user will get full access to the application, assigning her all
+ * applicable roles.
+ *
+ * @author Gunnar Hillert
+ * @since 1.2.0
+ */
 @Configuration
 @Conditional({OnDefaultBootUserAuthenticationEnabled.class, OnSecurityEnabledAndOAuth2Disabled.class})
 public class DefaultBootUserAuthenticationConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BasicAuthSecurityConfiguration.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BasicAuthSecurityConfiguration.class);
 
-	@Autowired
-	private SecurityProperties securityProperties;
+    @Autowired
+    private SecurityProperties securityProperties;
 
-	@Autowired(required=false)
-	private ManagementServerProperties managementServerProperties;
+    @Autowired(required = false)
+    private ManagementServerProperties managementServerProperties;
 
-	/**
-	 * Initializes the {@link AuthenticationManagerBuilder}. Creates an
-	 * {@link InMemoryUserDetailsManager} with the provided {@link AuthenticationManagerBuilder}.
-	 * {@link SecurityProperties#getUser()} must contain 1 user.
-	 *
-	 * @param auth the authentication manager builder
-	 */
-	@Override
-	public void init(AuthenticationManagerBuilder auth) throws Exception {
+    /**
+     * Initializes the {@link AuthenticationManagerBuilder}. Creates an
+     * {@link InMemoryUserDetailsManager} with the provided {@link AuthenticationManagerBuilder}.
+     * {@link SecurityProperties#getUser()} must contain 1 user.
+     *
+     * @param auth the authentication manager builder
+     */
+    @Override
+    public void init(AuthenticationManagerBuilder auth) throws Exception {
 
-		final User user = this.securityProperties.getUser();
+        final User user = this.securityProperties.getUser();
 
-		final User defaultSpringBootUser = new SecurityProperties().getUser();
+        final User defaultSpringBootUser = new SecurityProperties().getUser();
 
-		final String[] rolesToPopulate;
+        final String[] rolesToPopulate;
 
-		final boolean hasDefaultRoles;
+        final boolean hasDefaultRoles;
 
-		if (this.managementServerProperties != null
-			&& this.managementServerProperties.getSecurity().getRoles().size() == 1
-			&& "ADMIN".equals(this.managementServerProperties.getSecurity().getRoles().get(0))) {
-			defaultSpringBootUser.getRole().add("ADMIN");
-		}
+        if (this.managementServerProperties != null
+                && this.managementServerProperties.getSecurity().getRoles().size() == 1
+                && "ADMIN".equals(this.managementServerProperties.getSecurity().getRoles().get(0))) {
+            defaultSpringBootUser.getRole().add("ADMIN");
+        }
 
-		if (defaultSpringBootUser.getName().equals(user.getName())
-			&& user.getRole().size() == defaultSpringBootUser.getRole().size()
-			&& defaultSpringBootUser.getRole().equals(user.getRole())) {
-			hasDefaultRoles = true;
-		}
-		else {
-			hasDefaultRoles = false;
-		}
+        if (defaultSpringBootUser.getName().equals(user.getName())
+                && user.getRole().size() == defaultSpringBootUser.getRole().size()
+                && defaultSpringBootUser.getRole().equals(user.getRole())) {
+            hasDefaultRoles = true;
+        } else {
+            hasDefaultRoles = false;
+        }
 
-		if (hasDefaultRoles) {
-			rolesToPopulate = CoreSecurityRoles.getAllRolesAsStringArray();
-		}
-		else {
-			rolesToPopulate = user.getRole().toArray(new String[user.getRole().size()]);
-		}
+        if (hasDefaultRoles) {
+            rolesToPopulate = CoreSecurityRoles.getAllRolesAsStringArray();
+        } else {
+            rolesToPopulate = user.getRole().toArray(new String[user.getRole().size()]);
+        }
 
-		if (user.isDefaultPassword()) {
-			logger.info(String.format("%n%nUsing default security password: %s with roles '%s'%n",
-					user.getPassword(), StringUtils.arrayToCommaDelimitedString(rolesToPopulate)));
-		}
+        if (user.isDefaultPassword()) {
+            logger.info(String.format("%n%nUsing default security password: %s with roles '%s'%n",
+                    user.getPassword(), StringUtils.arrayToCommaDelimitedString(rolesToPopulate)));
+        }
 
-		auth.inMemoryAuthentication()
-			.withUser(user.getName()).password(user.getPassword()).roles(rolesToPopulate);
-	}
+        auth.inMemoryAuthentication()
+                .withUser(user.getName()).password(user.getPassword()).roles(rolesToPopulate);
+    }
 
 }

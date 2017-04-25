@@ -18,7 +18,6 @@ package org.springframework.cloud.dataflow.rest.client.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.batch.core.JobInstance;
 
 /**
@@ -28,10 +27,10 @@ import org.springframework.batch.core.JobInstance;
  * @author Gary Russell
  * @since 1.0
  */
-@JsonIgnoreProperties({ "instanceId" })
+@JsonIgnoreProperties({"instanceId"})
 public abstract class JobInstanceJacksonMixIn {
 
-	JobInstanceJacksonMixIn(@JsonProperty("id") Long id, @JsonProperty("jobName") String jobName) {
-	}
+    JobInstanceJacksonMixIn(@JsonProperty("id") Long id, @JsonProperty("jobName") String jobName) {
+    }
 
 }

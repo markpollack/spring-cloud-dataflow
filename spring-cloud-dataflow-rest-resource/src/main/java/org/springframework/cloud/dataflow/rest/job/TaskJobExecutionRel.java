@@ -30,38 +30,39 @@ import org.springframework.util.Assert;
  */
 public class TaskJobExecutionRel {
 
-	private final TaskExecution taskExecution;
+    private final TaskExecution taskExecution;
 
-	private final List<Long> jobExecutionIds;
+    private final List<Long> jobExecutionIds;
 
-	/**
-	 * Constructor that establishes the relationship between a {@link TaskExecution} and
-	 * the Job Execution Ids of the jobs that were executed within it.
-	 * @param taskExecution to be associated with the job execution ids.
-	 * @param jobExecutionIds to be associated with the task execution.
-	 */
-	public TaskJobExecutionRel(TaskExecution taskExecution, List<Long> jobExecutionIds) {
-		Assert.notNull(taskExecution, "taskExecution must not be null");
-		this.taskExecution = taskExecution;
-		if(jobExecutionIds == null) {
-			this.jobExecutionIds = Collections.emptyList();
-		} else {
-			this.jobExecutionIds = Collections.unmodifiableList(new ArrayList<>(jobExecutionIds));
-		}
-	}
+    /**
+     * Constructor that establishes the relationship between a {@link TaskExecution} and
+     * the Job Execution Ids of the jobs that were executed within it.
+     *
+     * @param taskExecution   to be associated with the job execution ids.
+     * @param jobExecutionIds to be associated with the task execution.
+     */
+    public TaskJobExecutionRel(TaskExecution taskExecution, List<Long> jobExecutionIds) {
+        Assert.notNull(taskExecution, "taskExecution must not be null");
+        this.taskExecution = taskExecution;
+        if (jobExecutionIds == null) {
+            this.jobExecutionIds = Collections.emptyList();
+        } else {
+            this.jobExecutionIds = Collections.unmodifiableList(new ArrayList<>(jobExecutionIds));
+        }
+    }
 
-	/**
-	 * @return the taskExecution for this relationship.
-	 */
-	public TaskExecution getTaskExecution() {
-		return taskExecution;
-	}
+    /**
+     * @return the taskExecution for this relationship.
+     */
+    public TaskExecution getTaskExecution() {
+        return taskExecution;
+    }
 
-	/**
-	 * @return the job execution ids that are associated with the {@link TaskExecution} in
-	 * this relationship.
-	 */
-	public List<Long> getJobExecutionIds() {
-		return jobExecutionIds;
-	}
+    /**
+     * @return the job execution ids that are associated with the {@link TaskExecution} in
+     * this relationship.
+     */
+    public List<Long> getJobExecutionIds() {
+        return jobExecutionIds;
+    }
 }

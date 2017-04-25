@@ -16,7 +16,6 @@
 package org.springframework.cloud.dataflow.server.config.security;
 
 import org.junit.Test;
-
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -24,24 +23,22 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
-*
-* @author Gunnar Hillert
-*/
+ * @author Gunnar Hillert
+ */
 public class FileAuthenticationConfigurationTests {
 
-	@Test
-	public void testInitAuthenticationManagerBuilder() throws Exception {
+    @Test
+    public void testInitAuthenticationManagerBuilder() throws Exception {
 
-		try {
-			final FileAuthenticationConfiguration fileAuthenticationConfiguration =
-					new FileAuthenticationConfiguration();
-			fileAuthenticationConfiguration.init(mock(AuthenticationManagerBuilder.class));
-		}
-		catch (IllegalArgumentException anIllegalArgumentException) {
-			assertThat(anIllegalArgumentException.getMessage(),
-					is("No user specified. Please specify at least 1 user (e.g. "
-							+ "via 'spring.cloud.dataflow.security.authentication.file.users')"));
-		}
-	}
+        try {
+            final FileAuthenticationConfiguration fileAuthenticationConfiguration =
+                    new FileAuthenticationConfiguration();
+            fileAuthenticationConfiguration.init(mock(AuthenticationManagerBuilder.class));
+        } catch (IllegalArgumentException anIllegalArgumentException) {
+            assertThat(anIllegalArgumentException.getMessage(),
+                    is("No user specified. Please specify at least 1 user (e.g. "
+                            + "via 'spring.cloud.dataflow.security.authentication.file.users')"));
+        }
+    }
 
 }

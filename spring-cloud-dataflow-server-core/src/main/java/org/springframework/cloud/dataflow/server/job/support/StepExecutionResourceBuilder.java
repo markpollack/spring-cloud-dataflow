@@ -32,36 +32,33 @@ import org.springframework.util.Assert;
  */
 public class StepExecutionResourceBuilder {
 
-	static public StepExecutionResource toResource(StepExecution entity) {
-		return new StepExecutionResource(entity.getId(), entity, generateStepType(entity));
-	}
+    static public StepExecutionResource toResource(StepExecution entity) {
+        return new StepExecutionResource(entity.getId(), entity, generateStepType(entity));
+    }
 
-	private static String generateStepType(StepExecution stepExecution) {
-		Assert.notNull(stepExecution, "stepExecution must not be null");
-		String stepType = StepType.UNKNOWN.getDisplayName();
-		if(stepExecution.getExecutionContext().containsKey(TaskletStep.TASKLET_TYPE_KEY)) {
-			String taskletClassName = stepExecution.getExecutionContext().getString(TaskletStep.TASKLET_TYPE_KEY);
-			TaskletType type = TaskletType.fromClassName(taskletClassName);
+    private static String generateStepType(StepExecution stepExecution) {
+        Assert.notNull(stepExecution, "stepExecution must not be null");
+        String stepType = StepType.UNKNOWN.getDisplayName();
+        if (stepExecution.getExecutionContext().containsKey(TaskletStep.TASKLET_TYPE_KEY)) {
+            String taskletClassName = stepExecution.getExecutionContext().getString(TaskletStep.TASKLET_TYPE_KEY);
+            TaskletType type = TaskletType.fromClassName(taskletClassName);
 
-			if(type == TaskletType.UNKNOWN) {
-				stepType = taskletClassName;
-			}
-			else {
-				stepType = type.getDisplayName();
-			}
-		}
-		else if(stepExecution.getExecutionContext().containsKey(Step.STEP_TYPE_KEY)) {
-			String stepClassName = stepExecution.getExecutionContext().getString(Step.STEP_TYPE_KEY);
-			StepType type = StepType.fromClassName(stepClassName);
+            if (type == TaskletType.UNKNOWN) {
+                stepType = taskletClassName;
+            } else {
+                stepType = type.getDisplayName();
+            }
+        } else if (stepExecution.getExecutionContext().containsKey(Step.STEP_TYPE_KEY)) {
+            String stepClassName = stepExecution.getExecutionContext().getString(Step.STEP_TYPE_KEY);
+            StepType type = StepType.fromClassName(stepClassName);
 
-			if(type == StepType.UNKNOWN) {
-				stepType = stepClassName;
-			}
-			else {
-				stepType = type.getDisplayName();
-			}
-		}
-		return stepType;
-	}
+            if (type == StepType.UNKNOWN) {
+                stepType = stepClassName;
+            } else {
+                stepType = type.getDisplayName();
+            }
+        }
+        return stepType;
+    }
 
 }

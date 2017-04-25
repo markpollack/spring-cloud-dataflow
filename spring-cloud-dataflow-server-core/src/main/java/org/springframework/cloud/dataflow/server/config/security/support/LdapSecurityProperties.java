@@ -32,95 +32,95 @@ import org.springframework.cloud.dataflow.core.DataFlowPropertyKeys;
 @LdapSecurityPropertiesValid
 public class LdapSecurityProperties {
 
-	@NotNull(message="Provide a valid url to your Ldap server")
-	private URI url;
+    @NotNull(message = "Provide a valid url to your Ldap server")
+    private URI url;
 
-	private String userDnPattern;
+    private String userDnPattern;
 
-	private String managerDn;
+    private String managerDn;
 
-	private String managerPassword;
+    private String managerPassword;
 
-	private String userSearchBase = "";
+    private String userSearchBase = "";
 
-	private String userSearchFilter;
+    private String userSearchFilter;
 
-	private String groupSearchFilter = "";
+    private String groupSearchFilter = "";
 
-	private String groupSearchBase = "";
+    private String groupSearchBase = "";
 
-	private String groupRoleAttribute = "cn";
+    private String groupRoleAttribute = "cn";
 
-	public URI getUrl() {
-		return url;
-	}
+    public URI getUrl() {
+        return url;
+    }
 
-	public void setUrl(URI url) {
-		this.url = url;
-	}
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
-	public String getUserDnPattern() {
-		return userDnPattern;
-	}
+    public String getUserDnPattern() {
+        return userDnPattern;
+    }
 
-	public void setUserDnPattern(String userDnPattern) {
-		this.userDnPattern = userDnPattern;
-	}
+    public void setUserDnPattern(String userDnPattern) {
+        this.userDnPattern = userDnPattern;
+    }
 
-	public String getManagerDn() {
-		return managerDn;
-	}
+    public String getManagerDn() {
+        return managerDn;
+    }
 
-	public void setManagerDn(String managerDn) {
-		this.managerDn = managerDn;
-	}
+    public void setManagerDn(String managerDn) {
+        this.managerDn = managerDn;
+    }
 
-	public String getManagerPassword() {
-		return managerPassword;
-	}
+    public String getManagerPassword() {
+        return managerPassword;
+    }
 
-	public void setManagerPassword(String managerPassword) {
-		this.managerPassword = managerPassword;
-	}
+    public void setManagerPassword(String managerPassword) {
+        this.managerPassword = managerPassword;
+    }
 
-	public String getUserSearchBase() {
-		return userSearchBase;
-	}
+    public String getUserSearchBase() {
+        return userSearchBase;
+    }
 
-	public void setUserSearchBase(String userSearchBase) {
-		this.userSearchBase = userSearchBase;
-	}
+    public void setUserSearchBase(String userSearchBase) {
+        this.userSearchBase = userSearchBase;
+    }
 
-	public String getUserSearchFilter() {
-		return userSearchFilter;
-	}
+    public String getUserSearchFilter() {
+        return userSearchFilter;
+    }
 
-	public void setUserSearchFilter(String userSearchFilter) {
-		this.userSearchFilter = userSearchFilter;
-	}
+    public void setUserSearchFilter(String userSearchFilter) {
+        this.userSearchFilter = userSearchFilter;
+    }
 
-	public String getGroupSearchFilter() {
-		return groupSearchFilter;
-	}
+    public String getGroupSearchFilter() {
+        return groupSearchFilter;
+    }
 
-	public void setGroupSearchFilter(String groupSearchFilter) {
-		this.groupSearchFilter = groupSearchFilter;
-	}
+    public void setGroupSearchFilter(String groupSearchFilter) {
+        this.groupSearchFilter = groupSearchFilter;
+    }
 
-	public String getGroupSearchBase() {
-		return groupSearchBase;
-	}
+    public String getGroupSearchBase() {
+        return groupSearchBase;
+    }
 
-	public void setGroupSearchBase(String groupSearchBase) {
-		this.groupSearchBase = groupSearchBase;
-	}
+    public void setGroupSearchBase(String groupSearchBase) {
+        this.groupSearchBase = groupSearchBase;
+    }
 
-	public String getGroupRoleAttribute() {
-		return groupRoleAttribute;
-	}
+    public String getGroupRoleAttribute() {
+        return groupRoleAttribute;
+    }
 
-	public void setGroupRoleAttribute(String groupRoleAttribute) {
-		this.groupRoleAttribute = groupRoleAttribute;
-	}
+    public void setGroupRoleAttribute(String groupRoleAttribute) {
+        this.groupRoleAttribute = groupRoleAttribute;
+    }
 
 }

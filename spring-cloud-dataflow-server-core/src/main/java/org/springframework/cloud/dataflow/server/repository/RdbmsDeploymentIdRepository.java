@@ -32,29 +32,29 @@ import org.springframework.util.Assert;
  */
 public class RdbmsDeploymentIdRepository extends AbstractRdbmsKeyValueRepository<String> implements DeploymentIdRepository {
 
-	public RdbmsDeploymentIdRepository(DataSource dataSource) {
-		super(dataSource, "DEPLOYMENT_", "IDS", new RowMapper<String>() {
-			@Override
-			public String mapRow(ResultSet resultSet, int i) throws SQLException {
-				return resultSet.getString("DEPLOYMENT_ID");
-			}
-		}, "DEPLOYMENT_KEY", "DEPLOYMENT_ID");
-	}
+    public RdbmsDeploymentIdRepository(DataSource dataSource) {
+        super(dataSource, "DEPLOYMENT_", "IDS", new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                return resultSet.getString("DEPLOYMENT_ID");
+            }
+        }, "DEPLOYMENT_KEY", "DEPLOYMENT_ID");
+    }
 
-	@Override
-	public void save(String key, String deploymentId) {
-		Object[] insertParameters = new Object[]{key, deploymentId};
-		jdbcTemplate.update(saveRow, insertParameters, new int[]{Types.VARCHAR, Types.VARCHAR});
-	}
+    @Override
+    public void save(String key, String deploymentId) {
+        Object[] insertParameters = new Object[]{key, deploymentId};
+        jdbcTemplate.update(saveRow, insertParameters, new int[]{Types.VARCHAR, Types.VARCHAR});
+    }
 
-	@Override
-	public String save(String key) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public String save(String key) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void delete(String name) {
-		Assert.hasText(name, "name must not be empty nor null");
-		jdbcTemplate.update(deleteFromTableByKey, name);
-	}
+    @Override
+    public void delete(String name) {
+        Assert.hasText(name, "name must not be empty nor null");
+        jdbcTemplate.update(deleteFromTableByKey, name);
+    }
 }

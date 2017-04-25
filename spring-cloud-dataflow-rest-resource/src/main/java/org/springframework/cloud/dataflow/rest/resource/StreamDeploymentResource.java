@@ -27,8 +27,8 @@ import org.springframework.hateoas.ResourceSupport;
 public class StreamDeploymentResource extends ResourceSupport {
 
 
-	public static class Page extends PagedResources<StreamDeploymentResource> {
+    public static class Page extends PagedResources<StreamDeploymentResource> {
 
-	}
+    }
 
 }

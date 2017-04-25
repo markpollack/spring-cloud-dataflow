@@ -19,7 +19,6 @@ package org.springframework.cloud.dataflow.server.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.server.configuration.TestDependencies;
@@ -42,30 +41,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for metrics controller.
  *
  * @author Janne Valkealahti
- *
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestDependencies.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class MetricsControllerTests {
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	@Before
-	public void setupMocks() throws Exception {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(get("/").accept(MediaType.APPLICATION_JSON)).build();
-	}
+    @Before
+    public void setupMocks() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(get("/").accept(MediaType.APPLICATION_JSON)).build();
+    }
 
-	@Test
-	public void testGetResponse() throws Exception {
-		MockHttpServletResponse responseString = mockMvc.perform(
-				get("/metrics/streams").accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk()).andReturn().getResponse();
-		// for now we just get dummy mocked response
-		assertThat(responseString.getContentAsString(), containsString("ticktock1"));
-		assertThat(responseString.getContentAsString(), containsString("aggregateMetrics"));
-	}
+    @Test
+    public void testGetResponse() throws Exception {
+        MockHttpServletResponse responseString = mockMvc.perform(
+                get("/metrics/streams").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk()).andReturn().getResponse();
+        // for now we just get dummy mocked response
+        assertThat(responseString.getContentAsString(), containsString("ticktock1"));
+        assertThat(responseString.getContentAsString(), containsString("aggregateMetrics"));
+    }
 }

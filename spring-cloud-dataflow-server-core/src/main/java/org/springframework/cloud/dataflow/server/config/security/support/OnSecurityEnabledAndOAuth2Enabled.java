@@ -25,14 +25,14 @@ import org.springframework.context.annotation.Condition;
  *
  * @author Gunnar Hillert
  * @since 1.1.0
- *
  */
 public class OnSecurityEnabledAndOAuth2Enabled extends AllNestedConditions {
 
-	public OnSecurityEnabledAndOAuth2Enabled() {
-		super(ConfigurationPhase.REGISTER_BEAN);
-	}
+    public OnSecurityEnabledAndOAuth2Enabled() {
+        super(ConfigurationPhase.REGISTER_BEAN);
+    }
 
-	@ConditionalOnProperty(name = "security.oauth2.client.client-id")
-	static class OAuth2Enabled { }
+    @ConditionalOnProperty(name = "security.oauth2.client.client-id")
+    static class OAuth2Enabled {
+    }
 }

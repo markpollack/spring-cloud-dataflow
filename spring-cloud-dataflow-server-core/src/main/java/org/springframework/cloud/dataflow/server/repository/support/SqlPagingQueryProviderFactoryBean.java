@@ -44,128 +44,127 @@ import static org.springframework.cloud.dataflow.server.repository.support.Datab
  */
 public class SqlPagingQueryProviderFactoryBean implements FactoryBean<PagingQueryProvider> {
 
-	private DataSource dataSource;
+    private DataSource dataSource;
 
-	private String databaseType;
+    private String databaseType;
 
-	private String fromClause;
+    private String fromClause;
 
-	private String whereClause;
+    private String whereClause;
 
-	private String selectClause;
+    private String selectClause;
 
-	private Map<String, Order> sortKeys;
+    private Map<String, Order> sortKeys;
 
-	private Map<DatabaseType, AbstractSqlPagingQueryProvider> providers = new HashMap<DatabaseType, AbstractSqlPagingQueryProvider>();
+    private Map<DatabaseType, AbstractSqlPagingQueryProvider> providers = new HashMap<DatabaseType, AbstractSqlPagingQueryProvider>();
 
 
-	{
-		providers.put(HSQL, new HsqlPagingQueryProvider());
-		providers.put(H2, new H2PagingQueryProvider());
-		providers.put(MYSQL, new MySqlPagingQueryProvider());
-		providers.put(POSTGRES, new PostgresPagingQueryProvider());
-		providers.put(ORACLE, new OraclePagingQueryProvider());
-		providers.put(SQLSERVER, new SqlServerPagingQueryProvider());
-		providers.put(DB2, new Db2PagingQueryProvider());
-	}
+    {
+        providers.put(HSQL, new HsqlPagingQueryProvider());
+        providers.put(H2, new H2PagingQueryProvider());
+        providers.put(MYSQL, new MySqlPagingQueryProvider());
+        providers.put(POSTGRES, new PostgresPagingQueryProvider());
+        providers.put(ORACLE, new OraclePagingQueryProvider());
+        providers.put(SQLSERVER, new SqlServerPagingQueryProvider());
+        providers.put(DB2, new Db2PagingQueryProvider());
+    }
 
-	/**
-	 * @param databaseType the databaseType to set
-	 */
-	public void setDatabaseType(String databaseType) {
-		Assert.hasText(databaseType, "databaseType must not be empty nor null");
-		this.databaseType = databaseType;
-	}
+    /**
+     * @param databaseType the databaseType to set
+     */
+    public void setDatabaseType(String databaseType) {
+        Assert.hasText(databaseType, "databaseType must not be empty nor null");
+        this.databaseType = databaseType;
+    }
 
-	/**
-	 * @param dataSource the dataSource to set
-	 */
-	public void setDataSource(DataSource dataSource) {
-		Assert.notNull(dataSource, "dataSource must not be null");
-		this.dataSource = dataSource;
-	}
+    /**
+     * @param dataSource the dataSource to set
+     */
+    public void setDataSource(DataSource dataSource) {
+        Assert.notNull(dataSource, "dataSource must not be null");
+        this.dataSource = dataSource;
+    }
 
-	/**
-	 * @param fromClause the fromClause to set
-	 */
-	public void setFromClause(String fromClause) {
-		Assert.hasText(fromClause, "fromClause must not be empty nor null");
-		this.fromClause = fromClause;
-	}
+    /**
+     * @param fromClause the fromClause to set
+     */
+    public void setFromClause(String fromClause) {
+        Assert.hasText(fromClause, "fromClause must not be empty nor null");
+        this.fromClause = fromClause;
+    }
 
-	/**
-	 * @param whereClause the whereClause to set
-	 */
-	public void setWhereClause(String whereClause) {
-		this.whereClause = whereClause;
-	}
+    /**
+     * @param whereClause the whereClause to set
+     */
+    public void setWhereClause(String whereClause) {
+        this.whereClause = whereClause;
+    }
 
-	/**
-	 * @param selectClause the selectClause to set
-	 */
-	public void setSelectClause(String selectClause) {
-		Assert.hasText(selectClause, "selectClause must not be empty nor null");
-		this.selectClause = selectClause;
-	}
+    /**
+     * @param selectClause the selectClause to set
+     */
+    public void setSelectClause(String selectClause) {
+        Assert.hasText(selectClause, "selectClause must not be empty nor null");
+        this.selectClause = selectClause;
+    }
 
-	/**
-	 * @param sortKeys the sortKeys to set
-	 */
-	public void setSortKeys(Map<String, Order> sortKeys) {
-		this.sortKeys = sortKeys;
-	}
+    /**
+     * @param sortKeys the sortKeys to set
+     */
+    public void setSortKeys(Map<String, Order> sortKeys) {
+        this.sortKeys = sortKeys;
+    }
 
-	/**
-	 * Get a {@link PagingQueryProvider} instance using the provided properties
-	 * and appropriate for the given database type.
-	 *
-	 * @see FactoryBean#getObject()
-	 */
-	@Override
-	public PagingQueryProvider getObject() throws Exception {
+    /**
+     * Get a {@link PagingQueryProvider} instance using the provided properties
+     * and appropriate for the given database type.
+     *
+     * @see FactoryBean#getObject()
+     */
+    @Override
+    public PagingQueryProvider getObject() throws Exception {
 
-		DatabaseType type;
-		try {
-			type = databaseType != null ? DatabaseType.valueOf(databaseType.toUpperCase()) : DatabaseType
-					.fromMetaData(dataSource);
-		}
-		catch (MetaDataAccessException e) {
-			throw new IllegalArgumentException(
-					"Could not inspect meta data for database type.  You have to supply it explicitly.", e);
-		}
+        DatabaseType type;
+        try {
+            type = databaseType != null ? DatabaseType.valueOf(databaseType.toUpperCase()) : DatabaseType
+                    .fromMetaData(dataSource);
+        } catch (MetaDataAccessException e) {
+            throw new IllegalArgumentException(
+                    "Could not inspect meta data for database type.  You have to supply it explicitly.", e);
+        }
 
-		AbstractSqlPagingQueryProvider provider = providers.get(type);
-		Assert.state(provider != null, "Should not happen: missing PagingQueryProvider for DatabaseType=" + type);
+        AbstractSqlPagingQueryProvider provider = providers.get(type);
+        Assert.state(provider != null, "Should not happen: missing PagingQueryProvider for DatabaseType=" + type);
 
-		provider.setFromClause(fromClause);
-		provider.setWhereClause(whereClause);
-		provider.setSortKeys(sortKeys);
-		if (StringUtils.hasText(selectClause)) {
-			provider.setSelectClause(selectClause);
-		}
-		provider.init(dataSource);
+        provider.setFromClause(fromClause);
+        provider.setWhereClause(whereClause);
+        provider.setSortKeys(sortKeys);
+        if (StringUtils.hasText(selectClause)) {
+            provider.setSelectClause(selectClause);
+        }
+        provider.init(dataSource);
 
-		return provider;
+        return provider;
 
-	}
+    }
 
-	/**
-	 * Always returns {@link PagingQueryProvider}.
-	 *
-	 * @see FactoryBean#getObjectType()
-	 */
-	@Override
-	public Class<PagingQueryProvider> getObjectType() {
-		return PagingQueryProvider.class;
-	}
+    /**
+     * Always returns {@link PagingQueryProvider}.
+     *
+     * @see FactoryBean#getObjectType()
+     */
+    @Override
+    public Class<PagingQueryProvider> getObjectType() {
+        return PagingQueryProvider.class;
+    }
 
-	/**
-	 * Always returns true.
-	 *
-	 * @see FactoryBean#isSingleton()
-	 */
-	@Override
-	public boolean isSingleton() {
-		return true;
-	}
+    /**
+     * Always returns true.
+     *
+     * @see FactoryBean#isSingleton()
+     */
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 }

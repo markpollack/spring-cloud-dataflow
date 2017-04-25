@@ -96,194 +96,194 @@ import static org.springframework.hateoas.config.EnableHypermediaSupport.Hyperme
 @EnableConfigurationProperties({CommonApplicationProperties.class, MetricsProperties.class})
 public class TestDependencies extends WebMvcConfigurationSupport {
 
-	@Bean
-	public RestControllerAdvice restControllerAdvice() {
-		return new RestControllerAdvice();
-	}
+    @Bean
+    public RestControllerAdvice restControllerAdvice() {
+        return new RestControllerAdvice();
+    }
 
-	@Bean
-	public ResourceLoader resourceLoader() {
-		MavenProperties mavenProperties = new MavenProperties();
-		mavenProperties.setRemoteRepositories(new HashMap<>(Collections.singletonMap("springRepo",
-				new MavenProperties.RemoteRepository("https://repo.spring.io/libs-snapshot"))));
+    @Bean
+    public ResourceLoader resourceLoader() {
+        MavenProperties mavenProperties = new MavenProperties();
+        mavenProperties.setRemoteRepositories(new HashMap<>(Collections.singletonMap("springRepo",
+                new MavenProperties.RemoteRepository("https://repo.spring.io/libs-snapshot"))));
 
-		Map<String, ResourceLoader> resourceLoaders = new HashMap<>();
-		resourceLoaders.put("maven", new MavenResourceLoader(mavenProperties));
-		resourceLoaders.put("file", new FileSystemResourceLoader());
+        Map<String, ResourceLoader> resourceLoaders = new HashMap<>();
+        resourceLoaders.put("maven", new MavenResourceLoader(mavenProperties));
+        resourceLoaders.put("file", new FileSystemResourceLoader());
 
-		DelegatingResourceLoader delegatingResourceLoader = new DelegatingResourceLoader(resourceLoaders);
-		return delegatingResourceLoader;
-	}
+        DelegatingResourceLoader delegatingResourceLoader = new DelegatingResourceLoader(resourceLoaders);
+        return delegatingResourceLoader;
+    }
 
-	@Bean
-	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
-			ApplicationConfigurationMetadataResolver metadataResolver,
-			CommonApplicationProperties applicationProperties) {
-		return new StreamDeploymentController(repository, deploymentIdRepository, registry, appDeployer(),
-				metadataResolver, applicationProperties);
-	}
+    @Bean
+    public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
+                                                                 DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
+                                                                 ApplicationConfigurationMetadataResolver metadataResolver,
+                                                                 CommonApplicationProperties applicationProperties) {
+        return new StreamDeploymentController(repository, deploymentIdRepository, registry, appDeployer(),
+                metadataResolver, applicationProperties);
+    }
 
-	@Bean
-	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController) {
-		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, appDeployer(),
-				appRegistry());
-	}
+    @Bean
+    public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
+                                                                 DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController) {
+        return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, appDeployer(),
+                appRegistry());
+    }
 
-	@Bean
-	public MethodValidationPostProcessor methodValidationPostProcessor() {
-		return new MethodValidationPostProcessor();
-	}
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
 
-	@Bean
-	public CompletionController completionController(StreamCompletionProvider streamCompletionProvider, TaskCompletionProvider taskCompletionProvider) {
-		return new CompletionController(streamCompletionProvider, taskCompletionProvider);
-	}
+    @Bean
+    public CompletionController completionController(StreamCompletionProvider streamCompletionProvider, TaskCompletionProvider taskCompletionProvider) {
+        return new CompletionController(streamCompletionProvider, taskCompletionProvider);
+    }
 
-	@Bean
-	public ToolsController toolsController() {
-		return new ToolsController();
-	}
+    @Bean
+    public ToolsController toolsController() {
+        return new ToolsController();
+    }
 
-	@Bean
-	public AppRegistryController appRegistryController(AppRegistry registry, ApplicationConfigurationMetadataResolver metadataResolver) {
-		return new AppRegistryController(registry, metadataResolver, new ForkJoinPool(2));
-	}
+    @Bean
+    public AppRegistryController appRegistryController(AppRegistry registry, ApplicationConfigurationMetadataResolver metadataResolver) {
+        return new AppRegistryController(registry, metadataResolver, new ForkJoinPool(2));
+    }
 
-	@Bean
-	public MetricsController metricsController(MetricStore metricStore) {
-		return new MetricsController(metricStore);
-	}
+    @Bean
+    public MetricsController metricsController(MetricStore metricStore) {
+        return new MetricsController(metricStore);
+    }
 
-	@Bean
-	public RuntimeAppsController runtimeAppsController(MetricStore metricStore) {
-		return new RuntimeAppsController(streamDefinitionRepository(), deploymentIdRepository(), appDeployer(), metricStore, new ForkJoinPool(2));
-	}
+    @Bean
+    public RuntimeAppsController runtimeAppsController(MetricStore metricStore) {
+        return new RuntimeAppsController(streamDefinitionRepository(), deploymentIdRepository(), appDeployer(), metricStore, new ForkJoinPool(2));
+    }
 
-	@Bean
-	public RuntimeAppsController.AppInstanceController appInstanceController() {
-		return new RuntimeAppsController.AppInstanceController(appDeployer());
-	}
+    @Bean
+    public RuntimeAppsController.AppInstanceController appInstanceController() {
+        return new RuntimeAppsController.AppInstanceController(appDeployer());
+    }
 
-	@Bean
-	public MetricStore metricStore(MetricsProperties metricsProperties) {
-		return new MetricStore(metricsProperties) {
-			@Override
-			public List<ApplicationsMetrics> getMetrics() {
-				List<ApplicationsMetrics> metrics = new ArrayList<>();
-				ApplicationsMetrics am = new ApplicationsMetrics();
-				am.setName("ticktock1");
-				List<Application> applications = new ArrayList<>();
-				Application application = new Application();
-				application.setName("time");
-				List<Instance> instances = new ArrayList<>();
-				Instance i = new Instance();
-				List<ApplicationsMetrics.Metric> imetrics = new ArrayList<>();
-				Metric imetric = new ApplicationsMetrics.Metric();
-				imetric.setName("fake1");
-				imetric.setValue(111);
-				imetrics.add(imetric);
-				i.setMetrics(imetrics);
-				i.setGuid("34215");
-				instances.add(i);
-				application.setInstances(instances);
+    @Bean
+    public MetricStore metricStore(MetricsProperties metricsProperties) {
+        return new MetricStore(metricsProperties) {
+            @Override
+            public List<ApplicationsMetrics> getMetrics() {
+                List<ApplicationsMetrics> metrics = new ArrayList<>();
+                ApplicationsMetrics am = new ApplicationsMetrics();
+                am.setName("ticktock1");
+                List<Application> applications = new ArrayList<>();
+                Application application = new Application();
+                application.setName("time");
+                List<Instance> instances = new ArrayList<>();
+                Instance i = new Instance();
+                List<ApplicationsMetrics.Metric> imetrics = new ArrayList<>();
+                Metric imetric = new ApplicationsMetrics.Metric();
+                imetric.setName("fake1");
+                imetric.setValue(111);
+                imetrics.add(imetric);
+                i.setMetrics(imetrics);
+                i.setGuid("34215");
+                instances.add(i);
+                application.setInstances(instances);
 
-				List<Metric> aggregateMetrics = new ArrayList<>();
-				Metric aggregateMetric = new ApplicationsMetrics.Metric();
-				aggregateMetric.setName("rate");
-				aggregateMetric.setValue("1000");
-				aggregateMetrics.add(aggregateMetric);
-				application.setAggregateMetrics(aggregateMetrics);
+                List<Metric> aggregateMetrics = new ArrayList<>();
+                Metric aggregateMetric = new ApplicationsMetrics.Metric();
+                aggregateMetric.setName("rate");
+                aggregateMetric.setValue("1000");
+                aggregateMetrics.add(aggregateMetric);
+                application.setAggregateMetrics(aggregateMetrics);
 
-				applications.add(application);
-				am.setApplications(applications);
-				metrics.add(am);
-				return metrics;
-			}
-		};
-	}
+                applications.add(application);
+                am.setApplications(applications);
+                metrics.add(am);
+                return metrics;
+            }
+        };
+    }
 
-	@Bean
-	public TaskDefinitionController taskDefinitionController(TaskDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository,
-			ApplicationConfigurationMetadataResolver metadataResolver) {
-		return new TaskDefinitionController(repository, deploymentIdRepository,
-				taskLauncher(), appRegistry(),
-				taskService(metadataResolver, taskRepository(),
-						deploymentIdRepository));
-	}
+    @Bean
+    public TaskDefinitionController taskDefinitionController(TaskDefinitionRepository repository,
+                                                             DeploymentIdRepository deploymentIdRepository,
+                                                             ApplicationConfigurationMetadataResolver metadataResolver) {
+        return new TaskDefinitionController(repository, deploymentIdRepository,
+                taskLauncher(), appRegistry(),
+                taskService(metadataResolver, taskRepository(),
+                        deploymentIdRepository));
+    }
 
-	@Bean
-	public TaskExecutionController taskExecutionController(
-			TaskExplorer explorer,
-			ApplicationConfigurationMetadataResolver metadataResolver,
-			DeploymentIdRepository deploymentIdRepository) {
-		return new TaskExecutionController(explorer,
-				taskService(metadataResolver, taskRepository(),
-						deploymentIdRepository), taskDefinitionRepository());
-	}
+    @Bean
+    public TaskExecutionController taskExecutionController(
+            TaskExplorer explorer,
+            ApplicationConfigurationMetadataResolver metadataResolver,
+            DeploymentIdRepository deploymentIdRepository) {
+        return new TaskExecutionController(explorer,
+                taskService(metadataResolver, taskRepository(),
+                        deploymentIdRepository), taskDefinitionRepository());
+    }
 
-	@Bean
-	public TaskRepository taskRepository() {
-		return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
-	}
+    @Bean
+    public TaskRepository taskRepository() {
+        return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
+    }
 
-	@Bean
-	public UriRegistry uriRegistry() {
-		return new InMemoryUriRegistry();
-	}
+    @Bean
+    public UriRegistry uriRegistry() {
+        return new InMemoryUriRegistry();
+    }
 
-	@Bean
-	public AppRegistry appRegistry() {
-		return new AppRegistry(uriRegistry(), resourceLoader());
-	}
+    @Bean
+    public AppRegistry appRegistry() {
+        return new AppRegistry(uriRegistry(), resourceLoader());
+    }
 
-	@Bean
-	public DataFlowAppRegistryPopulator dataflowUriRegistryPopulator() {
-		return new DataFlowAppRegistryPopulator(appRegistry(), "classpath:META-INF/test-apps.properties");
-	}
+    @Bean
+    public DataFlowAppRegistryPopulator dataflowUriRegistryPopulator() {
+        return new DataFlowAppRegistryPopulator(appRegistry(), "classpath:META-INF/test-apps.properties");
+    }
 
-	@Bean
-	public AppDeployer appDeployer() {
-		return mock(AppDeployer.class);
-	}
+    @Bean
+    public AppDeployer appDeployer() {
+        return mock(AppDeployer.class);
+    }
 
-	@Bean
-	public TaskLauncher taskLauncher() {
-		return mock(TaskLauncher.class);
-	}
+    @Bean
+    public TaskLauncher taskLauncher() {
+        return mock(TaskLauncher.class);
+    }
 
-	@Bean
-	public TaskExplorer taskExplorer() {
-		return mock(TaskExplorer.class);
-	}
+    @Bean
+    public TaskExplorer taskExplorer() {
+        return mock(TaskExplorer.class);
+    }
 
-	@Bean
-	public TaskService taskService(
-		ApplicationConfigurationMetadataResolver metadataResolver,
-		TaskRepository taskExecutionRepository,
-			DeploymentIdRepository deploymentIdRepository) {
-		return new DefaultTaskService(new DataSourceProperties(),
-				taskDefinitionRepository(), taskExplorer(), taskExecutionRepository,
-				appRegistry(), resourceLoader(), taskLauncher(),
-				metadataResolver, new TaskConfigurationProperties(),
-				deploymentIdRepository, null);
-	}
+    @Bean
+    public TaskService taskService(
+            ApplicationConfigurationMetadataResolver metadataResolver,
+            TaskRepository taskExecutionRepository,
+            DeploymentIdRepository deploymentIdRepository) {
+        return new DefaultTaskService(new DataSourceProperties(),
+                taskDefinitionRepository(), taskExplorer(), taskExecutionRepository,
+                appRegistry(), resourceLoader(), taskLauncher(),
+                metadataResolver, new TaskConfigurationProperties(),
+                deploymentIdRepository, null);
+    }
 
-	@Bean
-	public StreamDefinitionRepository streamDefinitionRepository() {
-		return new InMemoryStreamDefinitionRepository();
-	}
+    @Bean
+    public StreamDefinitionRepository streamDefinitionRepository() {
+        return new InMemoryStreamDefinitionRepository();
+    }
 
-	@Bean
-	public TaskDefinitionRepository taskDefinitionRepository() {
-		return new InMemoryTaskDefinitionRepository();
-	}
+    @Bean
+    public TaskDefinitionRepository taskDefinitionRepository() {
+        return new InMemoryTaskDefinitionRepository();
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public DeploymentIdRepository deploymentIdRepository() {
-		return new InMemoryDeploymentIdRepository();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public DeploymentIdRepository deploymentIdRepository() {
+        return new InMemoryDeploymentIdRepository();
+    }
 }

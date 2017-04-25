@@ -17,7 +17,6 @@
 package org.springframework.cloud.dataflow.server.job.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 
@@ -30,6 +29,6 @@ import org.springframework.batch.core.StepExecution;
  */
 public abstract class StepExecutionJacksonMixIn {
 
-	@JsonIgnore
-	abstract JobExecution getJobExecution();
+    @JsonIgnore
+    abstract JobExecution getJobExecution();
 }

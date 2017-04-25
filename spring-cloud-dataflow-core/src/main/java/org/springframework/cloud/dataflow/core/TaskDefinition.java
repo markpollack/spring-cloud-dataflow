@@ -35,213 +35,209 @@ import org.springframework.util.Assert;
  */
 public class TaskDefinition extends DataFlowAppDefinition {
 
-	public static final String SPRING_CLOUD_TASK_NAME = "spring.cloud.task.name";
-	/**
-	 * DSL text for the module.
-	 */
-	private final String dslText;
+    public static final String SPRING_CLOUD_TASK_NAME = "spring.cloud.task.name";
+    /**
+     * DSL text for the module.
+     */
+    private final String dslText;
 
-	TaskDefinition(String registeredAppName, String label, Map<String, String> properties) {
-		super(registeredAppName, label, properties);
-		this.dslText = "";
-		properties.put(SPRING_CLOUD_TASK_NAME, registeredAppName);
-	}
+    TaskDefinition(String registeredAppName, String label, Map<String, String> properties) {
+        super(registeredAppName, label, properties);
+        this.dslText = "";
+        properties.put(SPRING_CLOUD_TASK_NAME, registeredAppName);
+    }
 
-	public TaskDefinition(String name, String dsl) {
-		this.dslText = dsl;
-		Map<String, String> properties = new HashMap<>();
-		TaskNode taskNode = new TaskParser(name, dsl, true, true).parse();
-		if (taskNode.isComposed()) {
-			setRegisteredAppName(name);
-		}
-		else {
-			TaskAppNode singleTaskApp = taskNode.getTaskApp();
-			setRegisteredAppName(singleTaskApp.getName());
-			if (singleTaskApp.hasArguments()) {
-				for (ArgumentNode argumentNode : singleTaskApp.getArguments()) {
-					properties.put(argumentNode.getName(), argumentNode.getValue());
-				}
-			}
-		}
-		properties.put(SPRING_CLOUD_TASK_NAME, name);
-		this.appDefinition = new AppDefinition(name, properties);
-	}
-
-
-	public String getDslText() {
-		return dslText;
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringCreator(this)
-				.append("dslText", this.dslText)
-				.append("appDefinition", this.appDefinition).toString();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dslText == null) ? 0 : dslText.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TaskDefinition other = (TaskDefinition) obj;
-		if (dslText == null) {
-			if (other.dslText != null)
-				return false;
-		}
-		else if (!dslText.equals(other.dslText))
-			return false;
-		return true;
-	}
-
-	/**
-	 * Builder object for {@code TaskDefinition}.
-	 * This object is mutable to allow for flexibility in specifying application
-	 * fields/properties during parsing.
-	 */
-	public static class TaskDefinitionBuilder {
-
-		/**
-		 * @see DataFlowAppDefinition#registeredAppName
-		 */
-		private String registeredAppName;
-
-		/**
-		 * @see AppDefinition#getName()
-		 */
-		private String label;
-
-		/**
-		 * @see AppDefinition#getProperties()
-		 */
-		private final Map<String, String> properties = new HashMap<String, String>();
-
-		/**
-		 * Create a new builder that is initialized with properties of the given definition.
-		 * Useful for "mutating" a definition by building a slightly different copy.
-		 * @param definition the DataFlowAppDefinition to use when creating the builder
-		 * @return a task definition builder
-		 */
-		public static TaskDefinitionBuilder from(DataFlowAppDefinition definition) {
-			TaskDefinitionBuilder builder = new TaskDefinitionBuilder();
-			builder.setRegisteredAppName(definition.getRegisteredAppName())
-					.setLabel(definition.getName())
-					.addProperties(definition.getProperties());
-			return builder;
-		}
+    public TaskDefinition(String name, String dsl) {
+        this.dslText = dsl;
+        Map<String, String> properties = new HashMap<>();
+        TaskNode taskNode = new TaskParser(name, dsl, true, true).parse();
+        if (taskNode.isComposed()) {
+            setRegisteredAppName(name);
+        } else {
+            TaskAppNode singleTaskApp = taskNode.getTaskApp();
+            setRegisteredAppName(singleTaskApp.getName());
+            if (singleTaskApp.hasArguments()) {
+                for (ArgumentNode argumentNode : singleTaskApp.getArguments()) {
+                    properties.put(argumentNode.getName(), argumentNode.getValue());
+                }
+            }
+        }
+        properties.put(SPRING_CLOUD_TASK_NAME, name);
+        this.appDefinition = new AppDefinition(name, properties);
+    }
 
 
-		/**
-		 * Set the name of the app in the registry.
-		 *
-		 * @param registeredAppName name of app in registry
-		 * @return this builder object
-		 * @see DataFlowAppDefinition#registeredAppName
-		 */
-		public TaskDefinitionBuilder setRegisteredAppName(String registeredAppName) {
-			this.registeredAppName = registeredAppName;
-			return this;
-		}
+    public String getDslText() {
+        return dslText;
+    }
 
-		/**
-		 * Set the app label.
-		 *
-		 * @param label name of app label
-		 * @return this builder object
-		 */
-		public TaskDefinitionBuilder setLabel(String label) {
-			this.label = label;
-			return this;
-		}
+    @Override
+    public String toString() {
+        return new ToStringCreator(this)
+                .append("dslText", this.dslText)
+                .append("appDefinition", this.appDefinition).toString();
+    }
 
-		/**
-		 * Set an app property.
-		 *
-		 * @param name  property name
-		 * @param value property value
-		 * @return this builder object
-		 * @see AppDefinition#getProperties()
-		 */
-		public TaskDefinitionBuilder setProperty(String name, String value) {
-			this.properties.put(name, value);
-			return this;
-		}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dslText == null) ? 0 : dslText.hashCode());
+        return result;
+    }
 
-		/**
-		 * Add the contents of the provided map to the map of app properties.
-		 *
-		 * @param properties app properties
-		 * @return this builder object
-		 * @see AppDefinition#getProperties()
-		 */
-		public TaskDefinitionBuilder addProperties(Map<String, String> properties) {
-			this.properties.putAll(properties);
-			return this;
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TaskDefinition other = (TaskDefinition) obj;
+        if (dslText == null) {
+            if (other.dslText != null)
+                return false;
+        } else if (!dslText.equals(other.dslText))
+            return false;
+        return true;
+    }
 
-		/**
-		 * Sets the contents of the provided map as the map of app properties.
-		 *
-		 * @param properties app properties
-		 * @return this builder object
-		 * @see AppDefinition#getProperties()
-		 */
-		public TaskDefinitionBuilder setProperties(Map<String, String> properties) {
-			Assert.notNull(properties, "properties must not be null");
-			this.properties.clear();
-			this.addProperties(properties);
-			return this;
-		}
+    /**
+     * Builder object for {@code TaskDefinition}.
+     * This object is mutable to allow for flexibility in specifying application
+     * fields/properties during parsing.
+     */
+    public static class TaskDefinitionBuilder {
 
-		/**
-		 * Return name of task app in registry.
-		 *
-		 * @return task app name in registry
-		 */
-		public String getRegisteredAppName() {
-			return registeredAppName;
-		}
+        /**
+         * @see AppDefinition#getProperties()
+         */
+        private final Map<String, String> properties = new HashMap<String, String>();
+        /**
+         * @see DataFlowAppDefinition#registeredAppName
+         */
+        private String registeredAppName;
+        /**
+         * @see AppDefinition#getName()
+         */
+        private String label;
 
-		/**
-		 * Return symbolic name of a task. If not provided, it will be the same as the task name.
-		 *
-		 * @return app label
-		 */
-		public String getLabel() {
-			return label;
-		}
+        /**
+         * Create a new builder that is initialized with properties of the given definition.
+         * Useful for "mutating" a definition by building a slightly different copy.
+         *
+         * @param definition the DataFlowAppDefinition to use when creating the builder
+         * @return a task definition builder
+         */
+        public static TaskDefinitionBuilder from(DataFlowAppDefinition definition) {
+            TaskDefinitionBuilder builder = new TaskDefinitionBuilder();
+            builder.setRegisteredAppName(definition.getRegisteredAppName())
+                    .setLabel(definition.getName())
+                    .addProperties(definition.getProperties());
+            return builder;
+        }
 
-		/**
-		 * Return properties for the task.
-		 * Note that the contents of this map are <b>mutable</b>.
-		 *
-		 * @return map of app properties
-		 */
-		public Map<String, String> getProperties() {
-			return properties;
-		}
+        /**
+         * Set an app property.
+         *
+         * @param name  property name
+         * @param value property value
+         * @return this builder object
+         * @see AppDefinition#getProperties()
+         */
+        public TaskDefinitionBuilder setProperty(String name, String value) {
+            this.properties.put(name, value);
+            return this;
+        }
 
-		/**
-		 * Return a new instance of {@link TaskDefinition}.
-		 *
-		 * @return new instance of {@code TaskDefinition}
-		 */
-		public TaskDefinition build() {
-			if (this.label == null) {
-				this.label = this.registeredAppName;
-			}
-			return new TaskDefinition(this.registeredAppName, this.label, this.properties);
-		}
-	}
+        /**
+         * Add the contents of the provided map to the map of app properties.
+         *
+         * @param properties app properties
+         * @return this builder object
+         * @see AppDefinition#getProperties()
+         */
+        public TaskDefinitionBuilder addProperties(Map<String, String> properties) {
+            this.properties.putAll(properties);
+            return this;
+        }
+
+        /**
+         * Return name of task app in registry.
+         *
+         * @return task app name in registry
+         */
+        public String getRegisteredAppName() {
+            return registeredAppName;
+        }
+
+        /**
+         * Set the name of the app in the registry.
+         *
+         * @param registeredAppName name of app in registry
+         * @return this builder object
+         * @see DataFlowAppDefinition#registeredAppName
+         */
+        public TaskDefinitionBuilder setRegisteredAppName(String registeredAppName) {
+            this.registeredAppName = registeredAppName;
+            return this;
+        }
+
+        /**
+         * Return symbolic name of a task. If not provided, it will be the same as the task name.
+         *
+         * @return app label
+         */
+        public String getLabel() {
+            return label;
+        }
+
+        /**
+         * Set the app label.
+         *
+         * @param label name of app label
+         * @return this builder object
+         */
+        public TaskDefinitionBuilder setLabel(String label) {
+            this.label = label;
+            return this;
+        }
+
+        /**
+         * Return properties for the task.
+         * Note that the contents of this map are <b>mutable</b>.
+         *
+         * @return map of app properties
+         */
+        public Map<String, String> getProperties() {
+            return properties;
+        }
+
+        /**
+         * Sets the contents of the provided map as the map of app properties.
+         *
+         * @param properties app properties
+         * @return this builder object
+         * @see AppDefinition#getProperties()
+         */
+        public TaskDefinitionBuilder setProperties(Map<String, String> properties) {
+            Assert.notNull(properties, "properties must not be null");
+            this.properties.clear();
+            this.addProperties(properties);
+            return this;
+        }
+
+        /**
+         * Return a new instance of {@link TaskDefinition}.
+         *
+         * @return new instance of {@code TaskDefinition}
+         */
+        public TaskDefinition build() {
+            if (this.label == null) {
+                this.label = this.registeredAppName;
+            }
+            return new TaskDefinition(this.registeredAppName, this.label, this.properties);
+        }
+    }
 }

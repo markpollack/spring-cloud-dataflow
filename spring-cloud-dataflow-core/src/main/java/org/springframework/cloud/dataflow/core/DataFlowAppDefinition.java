@@ -27,70 +27,69 @@ import org.springframework.util.Assert;
  */
 abstract class DataFlowAppDefinition {
 
-	/**
-	 * The name of the registered app.
-	 */
-	private volatile String registeredAppName;
+    /**
+     * The underlying {@link AppDefinition}.
+     */
+    protected volatile AppDefinition appDefinition;
+    /**
+     * The name of the registered app.
+     */
+    private volatile String registeredAppName;
 
-	/**
-	 * The underlying {@link AppDefinition}.
-	 */
-	protected volatile AppDefinition appDefinition;
+    /**
+     * Construct a {@code DataFlowAppDefinition}.
+     */
+    protected DataFlowAppDefinition() {
+    }
 
-	/**
-	 * Construct a {@code DataFlowAppDefinition}.
-	 */
-	protected DataFlowAppDefinition() {
-	}
+    /**
+     * Construct a {@code DataFlowAppDefinition}.
+     *
+     * @param registeredAppName name of application in registry
+     * @param label             label used for application
+     * @param properties        app properties; may be {@code null}
+     */
+    protected DataFlowAppDefinition(String registeredAppName, String label, Map<String, String> properties) {
+        Assert.notNull(registeredAppName, "registeredAppName must not be null");
+        Assert.notNull(label, "label must not be null");
+        this.registeredAppName = registeredAppName;
+        this.appDefinition = new AppDefinition(label, properties);
+    }
 
-	/**
-	 * Construct a {@code DataFlowAppDefinition}.
-	 *
-	 * @param registeredAppName name of application in registry
-	 * @param label label used for application
-	 * @param properties app properties; may be {@code null}
-	 */
-	protected DataFlowAppDefinition(String registeredAppName, String label, Map<String, String> properties) {
-		Assert.notNull(registeredAppName, "registeredAppName must not be null");
-		Assert.notNull(label, "label must not be null");
-		this.registeredAppName = registeredAppName;
-		this.appDefinition = new AppDefinition(label, properties);
-	}
+    /**
+     * Return the name from the {@link AppDefinition}.
+     *
+     * @return the name from the {@link AppDefinition}
+     */
+    public String getName() {
+        return this.appDefinition.getName();
+    }
 
-	/**
-	 * Return the name from the {@link AppDefinition}.
-	 * 
-	 * @return the name from the {@link AppDefinition}
-	 */
-	public String getName() {
-		return this.appDefinition.getName();
-	}
+    /**
+     * Return the name of the registered app.
+     *
+     * @return name of app in registry
+     */
+    public String getRegisteredAppName() {
+        return registeredAppName;
+    }
 
-	/**
-	 * Return the name of the registered app.
-	 *
-	 * @return name of app in registry
-	 */
-	public String getRegisteredAppName() {
-		return registeredAppName;
-	}
+    /**
+     * Set the registered app name. Only intended for subclasses to invoke.
+     *
+     * @param registeredAppName the registered app name
+     */
+    protected void setRegisteredAppName(String registeredAppName) {
+        this.registeredAppName = registeredAppName;
+    }
 
-	/**
-	 * Set the registered app name. Only intended for subclasses to invoke.
-	 *
-	 * @param registeredAppName the registered app name
-	 */
-	protected void setRegisteredAppName(String registeredAppName) {
-		this.registeredAppName = registeredAppName;
-	}
-
-	/**
-	 * Gets the app definition properties. These properties are passed into a running app.
-	 *
-	 * @return the unmodifiable map of app properties
-	 */
-	public Map<String, String> getProperties() {
-		return this.appDefinition.getProperties();
-	}
+    /**
+     * Gets the app definition properties. These properties are passed into a running app.
+     *
+     * @return the unmodifiable map of app properties
+     */
+    public Map<String, String> getProperties() {
+        return this.appDefinition.getProperties();
+    }
 
 }

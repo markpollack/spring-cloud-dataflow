@@ -17,7 +17,6 @@
 package org.springframework.cloud.dataflow.server.rest.documentation;
 
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -30,12 +29,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class AppRegistryDocumentation extends BaseDocumentation {
 
-	@Test
-	public void getApplicationsFiltered() throws Exception {
-		this.mockMvc.perform(get("/apps").param("type", "source")
-			.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(this.documentationHandler.document(requestParameters(
-					parameterWithName("type").description("Restrict the returned apps to the type of the app."))));
-	}
+    @Test
+    public void getApplicationsFiltered() throws Exception {
+        this.mockMvc.perform(get("/apps").param("type", "source")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(this.documentationHandler.document(requestParameters(
+                        parameterWithName("type").description("Restrict the returned apps to the type of the app."))));
+    }
 }

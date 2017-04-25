@@ -58,153 +58,153 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(TaskExecutionResource.class)
 public class TaskExecutionController {
 
-	private final Assembler taskAssembler = new Assembler();
+    private final Assembler taskAssembler = new Assembler();
 
 
-	private final TaskService taskService;
+    private final TaskService taskService;
 
-	private final TaskExplorer explorer;
+    private final TaskExplorer explorer;
 
-	private final TaskDefinitionRepository taskDefinitionRepository;
+    private final TaskDefinitionRepository taskDefinitionRepository;
 
-	/**
-	 * Creates a {@code TaskExecutionController} that retrieves Task Execution information
-	 * from a the {@link TaskExplorer}
-	 *
-	 * @param explorer the explorer this controller will use for retrieving
-	 *                   task execution information.
-	 * @param taskService used to launch tasks
-	 * @param taskDefinitionRepository the task definition repository
-	 */
-	public TaskExecutionController(TaskExplorer explorer, TaskService taskService,
-		TaskDefinitionRepository taskDefinitionRepository) {
-		Assert.notNull(explorer, "explorer must not be null");
-		Assert.notNull(taskService, "taskService must not be null");
-		Assert.notNull(taskDefinitionRepository, "taskDefinitionRepository must not be null");
-		this.taskService = taskService;
-		this.explorer = explorer;
-		this.taskDefinitionRepository = taskDefinitionRepository;
-	}
+    /**
+     * Creates a {@code TaskExecutionController} that retrieves Task Execution information
+     * from a the {@link TaskExplorer}
+     *
+     * @param explorer                 the explorer this controller will use for retrieving
+     *                                 task execution information.
+     * @param taskService              used to launch tasks
+     * @param taskDefinitionRepository the task definition repository
+     */
+    public TaskExecutionController(TaskExplorer explorer, TaskService taskService,
+                                   TaskDefinitionRepository taskDefinitionRepository) {
+        Assert.notNull(explorer, "explorer must not be null");
+        Assert.notNull(taskService, "taskService must not be null");
+        Assert.notNull(taskDefinitionRepository, "taskDefinitionRepository must not be null");
+        this.taskService = taskService;
+        this.explorer = explorer;
+        this.taskDefinitionRepository = taskDefinitionRepository;
+    }
 
-	/**
-	 * Return a page-able list of {@link TaskExecutionResource} defined tasks.
-	 *
-	 * @param pageable  page-able collection of {@code TaskExecution}s.
-	 * @param assembler for the {@link TaskExecution}s
-	 * @return a list of task executions
-	 */
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-	public PagedResources<TaskExecutionResource> list(Pageable pageable,
-			PagedResourcesAssembler<TaskJobExecutionRel> assembler) {
-		Page<TaskExecution> taskExecutions = explorer.findAll(pageable);
-		Page<TaskJobExecutionRel> result = getPageableRelationships(taskExecutions, pageable);
-		return assembler.toResource(result, taskAssembler);
-	}
+    /**
+     * Return a page-able list of {@link TaskExecutionResource} defined tasks.
+     *
+     * @param pageable  page-able collection of {@code TaskExecution}s.
+     * @param assembler for the {@link TaskExecution}s
+     * @return a list of task executions
+     */
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public PagedResources<TaskExecutionResource> list(Pageable pageable,
+                                                      PagedResourcesAssembler<TaskJobExecutionRel> assembler) {
+        Page<TaskExecution> taskExecutions = explorer.findAll(pageable);
+        Page<TaskJobExecutionRel> result = getPageableRelationships(taskExecutions, pageable);
+        return assembler.toResource(result, taskAssembler);
+    }
 
-	/**
-	 * Retrieve all task executions with the task name specified
-	 *
-	 * @param taskName name of the task
-	 * @param pageable  page-able collection of {@code TaskExecution}s.
-	 * @param assembler for the {@link TaskExecution}s
-	 * @return the paged list of task executions
-	 */
-	@RequestMapping(value = "", method = RequestMethod.GET, params = "name")
-	@ResponseStatus(HttpStatus.OK)
-	public PagedResources<TaskExecutionResource> retrieveTasksByName(
-			@RequestParam("name") String taskName, Pageable pageable,
-				PagedResourcesAssembler<TaskJobExecutionRel> assembler) {
-		if (this.taskDefinitionRepository.findOne(taskName) == null) {
-			throw new NoSuchTaskDefinitionException(taskName);
-		}
-		Page<TaskExecution> taskExecutions = explorer.findTaskExecutionsByName(taskName, pageable);
-		Page<TaskJobExecutionRel> result = getPageableRelationships(taskExecutions, pageable);
-		return assembler.toResource(result, taskAssembler);
-	}
+    /**
+     * Retrieve all task executions with the task name specified
+     *
+     * @param taskName  name of the task
+     * @param pageable  page-able collection of {@code TaskExecution}s.
+     * @param assembler for the {@link TaskExecution}s
+     * @return the paged list of task executions
+     */
+    @RequestMapping(value = "", method = RequestMethod.GET, params = "name")
+    @ResponseStatus(HttpStatus.OK)
+    public PagedResources<TaskExecutionResource> retrieveTasksByName(
+            @RequestParam("name") String taskName, Pageable pageable,
+            PagedResourcesAssembler<TaskJobExecutionRel> assembler) {
+        if (this.taskDefinitionRepository.findOne(taskName) == null) {
+            throw new NoSuchTaskDefinitionException(taskName);
+        }
+        Page<TaskExecution> taskExecutions = explorer.findTaskExecutionsByName(taskName, pageable);
+        Page<TaskJobExecutionRel> result = getPageableRelationships(taskExecutions, pageable);
+        return assembler.toResource(result, taskAssembler);
+    }
 
-	/**
-	 * Request the launching of an existing task definition. The name must be
-	 * included in the path.
-	 *
-	 * @param taskName the name of the existing task to be executed (required)
-	 * @param properties the runtime properties for the task, as a comma-delimited list of
-	 * 					 key=value pairs
-	 * @param arguments the runtime commandline arguments
-	 * @return the taskExecutionId for the executed task
-	 */
-	@RequestMapping(value = "", method = RequestMethod.POST, params = "name")
-	@ResponseStatus(HttpStatus.CREATED)
-	public long launch(@RequestParam("name") String taskName, @RequestParam(required = false) String properties,
-		@RequestParam(required = false) List<String> arguments) {
-		Map<String, String> propertiesToUse = DeploymentPropertiesUtils.parse(properties);
-		DeploymentPropertiesUtils.ensureJustDeploymentProperties(propertiesToUse);
-		return this.taskService.executeTask(taskName, propertiesToUse, DeploymentPropertiesUtils.parseParams(arguments));
-	}
+    /**
+     * Request the launching of an existing task definition. The name must be
+     * included in the path.
+     *
+     * @param taskName   the name of the existing task to be executed (required)
+     * @param properties the runtime properties for the task, as a comma-delimited list of
+     *                   key=value pairs
+     * @param arguments  the runtime commandline arguments
+     * @return the taskExecutionId for the executed task
+     */
+    @RequestMapping(value = "", method = RequestMethod.POST, params = "name")
+    @ResponseStatus(HttpStatus.CREATED)
+    public long launch(@RequestParam("name") String taskName, @RequestParam(required = false) String properties,
+                       @RequestParam(required = false) List<String> arguments) {
+        Map<String, String> propertiesToUse = DeploymentPropertiesUtils.parse(properties);
+        DeploymentPropertiesUtils.ensureJustDeploymentProperties(propertiesToUse);
+        return this.taskService.executeTask(taskName, propertiesToUse, DeploymentPropertiesUtils.parseParams(arguments));
+    }
 
 
-	/**
-	 * View the details of a single task execution, specified by id.
-	 *
-	 * @param id the id of the requested {@link TaskExecution}
-	 * @return the {@link TaskExecution}
-	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-	public TaskExecutionResource view(@PathVariable("id") long id) {
-		TaskExecution taskExecution = this.explorer.getTaskExecution(id);
-		if(taskExecution == null){
-			throw new NoSuchTaskExecutionException(id);
-		}
-		TaskJobExecutionRel taskJobExecutionRel = new TaskJobExecutionRel(taskExecution,
-				new ArrayList<>(explorer.getJobExecutionIdsByTaskExecutionId(
-						taskExecution.getExecutionId())));
-		return taskAssembler.toResource(taskJobExecutionRel);
-	}
+    /**
+     * View the details of a single task execution, specified by id.
+     *
+     * @param id the id of the requested {@link TaskExecution}
+     * @return the {@link TaskExecution}
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public TaskExecutionResource view(@PathVariable("id") long id) {
+        TaskExecution taskExecution = this.explorer.getTaskExecution(id);
+        if (taskExecution == null) {
+            throw new NoSuchTaskExecutionException(id);
+        }
+        TaskJobExecutionRel taskJobExecutionRel = new TaskJobExecutionRel(taskExecution,
+                new ArrayList<>(explorer.getJobExecutionIdsByTaskExecutionId(
+                        taskExecution.getExecutionId())));
+        return taskAssembler.toResource(taskJobExecutionRel);
+    }
 
-	/**
-	 * Cleanup resources associated with a single task execution, specified by id.
-	 *
-	 * @param id the id of the {@link TaskExecution} to clean up
-	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	@ResponseStatus(HttpStatus.OK)
-	public void cleanup(@PathVariable("id") long id) {
-		TaskExecution taskExecution = this.explorer.getTaskExecution(id);
-		if(taskExecution == null){
-			throw new NoSuchTaskExecutionException(id);
-		}
-		this.taskService.cleanupExecution(id);
-	}
+    /**
+     * Cleanup resources associated with a single task execution, specified by id.
+     *
+     * @param id the id of the {@link TaskExecution} to clean up
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    public void cleanup(@PathVariable("id") long id) {
+        TaskExecution taskExecution = this.explorer.getTaskExecution(id);
+        if (taskExecution == null) {
+            throw new NoSuchTaskExecutionException(id);
+        }
+        this.taskService.cleanupExecution(id);
+    }
 
-	/**
-	 * {@link org.springframework.hateoas.ResourceAssembler} implementation
-	 * that converts {@link TaskJobExecutionRel}s to {@link TaskExecutionResource}s.
-	 */
-	private static class Assembler extends ResourceAssemblerSupport<TaskJobExecutionRel, TaskExecutionResource> {
+    private Page<TaskJobExecutionRel> getPageableRelationships(Page<TaskExecution> taskExecutions, Pageable pageable) {
+        List<TaskJobExecutionRel> taskJobExecutionRels = new ArrayList<>();
+        for (TaskExecution taskExecution : taskExecutions.getContent()) {
+            taskJobExecutionRels.add(new TaskJobExecutionRel(taskExecution,
+                    new ArrayList<>(explorer.getJobExecutionIdsByTaskExecutionId(
+                            taskExecution.getExecutionId()))));
+        }
+        return new PageImpl<>(taskJobExecutionRels, pageable, taskExecutions.getTotalElements());
+    }
 
-		public Assembler() {
-			super(TaskExecutionController.class, TaskExecutionResource.class);
-		}
+    /**
+     * {@link org.springframework.hateoas.ResourceAssembler} implementation
+     * that converts {@link TaskJobExecutionRel}s to {@link TaskExecutionResource}s.
+     */
+    private static class Assembler extends ResourceAssemblerSupport<TaskJobExecutionRel, TaskExecutionResource> {
 
-		@Override
-		public TaskExecutionResource toResource(TaskJobExecutionRel taskJobExecutionRel) {
-			return createResourceWithId(taskJobExecutionRel.getTaskExecution().getExecutionId(), taskJobExecutionRel);
-		}
+        public Assembler() {
+            super(TaskExecutionController.class, TaskExecutionResource.class);
+        }
 
-		@Override
-		public TaskExecutionResource instantiateResource(TaskJobExecutionRel taskJobExecutionRel) {
-			return new TaskExecutionResource(taskJobExecutionRel);
-		}
-	}
+        @Override
+        public TaskExecutionResource toResource(TaskJobExecutionRel taskJobExecutionRel) {
+            return createResourceWithId(taskJobExecutionRel.getTaskExecution().getExecutionId(), taskJobExecutionRel);
+        }
 
-	private Page<TaskJobExecutionRel> getPageableRelationships(Page<TaskExecution> taskExecutions, Pageable pageable){
-		List<TaskJobExecutionRel> taskJobExecutionRels = new ArrayList<>();
-		for(TaskExecution taskExecution: taskExecutions.getContent()) {
-			taskJobExecutionRels.add( new TaskJobExecutionRel(taskExecution,
-					new ArrayList<>(explorer.getJobExecutionIdsByTaskExecutionId(
-							taskExecution.getExecutionId()))));
-		}
-		return new PageImpl<>(taskJobExecutionRels,pageable,taskExecutions.getTotalElements());
-	}
+        @Override
+        public TaskExecutionResource instantiateResource(TaskJobExecutionRel taskJobExecutionRel) {
+            return new TaskExecutionResource(taskJobExecutionRel);
+        }
+    }
 }

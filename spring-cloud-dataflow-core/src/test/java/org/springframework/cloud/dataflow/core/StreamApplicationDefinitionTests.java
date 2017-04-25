@@ -26,20 +26,20 @@ import static org.junit.Assert.assertEquals;
  */
 public class StreamApplicationDefinitionTests {
 
-	private static final String OUTPUT_BINDING_KEY = "spring.cloud.stream.bindings.output";
+    private static final String OUTPUT_BINDING_KEY = "spring.cloud.stream.bindings.output";
 
-	@Test
-	public void testBuilder() {
-		StreamAppDefinition definition = new StreamAppDefinition.Builder()
-				.setRegisteredAppName("time")
-				.setLabel("label")
-				.setProperty(OUTPUT_BINDING_KEY, "channel").build("ticktock");
+    @Test
+    public void testBuilder() {
+        StreamAppDefinition definition = new StreamAppDefinition.Builder()
+                .setRegisteredAppName("time")
+                .setLabel("label")
+                .setProperty(OUTPUT_BINDING_KEY, "channel").build("ticktock");
 
-		assertEquals("ticktock", definition.getStreamName());
-		assertEquals("time", definition.getRegisteredAppName());
-		assertEquals("label", definition.getName());
-		assertEquals(1, definition.getProperties().size());
-		assertEquals("channel", definition.getProperties().get(OUTPUT_BINDING_KEY));
-	}
+        assertEquals("ticktock", definition.getStreamName());
+        assertEquals("time", definition.getRegisteredAppName());
+        assertEquals("label", definition.getName());
+        assertEquals(1, definition.getProperties().size());
+        assertEquals("channel", definition.getProperties().get(OUTPUT_BINDING_KEY));
+    }
 
 }

@@ -39,162 +39,162 @@ import org.springframework.context.annotation.Import;
 @Import({ApplicationConfigurationMetadataResolverAutoConfiguration.class})
 public class CompletionConfiguration {
 
-	@Autowired
-	private AppRegistry appRegistry;
+    @Autowired
+    private AppRegistry appRegistry;
 
-	@Autowired
-	private ApplicationConfigurationMetadataResolver metadataResolver;
+    @Autowired
+    private ApplicationConfigurationMetadataResolver metadataResolver;
 
-	@Bean
-	public StreamCompletionProvider streamCompletionProvider() {
-		List<RecoveryStrategy<?>> recoveryStrategies = Arrays.<RecoveryStrategy<?>>asList(
-				emptyStartYieldsAppsRecoveryStrategy(),
-				expandOneDashToTwoDashesRecoveryStrategy(),
-				configurationPropertyNameAfterDashDashRecoveryStrategy(),
-				unfinishedConfigurationPropertyNameRecoveryStrategy(),
-				destinationNameYieldsAppsRecoveryStrategy(),
-				appsAfterPipeRecoveryStrategy(),
-				configurationPropertyValueHintRecoveryStrategy()
-		);
-		List<ExpansionStrategy> expansionStrategies = Arrays.asList(
-				addAppOptionsExpansionStrategy(),
-				pipeIntoOtherAppsExpansionStrategy(),
-				unfinishedAppNameExpansionStrategy(),
-				// Make sure this one runs last, as it may clear already computed proposals
-				// and return its own as the sole candidates
-				configurationPropertyValueHintExpansionStrategy()
-		);
+    @Bean
+    public StreamCompletionProvider streamCompletionProvider() {
+        List<RecoveryStrategy<?>> recoveryStrategies = Arrays.<RecoveryStrategy<?>>asList(
+                emptyStartYieldsAppsRecoveryStrategy(),
+                expandOneDashToTwoDashesRecoveryStrategy(),
+                configurationPropertyNameAfterDashDashRecoveryStrategy(),
+                unfinishedConfigurationPropertyNameRecoveryStrategy(),
+                destinationNameYieldsAppsRecoveryStrategy(),
+                appsAfterPipeRecoveryStrategy(),
+                configurationPropertyValueHintRecoveryStrategy()
+        );
+        List<ExpansionStrategy> expansionStrategies = Arrays.asList(
+                addAppOptionsExpansionStrategy(),
+                pipeIntoOtherAppsExpansionStrategy(),
+                unfinishedAppNameExpansionStrategy(),
+                // Make sure this one runs last, as it may clear already computed proposals
+                // and return its own as the sole candidates
+                configurationPropertyValueHintExpansionStrategy()
+        );
 
-		return new StreamCompletionProvider(recoveryStrategies, expansionStrategies);
-	}
+        return new StreamCompletionProvider(recoveryStrategies, expansionStrategies);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> emptyStartYieldsAppsRecoveryStrategy() {
-		return new EmptyStartYieldsSourceAppsRecoveryStrategy(appRegistry);
-	}
+    @Bean
+    public RecoveryStrategy<?> emptyStartYieldsAppsRecoveryStrategy() {
+        return new EmptyStartYieldsSourceAppsRecoveryStrategy(appRegistry);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> expandOneDashToTwoDashesRecoveryStrategy() {
-		return new ExpandOneDashToTwoDashesRecoveryStrategy();
-	}
+    @Bean
+    public RecoveryStrategy<?> expandOneDashToTwoDashesRecoveryStrategy() {
+        return new ExpandOneDashToTwoDashesRecoveryStrategy();
+    }
 
-	@Bean
-	public ConfigurationPropertyNameAfterDashDashRecoveryStrategy configurationPropertyNameAfterDashDashRecoveryStrategy() {
-		return new ConfigurationPropertyNameAfterDashDashRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public ConfigurationPropertyNameAfterDashDashRecoveryStrategy configurationPropertyNameAfterDashDashRecoveryStrategy() {
+        return new ConfigurationPropertyNameAfterDashDashRecoveryStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> unfinishedConfigurationPropertyNameRecoveryStrategy() {
-		return new UnfinishedConfigurationPropertyNameRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public RecoveryStrategy<?> unfinishedConfigurationPropertyNameRecoveryStrategy() {
+        return new UnfinishedConfigurationPropertyNameRecoveryStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> appsAfterPipeRecoveryStrategy() {
-		return new AppsAfterPipeRecoveryStrategy(appRegistry);
-	}
+    @Bean
+    public RecoveryStrategy<?> appsAfterPipeRecoveryStrategy() {
+        return new AppsAfterPipeRecoveryStrategy(appRegistry);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> destinationNameYieldsAppsRecoveryStrategy() {
-		return new DestinationNameYieldsAppsRecoveryStrategy(appRegistry);
-	}
+    @Bean
+    public RecoveryStrategy<?> destinationNameYieldsAppsRecoveryStrategy() {
+        return new DestinationNameYieldsAppsRecoveryStrategy(appRegistry);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> configurationPropertyValueHintRecoveryStrategy() {
-		return new ConfigurationPropertyValueHintRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public RecoveryStrategy<?> configurationPropertyValueHintRecoveryStrategy() {
+        return new ConfigurationPropertyValueHintRecoveryStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public ExpansionStrategy addAppOptionsExpansionStrategy() {
-		return new AddAppOptionsExpansionStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public ExpansionStrategy addAppOptionsExpansionStrategy() {
+        return new AddAppOptionsExpansionStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public ExpansionStrategy unfinishedAppNameExpansionStrategy() {
-		return new UnfinishedAppNameExpansionStrategy(appRegistry);
-	}
+    @Bean
+    public ExpansionStrategy unfinishedAppNameExpansionStrategy() {
+        return new UnfinishedAppNameExpansionStrategy(appRegistry);
+    }
 
-	@Bean
-	public ExpansionStrategy pipeIntoOtherAppsExpansionStrategy() {
-		return new PipeIntoOtherAppsExpansionStrategy(appRegistry);
-	}
+    @Bean
+    public ExpansionStrategy pipeIntoOtherAppsExpansionStrategy() {
+        return new PipeIntoOtherAppsExpansionStrategy(appRegistry);
+    }
 
-	@Bean
-	public ExpansionStrategy configurationPropertyValueHintExpansionStrategy() {
-		return new ConfigurationPropertyValueHintExpansionStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public ExpansionStrategy configurationPropertyValueHintExpansionStrategy() {
+        return new ConfigurationPropertyValueHintExpansionStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public ValueHintProvider defaultValueHintProvider() {
-		return new DefaultValueHintProvider();
-	}
+    @Bean
+    public ValueHintProvider defaultValueHintProvider() {
+        return new DefaultValueHintProvider();
+    }
 
-	@Bean
-	public ValueHintProvider enumValueHintProvider() {
-		return new EnumValueHintProvider();
-	}
+    @Bean
+    public ValueHintProvider enumValueHintProvider() {
+        return new EnumValueHintProvider();
+    }
 
-	@Bean
-	public ValueHintProvider booleanValueHintProvider() {
-		return new BooleanValueHintProvider();
-	}
-	
-	@Bean
-	public TaskCompletionProvider taskCompletionProvider() {
-		List<RecoveryStrategy<?>> recoveryStrategies = Arrays.<RecoveryStrategy<?>>asList(
-				emptyStartYieldsAppsTaskRecoveryStrategy(),
-				expandOneDashToTwoDashesTaskRecoveryStrategy(),
-				configurationPropertyNameAfterDashDashTaskRecoveryStrategy(),
-				unfinishedConfigurationPropertyNameTaskRecoveryStrategy(),
-				configurationPropertyValueHintTaskRecoveryStrategy()
-		);
-		List<TaskExpansionStrategy> expansionStrategies = Arrays.asList(
-				addTaskAppOptionsExpansionStrategy(),
-				unfinishedTaskAppNameExpansionStrategy(),
-				// Make sure this one runs last, as it may clear already computed proposals
-				// and return its own as the sole candidates
-				taskConfigurationPropertyValueHintExpansionStrategy()
-		);
+    @Bean
+    public ValueHintProvider booleanValueHintProvider() {
+        return new BooleanValueHintProvider();
+    }
 
-		return new TaskCompletionProvider(recoveryStrategies, expansionStrategies);
-	}
-	
-	@Bean
-	public RecoveryStrategy<?> emptyStartYieldsAppsTaskRecoveryStrategy() {
-		return new EmptyStartYieldsSourceAppsTaskRecoveryStrategy(appRegistry);
-	}
+    @Bean
+    public TaskCompletionProvider taskCompletionProvider() {
+        List<RecoveryStrategy<?>> recoveryStrategies = Arrays.<RecoveryStrategy<?>>asList(
+                emptyStartYieldsAppsTaskRecoveryStrategy(),
+                expandOneDashToTwoDashesTaskRecoveryStrategy(),
+                configurationPropertyNameAfterDashDashTaskRecoveryStrategy(),
+                unfinishedConfigurationPropertyNameTaskRecoveryStrategy(),
+                configurationPropertyValueHintTaskRecoveryStrategy()
+        );
+        List<TaskExpansionStrategy> expansionStrategies = Arrays.asList(
+                addTaskAppOptionsExpansionStrategy(),
+                unfinishedTaskAppNameExpansionStrategy(),
+                // Make sure this one runs last, as it may clear already computed proposals
+                // and return its own as the sole candidates
+                taskConfigurationPropertyValueHintExpansionStrategy()
+        );
 
-	@Bean
-	public TaskExpansionStrategy addTaskAppOptionsExpansionStrategy() {
-		return new AddAppOptionsTaskExpansionStrategy(appRegistry, metadataResolver);
-	}
+        return new TaskCompletionProvider(recoveryStrategies, expansionStrategies);
+    }
 
-	@Bean
-	public TaskExpansionStrategy unfinishedTaskAppNameExpansionStrategy() {
-		return new UnfinishedTaskAppNameExpansionStrategy(appRegistry);
-	}
+    @Bean
+    public RecoveryStrategy<?> emptyStartYieldsAppsTaskRecoveryStrategy() {
+        return new EmptyStartYieldsSourceAppsTaskRecoveryStrategy(appRegistry);
+    }
 
-	@Bean
-	public TaskExpansionStrategy taskConfigurationPropertyValueHintExpansionStrategy() {
-		return new ConfigurationPropertyValueHintTaskExpansionStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public TaskExpansionStrategy addTaskAppOptionsExpansionStrategy() {
+        return new AddAppOptionsTaskExpansionStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> expandOneDashToTwoDashesTaskRecoveryStrategy() {
-		return new ExpandOneDashToTwoDashesTaskRecoveryStrategy();
-	}
-	
-	@Bean
-	public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
-		return new ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public TaskExpansionStrategy unfinishedTaskAppNameExpansionStrategy() {
+        return new UnfinishedTaskAppNameExpansionStrategy(appRegistry);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> configurationPropertyValueHintTaskRecoveryStrategy() {
-		return new ConfigurationPropertyValueHintTaskRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public TaskExpansionStrategy taskConfigurationPropertyValueHintExpansionStrategy() {
+        return new ConfigurationPropertyValueHintTaskExpansionStrategy(appRegistry, metadataResolver);
+    }
 
-	@Bean
-	public RecoveryStrategy<?> unfinishedConfigurationPropertyNameTaskRecoveryStrategy() {
-		return new UnfinishedConfigurationPropertyNameTaskRecoveryStrategy(appRegistry, metadataResolver);
-	}
+    @Bean
+    public RecoveryStrategy<?> expandOneDashToTwoDashesTaskRecoveryStrategy() {
+        return new ExpandOneDashToTwoDashesTaskRecoveryStrategy();
+    }
+
+    @Bean
+    public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
+        return new ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(appRegistry, metadataResolver);
+    }
+
+    @Bean
+    public RecoveryStrategy<?> configurationPropertyValueHintTaskRecoveryStrategy() {
+        return new ConfigurationPropertyValueHintTaskRecoveryStrategy(appRegistry, metadataResolver);
+    }
+
+    @Bean
+    public RecoveryStrategy<?> unfinishedConfigurationPropertyNameTaskRecoveryStrategy() {
+        return new UnfinishedConfigurationPropertyNameTaskRecoveryStrategy(appRegistry, metadataResolver);
+    }
 }

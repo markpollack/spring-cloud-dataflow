@@ -26,9 +26,9 @@ import org.springframework.cloud.dataflow.registry.AppRegistration;
  */
 public class NoSuchAppRegistrationException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public NoSuchAppRegistrationException(String name, ApplicationType type) {
-		super(String.format("The '%s:%s' application could not be found.", type, name));
-	}
+    public NoSuchAppRegistrationException(String name, ApplicationType type) {
+        super(String.format("The '%s:%s' application could not be found.", type, name));
+    }
 }

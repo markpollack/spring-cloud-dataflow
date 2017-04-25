@@ -18,7 +18,6 @@ package org.springframework.cloud.dataflow.rest.client.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.batch.core.JobParameters;
 
 /**
@@ -30,6 +29,6 @@ import org.springframework.batch.core.JobParameters;
 @JsonIgnoreProperties("empty")
 public abstract class JobParametersJacksonMixIn {
 
-	@JsonProperty
-	abstract boolean isEmpty();
+    @JsonProperty
+    abstract boolean isEmpty();
 }

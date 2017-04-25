@@ -33,35 +33,35 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DataFlowBannerProvider implements BannerProvider {
 
-	private static final String WELCOME = "Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type \"help\".";
+    private static final String WELCOME = "Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type \"help\".";
 
-	@Override
-	public String getProviderName() {
-		return "dataflow";
-	}
+    @Override
+    public String getProviderName() {
+        return "dataflow";
+    }
 
-	@Override
-	public String getBanner() {
-		return FileUtils.readBanner(DataFlowBannerProvider.class, "/dataflow-banner.txt") +
-				"\n" + getVersion() + "\n";
-	}
+    @Override
+    public String getBanner() {
+        return FileUtils.readBanner(DataFlowBannerProvider.class, "/dataflow-banner.txt") +
+                "\n" + getVersion() + "\n";
+    }
 
-	/**
-	 * Returns the version information as found in the manifest file (set during release).
-	 */
-	@Override
-	public String getVersion() {
-		Package pkg = DataFlowBannerProvider.class.getPackage();
-		String version = null;
-		if (pkg != null) {
-			version = pkg.getImplementationVersion();
-		}
-		return (version != null ? version : "Unknown Version");
-	}
+    /**
+     * Returns the version information as found in the manifest file (set during release).
+     */
+    @Override
+    public String getVersion() {
+        Package pkg = DataFlowBannerProvider.class.getPackage();
+        String version = null;
+        if (pkg != null) {
+            version = pkg.getImplementationVersion();
+        }
+        return (version != null ? version : "Unknown Version");
+    }
 
-	@Override
-	public String getWelcomeMessage() {
-		return WELCOME;
-	}
+    @Override
+    public String getWelcomeMessage() {
+        return WELCOME;
+    }
 
 }

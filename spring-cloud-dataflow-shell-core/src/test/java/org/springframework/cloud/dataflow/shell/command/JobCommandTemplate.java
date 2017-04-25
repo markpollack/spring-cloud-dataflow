@@ -31,96 +31,96 @@ import org.springframework.shell.core.JLineShellComponent;
  */
 public class JobCommandTemplate {
 
-	private final JLineShellComponent shell;
+    private final JLineShellComponent shell;
 
-	private List<String> tasks = new ArrayList<String>();
+    private List<String> tasks = new ArrayList<String>();
 
-	/**
-	 * Construct a new JobCommandTemplate, given a spring shell.
-	 *
-	 * @param shell the spring shell to execute commands against.
-	 */
-	public JobCommandTemplate(JLineShellComponent shell) {
-		this.shell = shell;
-	}
+    /**
+     * Construct a new JobCommandTemplate, given a spring shell.
+     *
+     * @param shell the spring shell to execute commands against.
+     */
+    public JobCommandTemplate(JLineShellComponent shell) {
+        this.shell = shell;
+    }
 
-	/**
-	 * Executes a task execution list.
-	 */
-	public CommandResult jobExecutionList() {
-		return shell.executeCommand("job execution list");
-	}
+    /**
+     * Executes a task execution list.
+     */
+    public CommandResult jobExecutionList() {
+        return shell.executeCommand("job execution list");
+    }
 
-	/**
-	 * Executes a task execution list.
-	 */
-	public CommandResult jobExecutionListByName(String jobName) {
-		return shell.executeCommand("job execution list --name " + jobName);
-	}
+    /**
+     * Executes a task execution list.
+     */
+    public CommandResult jobExecutionListByName(String jobName) {
+        return shell.executeCommand("job execution list --name " + jobName);
+    }
 
-	/**
-	 * Return the results of executing the shell command:
-	 * <code>dataflow: job execution display --id 1</code> where id is the id for the job
-	 * execution requested.
-	 *
-	 * @param id the identifier for the job execution.
-	 * @return the results of the shell command.
-	 */
-	public CommandResult executionDisplay(long id) {
-		return shell.executeCommand("job execution display --id " + id);
-	}
+    /**
+     * Return the results of executing the shell command:
+     * <code>dataflow: job execution display --id 1</code> where id is the id for the job
+     * execution requested.
+     *
+     * @param id the identifier for the job execution.
+     * @return the results of the shell command.
+     */
+    public CommandResult executionDisplay(long id) {
+        return shell.executeCommand("job execution display --id " + id);
+    }
 
-	/**
-	 * Return the results of executing the shell command:
-	 * <code>dataflow: job instance display --id 1</code> where id is the id for the job
-	 * instance requested.
-	 *
-	 * @param id the identifier for the job instance.
-	 * @return the results of the shell command.
-	 */
-	public CommandResult instanceDisplay(long id) {
-		return shell.executeCommand("job instance display --id " + id);
-	}
+    /**
+     * Return the results of executing the shell command:
+     * <code>dataflow: job instance display --id 1</code> where id is the id for the job
+     * instance requested.
+     *
+     * @param id the identifier for the job instance.
+     * @return the results of the shell command.
+     */
+    public CommandResult instanceDisplay(long id) {
+        return shell.executeCommand("job instance display --id " + id);
+    }
 
-	/**
-	 * Return the results of executing the shell command:
-	 * <code>dataflow: job execution step list --id 1</code> where id is the id for the job
-	 * execution requested.
-	 *
-	 * @param id the identifier for the job execution.
-	 * @return the results of the shell command.
-	 */
-	public CommandResult jobStepExecutionList(long id) {
-		return shell.executeCommand("job execution step list --id " + id);
-	}
+    /**
+     * Return the results of executing the shell command:
+     * <code>dataflow: job execution step list --id 1</code> where id is the id for the job
+     * execution requested.
+     *
+     * @param id the identifier for the job execution.
+     * @return the results of the shell command.
+     */
+    public CommandResult jobStepExecutionList(long id) {
+        return shell.executeCommand("job execution step list --id " + id);
+    }
 
-	/**
-	 * Return the results of executing the shell command:
-	 * <code>dataflow: job execution step progress --id 1 --jobExecutionId 1</code> where
-	 * id is the id for the step execution and jobExecutionId is for the jobExecution
-	 * requested.
-	 *
-	 * @param id the identifier for the step execution.
-	 * @param jobExecutionId the id for the job execution.
-	 * @return the results of the shell command.
-	 */
-	public CommandResult jobStepExecutionProgress(long id, long jobExecutionId) {
-		return shell.executeCommand("job execution step progress --id " + id
-		+ " --jobExecutionId " + jobExecutionId);
-	}
+    /**
+     * Return the results of executing the shell command:
+     * <code>dataflow: job execution step progress --id 1 --jobExecutionId 1</code> where
+     * id is the id for the step execution and jobExecutionId is for the jobExecution
+     * requested.
+     *
+     * @param id             the identifier for the step execution.
+     * @param jobExecutionId the id for the job execution.
+     * @return the results of the shell command.
+     */
+    public CommandResult jobStepExecutionProgress(long id, long jobExecutionId) {
+        return shell.executeCommand("job execution step progress --id " + id
+                + " --jobExecutionId " + jobExecutionId);
+    }
 
-	/**
-	 * Return the results of executing the shell command:
-	 * <code>dataflow: job execution step display --id 1 --jobExecutionId 1</code> where
-	 * id is the id for the step execution and jobExecutionId is for the jobExecution
-	 * requested.
-	 *
-	 * @param id the identifier for the step execution.
-	 * @param jobExecutionId the id for the job execution.
-	 * @return the results of the shell command.
-	 */
-	public CommandResult jobStepExecutionDisplay(long id, long jobExecutionId) {
-		return shell.executeCommand("job execution step display --id " + id
-				+ " --jobExecutionId " + jobExecutionId);
-	}
+    /**
+     * Return the results of executing the shell command:
+     * <code>dataflow: job execution step display --id 1 --jobExecutionId 1</code> where
+     * id is the id for the step execution and jobExecutionId is for the jobExecution
+     * requested.
+     *
+     * @param id             the identifier for the step execution.
+     * @param jobExecutionId the id for the job execution.
+     * @return the results of the shell command.
+     */
+    public CommandResult jobStepExecutionDisplay(long id, long jobExecutionId) {
+        return shell.executeCommand("job execution step display --id " + id
+                + " --jobExecutionId " + jobExecutionId);
+    }
 }

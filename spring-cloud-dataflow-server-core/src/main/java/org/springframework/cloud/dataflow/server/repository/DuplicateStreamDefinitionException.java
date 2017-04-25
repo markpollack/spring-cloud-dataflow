@@ -24,13 +24,13 @@ package org.springframework.cloud.dataflow.server.repository;
  */
 public class DuplicateStreamDefinitionException extends RuntimeException {
 
-	private static final long serialVersionUID = -3073129756296341192L;
+    private static final long serialVersionUID = -3073129756296341192L;
 
-	public DuplicateStreamDefinitionException() {
-		super();
-	}
+    public DuplicateStreamDefinitionException() {
+        super();
+    }
 
-	public DuplicateStreamDefinitionException(String message) {
-		super(message);
-	}
+    public DuplicateStreamDefinitionException(String message) {
+        super(message);
+    }
 }

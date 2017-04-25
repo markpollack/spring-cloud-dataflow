@@ -34,18 +34,18 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
 public class StreamConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public StreamDefinitionRepository streamDefinitionRepository(DataSource dataSource) {
-		return new RdbmsStreamDefinitionRepository(dataSource);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public StreamDefinitionRepository streamDefinitionRepository(DataSource dataSource) {
+        return new RdbmsStreamDefinitionRepository(dataSource);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean(TapOnDestinationRecoveryStrategy.class)
-	public RecoveryStrategy<?> tapOnDestinationExpansionStrategy(StreamCompletionProvider streamCompletionProvider,
-			StreamDefinitionRepository streamDefinitionRepository) {
-		RecoveryStrategy<?> recoveryStrategy = new TapOnDestinationRecoveryStrategy(streamDefinitionRepository);
-		streamCompletionProvider.addCompletionRecoveryStrategy(recoveryStrategy);
-		return recoveryStrategy;
-	}
+    @Bean
+    @ConditionalOnMissingBean(TapOnDestinationRecoveryStrategy.class)
+    public RecoveryStrategy<?> tapOnDestinationExpansionStrategy(StreamCompletionProvider streamCompletionProvider,
+                                                                 StreamDefinitionRepository streamDefinitionRepository) {
+        RecoveryStrategy<?> recoveryStrategy = new TapOnDestinationRecoveryStrategy(streamDefinitionRepository);
+        streamCompletionProvider.addCompletionRecoveryStrategy(recoveryStrategy);
+        return recoveryStrategy;
+    }
 }

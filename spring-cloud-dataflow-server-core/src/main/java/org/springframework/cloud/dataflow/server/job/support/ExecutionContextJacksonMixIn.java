@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 
@@ -34,6 +33,6 @@ import org.springframework.batch.item.ExecutionContext;
  */
 public abstract class ExecutionContextJacksonMixIn {
 
-	@JsonProperty("values")
-	abstract Set<Map.Entry<String, Object>> entrySet();
+    @JsonProperty("values")
+    abstract Set<Map.Entry<String, Object>> entrySet();
 }

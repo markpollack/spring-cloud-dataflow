@@ -24,40 +24,38 @@ package org.springframework.cloud.dataflow.rest.resource.about;
  */
 public class FeatureInfo {
 
-	/**
-	 * Default constructor for serialization frameworks.
-	 */
-	public FeatureInfo() {
-	}
+    private boolean analyticsEnabled = true;
+    private boolean streamsEnabled = true;
+    private boolean tasksEnabled = true;
 
-	private boolean analyticsEnabled = true;
+    /**
+     * Default constructor for serialization frameworks.
+     */
+    public FeatureInfo() {
+    }
 
-	private boolean streamsEnabled = true;
+    public boolean isAnalyticsEnabled() {
+        return this.analyticsEnabled;
+    }
 
-	private boolean tasksEnabled = true;
+    public void setAnalyticsEnabled(boolean analyticsEnabled) {
+        this.analyticsEnabled = analyticsEnabled;
+    }
 
-	public boolean isAnalyticsEnabled() {
-		return this.analyticsEnabled;
-	}
+    public boolean isStreamsEnabled() {
+        return this.streamsEnabled;
+    }
 
-	public void setAnalyticsEnabled(boolean analyticsEnabled) {
-		this.analyticsEnabled = analyticsEnabled;
-	}
+    public void setStreamsEnabled(boolean streamsEnabled) {
+        this.streamsEnabled = streamsEnabled;
+    }
 
-	public boolean isStreamsEnabled() {
-		return this.streamsEnabled;
-	}
+    public boolean isTasksEnabled() {
+        return this.tasksEnabled;
+    }
 
-	public void setStreamsEnabled(boolean streamsEnabled) {
-		this.streamsEnabled = streamsEnabled;
-	}
-
-	public boolean isTasksEnabled() {
-		return this.tasksEnabled;
-	}
-
-	public void setTasksEnabled(boolean tasksEnabled) {
-		this.tasksEnabled = tasksEnabled;
-	}
+    public void setTasksEnabled(boolean tasksEnabled) {
+        this.tasksEnabled = tasksEnabled;
+    }
 
 }

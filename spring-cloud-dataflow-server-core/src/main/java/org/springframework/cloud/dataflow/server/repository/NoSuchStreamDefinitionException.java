@@ -23,21 +23,21 @@ package org.springframework.cloud.dataflow.server.repository;
  */
 public class NoSuchStreamDefinitionException extends RuntimeException {
 
-	private final String name;
+    private final String name;
 
-	public NoSuchStreamDefinitionException(String name) {
-		this(name, "Could not find stream definition named " + name);
-	}
+    public NoSuchStreamDefinitionException(String name) {
+        this(name, "Could not find stream definition named " + name);
+    }
 
-	public NoSuchStreamDefinitionException(String name, String message) {
-		super(message);
-		this.name = name;
-	}
+    public NoSuchStreamDefinitionException(String name, String message) {
+        super(message);
+        this.name = name;
+    }
 
-	/**
-	 * @return the name of the stream definition that could not be found
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the name of the stream definition that could not be found
+     */
+    public String getName() {
+        return name;
+    }
 }

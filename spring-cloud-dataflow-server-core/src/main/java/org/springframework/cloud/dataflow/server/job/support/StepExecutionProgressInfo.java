@@ -36,142 +36,136 @@ import org.springframework.util.StringUtils;
  */
 public class StepExecutionProgressInfo {
 
-	private enum PercentCompleteBasis {
+    private final StepExecution stepExecution;
+    private final StepExecutionHistory stepExecutionHistory;
+    private double duration = 0;
+    private double percentageComplete = 0.5;
+    private boolean isFinished = false;
+    private PercentCompleteBasis percentCompleteBasis = PercentCompleteBasis.UNKNOWN;
 
-		UNKNOWN("unknown"), NOINFORMATION(
-				"percent.no.information,no.information", "no information"), ENDTIME(
-				"percent.end.time,end.time", "end time (already finished)"), DURATION(
-				"percent.duration,duration", "extrapolated duration"), READCOUNT(
-				"percent.read.count,read.count", "extrapolated read count"), NOHISTORY(
-				"percent.no.history,no.history", "no history");
+    public StepExecutionProgressInfo(StepExecution stepExecution,
+                                     StepExecutionHistory stepExecutionHistory) {
+        this.stepExecution = stepExecution;
+        this.stepExecutionHistory = stepExecutionHistory;
+        Date startTime = stepExecution.getStartTime();
+        Date endTime = stepExecution.getEndTime();
+        if (endTime == null) {
+            endTime = new Date();
+        } else {
+            isFinished = true;
+        }
+        if (startTime == null) {
+            startTime = new Date();
+        }
+        duration = endTime.getTime() - startTime.getTime();
+        percentageComplete = calculatePercentageComplete();
+    }
 
-		private final String[] codes;
+    public MessageSourceResolvable getEstimatedPercentCompleteMessage() {
 
-		private final String message;
+        String defaultMessage = String
+                .format(
+                        "This execution is estimated to be %.0f%% complete after %.0f ms based on %s",
+                        percentageComplete * 100, duration,
+                        percentCompleteBasis.getMessage().getDefaultMessage());
 
-		private PercentCompleteBasis(String code) {
-			this(code, code);
-		}
+        DefaultMessageSourceResolvable message = new DefaultMessageSourceResolvable(
+                new String[]{"step.execution.estimated.progress"},
+                new Object[]{percentageComplete, duration,
+                        percentCompleteBasis.getMessage()}, defaultMessage);
 
-		private PercentCompleteBasis(String codes, String message) {
-			this(StringUtils.commaDelimitedListToStringArray(codes), message);
-		}
+        return message;
 
-		private PercentCompleteBasis(String[] code, String message) {
-			this.codes = Arrays.copyOf(code, code.length);
-			this.message = message;
-		}
+    }
 
-		public MessageSourceResolvable getMessage() {
-			return new DefaultMessageSourceResolvable(codes, message);
-		}
+    public boolean isFinished() {
+        return isFinished;
+    }
 
-	}
+    public double getDuration() {
+        return duration;
+    }
 
-	private final StepExecution stepExecution;
+    public double getEstimatedPercentComplete() {
+        return percentageComplete;
+    }
 
-	private final StepExecutionHistory stepExecutionHistory;
+    private double calculatePercentageComplete() {
 
-	private double duration = 0;
+        if (isFinished) {
+            percentCompleteBasis = PercentCompleteBasis.ENDTIME;
+            return 1;
+        }
 
-	private double percentageComplete = 0.5;
+        if (stepExecutionHistory.getCount() == 0) {
+            percentCompleteBasis = PercentCompleteBasis.NOHISTORY;
+            return 0.5;
+        }
 
-	private boolean isFinished = false;
+        CumulativeHistory readHistory = stepExecutionHistory.getReadCount();
 
-	private PercentCompleteBasis percentCompleteBasis = PercentCompleteBasis.UNKNOWN;
+        if (readHistory.getMean() == 0) {
+            percentCompleteBasis = PercentCompleteBasis.DURATION;
+            return getDurationBasedEstimate(duration);
+        }
 
-	public StepExecutionProgressInfo(StepExecution stepExecution,
-			StepExecutionHistory stepExecutionHistory) {
-		this.stepExecution = stepExecution;
-		this.stepExecutionHistory = stepExecutionHistory;
-		Date startTime = stepExecution.getStartTime();
-		Date endTime = stepExecution.getEndTime();
-		if (endTime == null) {
-			endTime = new Date();
-		}
-		else {
-			isFinished = true;
-		}
-		if (startTime == null) {
-			startTime = new Date();
-		}
-		duration = endTime.getTime() - startTime.getTime();
-		percentageComplete = calculatePercentageComplete();
-	}
+        percentCompleteBasis = PercentCompleteBasis.READCOUNT;
+        return stepExecution.getReadCount() / readHistory.getMean();
 
-	public MessageSourceResolvable getEstimatedPercentCompleteMessage() {
+    }
 
-		String defaultMessage = String
-				.format(
-						"This execution is estimated to be %.0f%% complete after %.0f ms based on %s",
-						percentageComplete * 100, duration,
-						percentCompleteBasis.getMessage().getDefaultMessage());
+    private double getDurationBasedEstimate(double duration) {
 
-		DefaultMessageSourceResolvable message = new DefaultMessageSourceResolvable(
-				new String[] { "step.execution.estimated.progress" },
-				new Object[] { percentageComplete, duration,
-						percentCompleteBasis.getMessage() }, defaultMessage);
+        CumulativeHistory durationHistory = stepExecutionHistory.getDuration();
+        if (durationHistory.getMean() == 0) {
+            percentCompleteBasis = PercentCompleteBasis.NOINFORMATION;
+            return 0.5;
+        }
+        return duration / durationHistory.getMean();
 
-		return message;
+    }
 
-	}
+    public Long getStepExecutionId() {
+        return stepExecution.getId();
+    }
 
-	public boolean isFinished() {
-		return isFinished;
-	}
+    public StepExecution getStepExecution() {
+        return stepExecution;
+    }
 
-	public double getDuration() {
-		return duration;
-	}
+    public StepExecutionHistory getStepExecutionHistory() {
+        return stepExecutionHistory;
+    }
 
-	public double getEstimatedPercentComplete() {
-		return percentageComplete;
-	}
+    private enum PercentCompleteBasis {
 
-	private double calculatePercentageComplete() {
+        UNKNOWN("unknown"), NOINFORMATION(
+                "percent.no.information,no.information", "no information"), ENDTIME(
+                "percent.end.time,end.time", "end time (already finished)"), DURATION(
+                "percent.duration,duration", "extrapolated duration"), READCOUNT(
+                "percent.read.count,read.count", "extrapolated read count"), NOHISTORY(
+                "percent.no.history,no.history", "no history");
 
-		if (isFinished) {
-			percentCompleteBasis = PercentCompleteBasis.ENDTIME;
-			return 1;
-		}
+        private final String[] codes;
 
-		if (stepExecutionHistory.getCount() == 0) {
-			percentCompleteBasis = PercentCompleteBasis.NOHISTORY;
-			return 0.5;
-		}
+        private final String message;
 
-		CumulativeHistory readHistory = stepExecutionHistory.getReadCount();
+        private PercentCompleteBasis(String code) {
+            this(code, code);
+        }
 
-		if (readHistory.getMean() == 0) {
-			percentCompleteBasis = PercentCompleteBasis.DURATION;
-			return getDurationBasedEstimate(duration);
-		}
+        private PercentCompleteBasis(String codes, String message) {
+            this(StringUtils.commaDelimitedListToStringArray(codes), message);
+        }
 
-		percentCompleteBasis = PercentCompleteBasis.READCOUNT;
-		return stepExecution.getReadCount() / readHistory.getMean();
+        private PercentCompleteBasis(String[] code, String message) {
+            this.codes = Arrays.copyOf(code, code.length);
+            this.message = message;
+        }
 
-	}
+        public MessageSourceResolvable getMessage() {
+            return new DefaultMessageSourceResolvable(codes, message);
+        }
 
-	private double getDurationBasedEstimate(double duration) {
-
-		CumulativeHistory durationHistory = stepExecutionHistory.getDuration();
-		if (durationHistory.getMean() == 0) {
-			percentCompleteBasis = PercentCompleteBasis.NOINFORMATION;
-			return 0.5;
-		}
-		return duration / durationHistory.getMean();
-
-	}
-
-	public Long getStepExecutionId() {
-		return stepExecution.getId();
-	}
-
-	public StepExecution getStepExecution() {
-		return stepExecution;
-	}
-
-	public StepExecutionHistory getStepExecutionHistory() {
-		return stepExecutionHistory;
-	}
+    }
 }

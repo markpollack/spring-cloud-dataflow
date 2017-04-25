@@ -23,32 +23,32 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public class ArgumentNode extends AstNode {
 
-	private final String name;
+    private final String name;
 
-	private final String value;
+    private final String value;
 
-	public ArgumentNode(String name, String value, int startPos, int endPos) {
-		super(startPos, endPos);
-		this.name = name;
-		this.value = value;
-	}
+    public ArgumentNode(String name, String value, int startPos, int endPos) {
+        super(startPos, endPos);
+        this.name = name;
+        this.value = value;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	@Override
-	public String stringify(boolean includePositionalInfo) {
-		return toString();
-	}
+    @Override
+    public String stringify(boolean includePositionalInfo) {
+        return toString();
+    }
 
-	@Override
-	public String toString() {
-		return "--" + name + "=" + value;
-	}
+    @Override
+    public String toString() {
+        return "--" + name + "=" + value;
+    }
 
 }

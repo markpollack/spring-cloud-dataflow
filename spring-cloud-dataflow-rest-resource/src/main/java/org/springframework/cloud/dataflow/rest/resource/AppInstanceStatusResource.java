@@ -28,43 +28,43 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class AppInstanceStatusResource extends ResourceSupport {
 
-	private String instanceId;
+    private String instanceId;
 
-	private String state;
+    private String state;
 
-	private Map<String, String> attributes;
+    private Map<String, String> attributes;
 
-	private AppInstanceStatusResource() {
-		// noarg constructor for serialization
-	}
+    private AppInstanceStatusResource() {
+        // noarg constructor for serialization
+    }
 
-	public AppInstanceStatusResource(String instanceId, String state, Map<String, String> attributes) {
-		this.instanceId = instanceId;
-		this.state = state;
-		this.attributes = attributes;
-	}
+    public AppInstanceStatusResource(String instanceId, String state, Map<String, String> attributes) {
+        this.instanceId = instanceId;
+        this.state = state;
+        this.attributes = attributes;
+    }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+    public String getInstanceId() {
+        return instanceId;
+    }
 
-	public String getState() {
-		return state;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
-	public Map<String, String> getAttributes() {
-		return attributes;
-	}
+    public String getState() {
+        return state;
+    }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+    public void setState(String state) {
+        this.state = state;
+    }
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
 
-	public void setAttributes(Map<String, String> attributes) {
-		this.attributes = attributes;
-	}
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 }

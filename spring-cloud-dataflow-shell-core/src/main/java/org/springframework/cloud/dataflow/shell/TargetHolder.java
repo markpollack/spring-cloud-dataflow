@@ -24,38 +24,36 @@ import org.springframework.util.Assert;
  * also success/error messages + status.
  *
  * @author Gunnar Hillert
- * @since 1.0
- *
  * @see Target
- *
+ * @since 1.0
  */
 public class TargetHolder {
 
-	private Target target;
+    private Target target;
 
-	/**
-	 * Constructor.
-	 */
-	public TargetHolder() {
-	}
+    /**
+     * Constructor.
+     */
+    public TargetHolder() {
+    }
 
-	/**
-	 * Return the {@link Target} which encapsulates not only the Target URI but also success/error messages + status.
-	 *
-	 * @return Should never be null. Initialized by {@link ConfigCommands#afterPropertiesSet()}
-	 */
-	public Target getTarget() {
-		return target;
-	}
+    /**
+     * Return the {@link Target} which encapsulates not only the Target URI but also success/error messages + status.
+     *
+     * @return Should never be null. Initialized by {@link ConfigCommands#afterPropertiesSet()}
+     */
+    public Target getTarget() {
+        return target;
+    }
 
-	/**
-	 * Set the Dataflow Server {@link Target}.
-	 *
-	 * @param target Must not be null.
-	 */
-	public void setTarget(Target target) {
-		Assert.notNull(target, "The provided target must not be null.");
-		this.target = target;
-	}
+    /**
+     * Set the Dataflow Server {@link Target}.
+     *
+     * @param target Must not be null.
+     */
+    public void setTarget(Target target) {
+        Assert.notNull(target, "The provided target must not be null.");
+        this.target = target;
+    }
 
 }

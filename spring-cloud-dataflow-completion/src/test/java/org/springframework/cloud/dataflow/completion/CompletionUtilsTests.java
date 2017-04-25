@@ -18,7 +18,6 @@ package org.springframework.cloud.dataflow.completion;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.springframework.cloud.dataflow.core.StreamDefinition;
 
 import static org.hamcrest.core.Is.is;
@@ -30,16 +29,16 @@ import static org.hamcrest.core.Is.is;
  */
 public class CompletionUtilsTests {
 
-	@Test
-	public void testLabelQualification() {
-		StreamDefinition streamDefinition = new StreamDefinition("foo", "http | filter");
-		Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("filter", streamDefinition), is("filter2: filter"));
+    @Test
+    public void testLabelQualification() {
+        StreamDefinition streamDefinition = new StreamDefinition("foo", "http | filter");
+        Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("filter", streamDefinition), is("filter2: filter"));
 
-		streamDefinition = new StreamDefinition("foo", "http | filter");
-		Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("transform", streamDefinition), is("transform"));
+        streamDefinition = new StreamDefinition("foo", "http | filter");
+        Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("transform", streamDefinition), is("transform"));
 
-		streamDefinition = new StreamDefinition("foo", "http | filter | filter2: filter");
-		Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("filter", streamDefinition), is("filter3: filter"));
-	}
+        streamDefinition = new StreamDefinition("foo", "http | filter | filter2: filter");
+        Assert.assertThat(CompletionUtils.maybeQualifyWithLabel("filter", streamDefinition), is("filter3: filter"));
+    }
 
 }

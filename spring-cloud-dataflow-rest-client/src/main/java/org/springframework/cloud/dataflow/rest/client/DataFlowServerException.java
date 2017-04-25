@@ -24,8 +24,8 @@ package org.springframework.cloud.dataflow.rest.client;
 @SuppressWarnings("serial")
 public class DataFlowServerException extends RuntimeException {
 
-	public DataFlowServerException(String message) {
-		super(message);
-	}
+    public DataFlowServerException(String message) {
+        super(message);
+    }
 
 }

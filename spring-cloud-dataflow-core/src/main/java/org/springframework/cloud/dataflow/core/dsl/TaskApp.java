@@ -29,58 +29,58 @@ import org.springframework.util.Assert;
  */
 public class TaskApp {
 
-	private String taskDefinitionName;
+    private String taskDefinitionName;
 
-	private String name;
+    private String name;
 
-	private Map<String, String> arguments;
+    private Map<String, String> arguments;
 
-	private String label;
+    private String label;
 
-	TaskApp(String taskDefinitionName, TaskAppNode taskAppNode) {
-		Assert.notNull(taskAppNode, "taskAppNode not expected to be null");
-		this.taskDefinitionName = taskDefinitionName;
-		this.name = taskAppNode.getName();
-		this.arguments = taskAppNode.getArgumentsAsMap();
-		this.label = taskAppNode.getLabelString();
-	}
+    TaskApp(String taskDefinitionName, TaskAppNode taskAppNode) {
+        Assert.notNull(taskAppNode, "taskAppNode not expected to be null");
+        this.taskDefinitionName = taskDefinitionName;
+        this.name = taskAppNode.getName();
+        this.arguments = taskAppNode.getArgumentsAsMap();
+        this.label = taskAppNode.getLabelString();
+    }
 
-	public String getTaskName() {
-		return taskDefinitionName;
-	}
+    public String getTaskName() {
+        return taskDefinitionName;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Map<String, String> getArguments() {
-		return arguments;
-	}
+    public Map<String, String> getArguments() {
+        return arguments;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		if (label != null) {
-			s.append(label).append(": ");
-		}
-		s.append(name);
-		if (arguments.size() != 0) {
-			s.append(" ");
-			for (Map.Entry<String, String> argument : arguments.entrySet()) {
-				s.append("--").append(argument.getKey()).append("=").append(argument.getValue());
-			}
-		}
-		return s.toString();
-	}
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        if (label != null) {
+            s.append(label).append(": ");
+        }
+        s.append(name);
+        if (arguments.size() != 0) {
+            s.append(" ");
+            for (Map.Entry<String, String> argument : arguments.entrySet()) {
+                s.append("--").append(argument.getKey()).append("=").append(argument.getValue());
+            }
+        }
+        return s.toString();
+    }
 
-	public String getExecutableDSLName() {
-		StringBuilder s = new StringBuilder();
-		s.append(TaskNode.getTaskPrefix(taskDefinitionName));
-		s.append(label == null ? name : label);
-		return s.toString();
-	}
+    public String getExecutableDSLName() {
+        StringBuilder s = new StringBuilder();
+        s.append(TaskNode.getTaskPrefix(taskDefinitionName));
+        s.append(label == null ? name : label);
+        return s.toString();
+    }
 
 }

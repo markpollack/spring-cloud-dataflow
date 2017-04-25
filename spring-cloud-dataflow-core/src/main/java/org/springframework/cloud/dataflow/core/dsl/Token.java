@@ -24,93 +24,93 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public class Token {
 
-	/**
-	 * The kind of token.
-	 */
-	TokenKind kind;
+    /**
+     * The kind of token.
+     */
+    TokenKind kind;
 
-	/**
-	 * Any extra data for this token instance, e.g. the text for an identifier token.
-	 */
-	String data;
+    /**
+     * Any extra data for this token instance, e.g. the text for an identifier token.
+     */
+    String data;
 
-	/**
-	 * Index of first character.
-	 */
-	int startPos;
+    /**
+     * Index of first character.
+     */
+    int startPos;
 
-	/**
-	 * Index of char after the last character.
-	 */
-	int endPos;
+    /**
+     * Index of char after the last character.
+     */
+    int endPos;
 
-	/**
-	 * Constructor for use when there is no particular data for the token
-	 */
-	Token(TokenKind tokenKind, int startPos, int endPos) {
-		this.kind = tokenKind;
-		this.startPos = startPos;
-		this.endPos = endPos;
-	}
+    /**
+     * Constructor for use when there is no particular data for the token
+     */
+    Token(TokenKind tokenKind, int startPos, int endPos) {
+        this.kind = tokenKind;
+        this.startPos = startPos;
+        this.endPos = endPos;
+    }
 
-	/**
-	 * Constructor for use when there is extra data to associate with a token. For example the text for an identifier
-	 * token.
-	 */
-	Token(TokenKind tokenKind, char[] tokenData, int pos, int endPos) {
-		this(tokenKind, pos, endPos);
-		this.data = new String(tokenData.clone());
-	}
+    /**
+     * Constructor for use when there is extra data to associate with a token. For example the text for an identifier
+     * token.
+     */
+    Token(TokenKind tokenKind, char[] tokenData, int pos, int endPos) {
+        this(tokenKind, pos, endPos);
+        this.data = new String(tokenData.clone());
+    }
 
-	public TokenKind getKind() {
-		return kind;
-	}
+    public TokenKind getKind() {
+        return kind;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("[").append(kind.toString());
-		if (kind.hasPayload()) {
-			s.append(":").append(data);
-		}
-		s.append("]");
-		s.append("(").append(startPos).append(",").append(endPos).append(")");
-		return s.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("[").append(kind.toString());
+        if (kind.hasPayload()) {
+            s.append(":").append(data);
+        }
+        s.append("]");
+        s.append("(").append(startPos).append(",").append(endPos).append(")");
+        return s.toString();
+    }
 
-	public boolean isIdentifier() {
-		return kind == TokenKind.IDENTIFIER;
-	}
+    public boolean isIdentifier() {
+        return kind == TokenKind.IDENTIFIER;
+    }
 
-	public String stringValue() {
-		return data;
-	}
+    public String stringValue() {
+        return data;
+    }
 
-	@Override
-	public int hashCode() {
-		return this.kind.ordinal() * 37 + (this.startPos + this.endPos) * 37 +
-				(this.kind.hasPayload() ? this.data.hashCode() : 0);
-	}
+    @Override
+    public int hashCode() {
+        return this.kind.ordinal() * 37 + (this.startPos + this.endPos) * 37 +
+                (this.kind.hasPayload() ? this.data.hashCode() : 0);
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Token)) {
-			return false;
-		}
-		Token token = (Token) o;
-		boolean basicMatch = this.kind == token.kind &&
-				this.startPos == token.startPos && this.endPos == token.endPos;
-		if (!basicMatch)
-			return false;
-		if (this.kind.hasPayload()) {
-			if (!this.data.equals(token.data)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Token)) {
+            return false;
+        }
+        Token token = (Token) o;
+        boolean basicMatch = this.kind == token.kind &&
+                this.startPos == token.startPos && this.endPos == token.endPos;
+        if (!basicMatch)
+            return false;
+        if (this.kind.hasPayload()) {
+            if (!this.data.equals(token.data)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public boolean isKind(TokenKind desiredKind) {
-		return kind == desiredKind;
-	}
+    public boolean isKind(TokenKind desiredKind) {
+        return kind == desiredKind;
+    }
 }

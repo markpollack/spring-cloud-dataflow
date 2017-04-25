@@ -32,37 +32,37 @@ import org.springframework.util.ObjectUtils;
  */
 public class DataFlowAppRegistryPopulator implements InitializingBean, ResourceLoaderAware {
 
-	private final AppRegistry registry;
+    private final AppRegistry registry;
 
-	private final String[] locations;
+    private final String[] locations;
 
-	private ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
-	/**
-	 * Populates a {@link org.springframework.cloud.dataflow.registry.AppRegistry} on startup.
-	 *
-	 * @param registry the {@link UriRegistry} to populate
-	 * @param locations the properties file(s) listing apps to import into the registry
-	 */
-	public DataFlowAppRegistryPopulator(AppRegistry registry, String... locations) {
-		Assert.notNull(registry, "UriRegistry must not be null");
-		this.registry = registry;
-		this.locations = locations;
-	}
+    /**
+     * Populates a {@link org.springframework.cloud.dataflow.registry.AppRegistry} on startup.
+     *
+     * @param registry  the {@link UriRegistry} to populate
+     * @param locations the properties file(s) listing apps to import into the registry
+     */
+    public DataFlowAppRegistryPopulator(AppRegistry registry, String... locations) {
+        Assert.notNull(registry, "UriRegistry must not be null");
+        this.registry = registry;
+        this.locations = locations;
+    }
 
-	@Override
-	public void afterPropertiesSet() {
-		if (!ObjectUtils.isEmpty(this.locations)) {
-			Resource[] resources = new Resource[locations.length];
-			for (int i = 0; i < resources.length; i++) {
-				resources[i] = resourceLoader.getResource(locations[i]);
-			}
-			registry.importAll(true, resources);
-		}
-	}
+    @Override
+    public void afterPropertiesSet() {
+        if (!ObjectUtils.isEmpty(this.locations)) {
+            Resource[] resources = new Resource[locations.length];
+            for (int i = 0; i < resources.length; i++) {
+                resources[i] = resourceLoader.getResource(locations[i]);
+            }
+            registry.importAll(true, resources);
+        }
+    }
 
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 }

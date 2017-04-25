@@ -17,7 +17,6 @@
 package org.springframework.cloud.dataflow.rest.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.cloud.dataflow.rest.Version;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -29,22 +28,22 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class RootResource extends ResourceSupport {
 
-	private Integer apiRevision;
+    private Integer apiRevision;
 
-	// For JSON un-marshalling
-	private RootResource() {
-	}
+    // For JSON un-marshalling
+    private RootResource() {
+    }
 
-	public RootResource(int apiRevision) {
-		this.apiRevision = apiRevision;
-	}
+    public RootResource(int apiRevision) {
+        this.apiRevision = apiRevision;
+    }
 
-	@JsonProperty(Version.REVISION_KEY)
-	public Integer getApiRevision() {
-		return apiRevision;
-	}
+    @JsonProperty(Version.REVISION_KEY)
+    public Integer getApiRevision() {
+        return apiRevision;
+    }
 
-	public void setApiRevision(int apiRevision) {
-		this.apiRevision = apiRevision;
-	}
+    public void setApiRevision(int apiRevision) {
+        this.apiRevision = apiRevision;
+    }
 }

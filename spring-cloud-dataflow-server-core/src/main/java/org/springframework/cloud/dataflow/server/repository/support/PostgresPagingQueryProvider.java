@@ -25,11 +25,11 @@ import org.springframework.data.domain.Pageable;
  */
 public class PostgresPagingQueryProvider extends AbstractSqlPagingQueryProvider {
 
-	@Override
-	public String getPageQuery(Pageable pageable) {
-		String limitClause = new StringBuilder().append("LIMIT ").
-				append(pageable.getPageSize()).append(" OFFSET ").
-				append(pageable.getOffset()).toString();
-		return SqlPagingQueryUtils.generateLimitJumpToQuery(this, limitClause);
-	}
+    @Override
+    public String getPageQuery(Pageable pageable) {
+        String limitClause = new StringBuilder().append("LIMIT ").
+                append(pageable.getPageSize()).append(" OFFSET ").
+                append(pageable.getOffset()).toString();
+        return SqlPagingQueryUtils.generateLimitJumpToQuery(this, limitClause);
+    }
 }

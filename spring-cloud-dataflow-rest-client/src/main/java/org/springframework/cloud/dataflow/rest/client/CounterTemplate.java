@@ -29,31 +29,31 @@ import org.springframework.web.client.RestTemplate;
  */
 public class CounterTemplate implements CounterOperations {
 
-	public static final String COUNTERS_COLLECTION_RELATION = "counters";
+    public static final String COUNTERS_COLLECTION_RELATION = "counters";
 
-	public static final String COUNTER_RELATION = "counters/counter";
+    public static final String COUNTER_RELATION = "counters/counter";
 
-	private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-	private final ResourceSupport links;
+    private final ResourceSupport links;
 
-	public CounterTemplate(RestTemplate restTemplate, ResourceSupport resources) {
-		this.restTemplate = restTemplate;
-		links = resources;
-	}
+    public CounterTemplate(RestTemplate restTemplate, ResourceSupport resources) {
+        this.restTemplate = restTemplate;
+        links = resources;
+    }
 
-	@Override
-	public CounterResource retrieve(String name) {
-		return restTemplate.getForObject(links.getLink(COUNTER_RELATION).expand(name).getHref(), CounterResource.class);
-	}
+    @Override
+    public CounterResource retrieve(String name) {
+        return restTemplate.getForObject(links.getLink(COUNTER_RELATION).expand(name).getHref(), CounterResource.class);
+    }
 
-	@Override
-	public PagedResources<MetricResource> list() {
-		return restTemplate.getForObject(links.getLink(COUNTERS_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
-	}
+    @Override
+    public PagedResources<MetricResource> list() {
+        return restTemplate.getForObject(links.getLink(COUNTERS_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
+    }
 
-	@Override
-	public void reset(String name) {
-		restTemplate.delete(links.getLink(COUNTER_RELATION).expand(name).getHref());
-	}
+    @Override
+    public void reset(String name) {
+        restTemplate.delete(links.getLink(COUNTER_RELATION).expand(name).getHref());
+    }
 }

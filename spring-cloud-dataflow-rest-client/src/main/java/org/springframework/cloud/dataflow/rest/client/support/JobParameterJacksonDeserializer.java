@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.batch.core.JobParameter;
 
 
@@ -39,45 +38,41 @@ import org.springframework.batch.core.JobParameter;
  */
 public class JobParameterJacksonDeserializer extends JsonDeserializer<JobParameter> {
 
-	private final Logger logger = LoggerFactory.getLogger(JobParameterJacksonDeserializer.class);
+    private final Logger logger = LoggerFactory.getLogger(JobParameterJacksonDeserializer.class);
 
-	@Override
-	public JobParameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-			throws IOException,
-			JsonProcessingException {
-		ObjectCodec oc = jsonParser.getCodec();
-		JsonNode node = oc.readTree(jsonParser);
+    @Override
+    public JobParameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+            throws IOException,
+            JsonProcessingException {
+        ObjectCodec oc = jsonParser.getCodec();
+        JsonNode node = oc.readTree(jsonParser);
 
-		final String value = node.get("value").asText();
-		final boolean identifying = node.get("identifying").asBoolean();
-		final String type = node.get("type").asText();
+        final String value = node.get("value").asText();
+        final boolean identifying = node.get("identifying").asBoolean();
+        final String type = node.get("type").asText();
 
-		final JobParameter jobParameter;
+        final JobParameter jobParameter;
 
-		if (!type.isEmpty() && !type.equalsIgnoreCase("STRING")) {
-			if ("DATE".equalsIgnoreCase(type)) {
-				//TODO: when upgraded to Java8 use java DateTime
-				jobParameter = new JobParameter(DateTime.parse(value).toDate(), identifying);
-			}
-			else if ("DOUBLE".equalsIgnoreCase(type)) {
-				jobParameter = new JobParameter(Double.valueOf(value), identifying);
-			}
-			else if ("LONG".equalsIgnoreCase(type)) {
-				jobParameter = new JobParameter(Long.valueOf(value), identifying);
-			}
-			else {
-				throw new IllegalStateException("Unsupported JobParameter type: " + type);
-			}
-		}
-		else {
-			jobParameter = new JobParameter(value, identifying);
-		}
+        if (!type.isEmpty() && !type.equalsIgnoreCase("STRING")) {
+            if ("DATE".equalsIgnoreCase(type)) {
+                //TODO: when upgraded to Java8 use java DateTime
+                jobParameter = new JobParameter(DateTime.parse(value).toDate(), identifying);
+            } else if ("DOUBLE".equalsIgnoreCase(type)) {
+                jobParameter = new JobParameter(Double.valueOf(value), identifying);
+            } else if ("LONG".equalsIgnoreCase(type)) {
+                jobParameter = new JobParameter(Long.valueOf(value), identifying);
+            } else {
+                throw new IllegalStateException("Unsupported JobParameter type: " + type);
+            }
+        } else {
+            jobParameter = new JobParameter(value, identifying);
+        }
 
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("jobParameter - value: %s (type: %s, isIdentifying: %s)",
-					jobParameter.getValue(), jobParameter.getType().name(), jobParameter.isIdentifying()));
-		}
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("jobParameter - value: %s (type: %s, isIdentifying: %s)",
+                    jobParameter.getValue(), jobParameter.getType().name(), jobParameter.isIdentifying()));
+        }
 
-		return jobParameter;
-	}
+        return jobParameter;
+    }
 }

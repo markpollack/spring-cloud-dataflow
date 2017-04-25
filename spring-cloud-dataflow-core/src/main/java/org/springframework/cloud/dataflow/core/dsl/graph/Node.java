@@ -33,79 +33,78 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_EMPTY)
 public class Node {
 
-	public static final String METADATA_LABEL = "label";
+    public static final String METADATA_LABEL = "label";
 
-	public String id;
+    public String id;
 
-	public String name;
+    public String name;
 
-	// Properties are those supported by the node
-	public Map<String, String> properties;
-	
-	// Metadata is other information about the node (e.g. any label in use)
-	public Map<String, String> metadata;
+    // Properties are those supported by the node
+    public Map<String, String> properties;
 
-	Node() {
-	}
+    // Metadata is other information about the node (e.g. any label in use)
+    public Map<String, String> metadata;
 
-	public Node(String id, String name) {
-		this.id = id;
-		this.name = name;
-		this.properties = null;
-	}
+    Node() {
+    }
 
-	public Node(String id, String name, Map<String, String> properties) {
-		this.id = id;
-		this.name = name;
-		this.properties = properties;
-	}
+    public Node(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.properties = null;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("Node[id=").append(id).append(",name=").append(name);
-		if (properties != null) {
-			s.append(",properties=").append(properties);
-		}
-		s.append("]");
-		return s.toString();
-	}
+    public Node(String id, String name, Map<String, String> properties) {
+        this.id = id;
+        this.name = name;
+        this.properties = properties;
+    }
 
-	@JsonIgnore
-	public boolean isStart() {
-		return name.equals("START");
-	}
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Node[id=").append(id).append(",name=").append(name);
+        if (properties != null) {
+            s.append(",properties=").append(properties);
+        }
+        s.append("]");
+        return s.toString();
+    }
 
-	@JsonIgnore
-	public boolean isEnd() {
-		return name.equals("END");
-	}
+    @JsonIgnore
+    public boolean isStart() {
+        return name.equals("START");
+    }
 
-	@JsonIgnore
-	public boolean isFail() {
-		return name.equals("FAIL");
-	}
+    @JsonIgnore
+    public boolean isEnd() {
+        return name.equals("END");
+    }
 
-	@JsonIgnore
-	public boolean isSync() {
-		return name.equals("SYNC");
-	}
+    @JsonIgnore
+    public boolean isFail() {
+        return name.equals("FAIL");
+    }
 
-	@JsonIgnore
-	public void setLabel(String label) {
-		if (metadata == null) {
-			metadata = new HashMap<>();
-		}
-		metadata.put(METADATA_LABEL, label);
-	}
-	
-	@JsonIgnore
-	public String getLabel() {
-		if (metadata == null) {
-			return null;
-		}
-		else {
-			return metadata.get(METADATA_LABEL);
-		}
-	}
+    @JsonIgnore
+    public boolean isSync() {
+        return name.equals("SYNC");
+    }
+
+    @JsonIgnore
+    public String getLabel() {
+        if (metadata == null) {
+            return null;
+        } else {
+            return metadata.get(METADATA_LABEL);
+        }
+    }
+
+    @JsonIgnore
+    public void setLabel(String label) {
+        if (metadata == null) {
+            metadata = new HashMap<>();
+        }
+        metadata.put(METADATA_LABEL, label);
+    }
 }

@@ -32,58 +32,62 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface TaskOperations {
 
-	/**
-	 * @return the list tasks known to the system.
-	 */
-	PagedResources<TaskDefinitionResource> list();
+    /**
+     * @return the list tasks known to the system.
+     */
+    PagedResources<TaskDefinitionResource> list();
 
-	/**
-	 * Create a new task definition
-	 * @param name the name of the task
-	 * @param definition the task definition DSL
-	 * @return the task definition
-	 */
-	TaskDefinitionResource create(String name, String definition);
+    /**
+     * Create a new task definition
+     *
+     * @param name       the name of the task
+     * @param definition the task definition DSL
+     * @return the task definition
+     */
+    TaskDefinitionResource create(String name, String definition);
 
-	/**
-	 * Launch an already created task.
-	 * @param name the name of the task
-	 * @param properties the deployment properties
-	 * @param arguments the command line arguments
-	 * @return long containing the TaskExecutionId
-	 */
-	long launch(String name, Map<String, String> properties, List<String> arguments);
+    /**
+     * Launch an already created task.
+     *
+     * @param name       the name of the task
+     * @param properties the deployment properties
+     * @param arguments  the command line arguments
+     * @return long containing the TaskExecutionId
+     */
+    long launch(String name, Map<String, String> properties, List<String> arguments);
 
-	/**
-	 * Destroy an existing task.
-	 * @param name the name of the task
-	 */
-	void destroy(String name);
+    /**
+     * Destroy an existing task.
+     *
+     * @param name the name of the task
+     */
+    void destroy(String name);
 
-	/**
-	 * @return the list task executions known to the system.
-	 */
-	PagedResources<TaskExecutionResource> executionList();
+    /**
+     * @return the list task executions known to the system.
+     */
+    PagedResources<TaskExecutionResource> executionList();
 
-	/**
-	 * List task executions known to the system filtered by task name.
-	 * @param taskName of the executions.
-	 * @return the paged list of task executions for the given task name
-	 */
-	PagedResources<TaskExecutionResource> executionListByTaskName(String taskName);
+    /**
+     * List task executions known to the system filtered by task name.
+     *
+     * @param taskName of the executions.
+     * @return the paged list of task executions for the given task name
+     */
+    PagedResources<TaskExecutionResource> executionListByTaskName(String taskName);
 
-	/**
-	 * Return the {@link TaskExecutionResource} for the id specified.
-	 *
-	 * @param id identifier of the task execution
-	 * @return {@link TaskExecutionResource}
-	 */
-	TaskExecutionResource taskExecutionStatus(long id);
+    /**
+     * Return the {@link TaskExecutionResource} for the id specified.
+     *
+     * @param id identifier of the task execution
+     * @return {@link TaskExecutionResource}
+     */
+    TaskExecutionResource taskExecutionStatus(long id);
 
-	/**
-	 * Cleanup any resources associated with the execution for the id specified.
-	 *
-	 * @param id identifier of the task execution
-	 */
-	void cleanup(long id);
+    /**
+     * Cleanup any resources associated with the execution for the id specified.
+     *
+     * @param id identifier of the task execution
+     */
+    void cleanup(long id);
 }

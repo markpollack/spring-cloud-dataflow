@@ -18,7 +18,6 @@ package org.springframework.cloud.dataflow.shell.config;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.cloud.dataflow.rest.client.AggregateCounterOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.shell.Target;
@@ -27,107 +26,105 @@ import org.springframework.cloud.dataflow.shell.command.support.OpsType;
 import org.springframework.cloud.dataflow.shell.command.support.RoleType;
 
 /**
- *
  * @author Gunnar Hillert
- *
  */
 public class DataFlowShellTests {
 
-	@Test
-	public void testHasAccessWithNoOperation() {
-		final DataFlowShell dataFlowShell = new DataFlowShell();
-		dataFlowShell.setDataFlowOperations(null);
+    @Test
+    public void testHasAccessWithNoOperation() {
+        final DataFlowShell dataFlowShell = new DataFlowShell();
+        dataFlowShell.setDataFlowOperations(null);
 
-		Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+        Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
 
-	}
+    }
 
-	@Test
-	public void testHasAccessWithOperations() {
-		final Target target = new Target("http://myUri");
+    @Test
+    public void testHasAccessWithOperations() {
+        final Target target = new Target("http://myUri");
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
 
-	}
+    }
 
-	@Test
-	public void testHasAccessWithOperationsAndNullRole() {
-		final Target target = new Target("http://myUri");
+    @Test
+    public void testHasAccessWithOperationsAndNullRole() {
+        final Target target = new Target("http://myUri");
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertTrue(dataFlowShell.hasAccess(null, OpsType.AGGREGATE_COUNTER));
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertTrue(dataFlowShell.hasAccess(null, OpsType.AGGREGATE_COUNTER));
 
-	}
+    }
 
-	@Test
-	public void testHasAccessWithOperationsAndAuthenticationEnabledButNotAuthenticated() {
-		final Target target = new Target("http://myUri");
-		target.setAuthenticationEnabled(true);
+    @Test
+    public void testHasAccessWithOperationsAndAuthenticationEnabledButNotAuthenticated() {
+        final Target target = new Target("http://myUri");
+        target.setAuthenticationEnabled(true);
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
 
-	}
+    }
 
-	@Test
-	public void testHasAccessWithOperationsAndAuthenticationEnabledAndAuthenticated() {
-		final Target target = new Target("http://myUri", "username", "password", true);
-		target.getTargetCredentials().getRoles().add(RoleType.VIEW);
-		target.setAuthenticationEnabled(true);
-		target.setAuthenticated(true);
+    @Test
+    public void testHasAccessWithOperationsAndAuthenticationEnabledAndAuthenticated() {
+        final Target target = new Target("http://myUri", "username", "password", true);
+        target.getTargetCredentials().getRoles().add(RoleType.VIEW);
+        target.setAuthenticationEnabled(true);
+        target.setAuthenticated(true);
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
-	}
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+    }
 
-	@Test
-	public void testHasWrongRoleWithOperationsAndAuthenticationEnabledAndAuthenticated() {
+    @Test
+    public void testHasWrongRoleWithOperationsAndAuthenticationEnabledAndAuthenticated() {
 
-		final Target target = new Target("http://myUri", "username", "password", true);
-		target.getTargetCredentials().getRoles().add(RoleType.CREATE);
-		target.setAuthenticationEnabled(true);
-		target.setAuthenticated(true);
+        final Target target = new Target("http://myUri", "username", "password", true);
+        target.getTargetCredentials().getRoles().add(RoleType.CREATE);
+        target.setAuthenticationEnabled(true);
+        target.setAuthenticated(true);
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
-	}
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertFalse(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+    }
 
-	@Test
-	public void testHasNullRoleWithOperationsAndAuthenticationEnabledAndAuthenticated() {
+    @Test
+    public void testHasNullRoleWithOperationsAndAuthenticationEnabledAndAuthenticated() {
 
-		final Target target = new Target("http://myUri", "username", "password", true);
-		target.getTargetCredentials().getRoles().add(RoleType.CREATE);
-		target.setAuthenticationEnabled(true);
-		target.setAuthenticated(true);
+        final Target target = new Target("http://myUri", "username", "password", true);
+        target.getTargetCredentials().getRoles().add(RoleType.CREATE);
+        target.setAuthenticationEnabled(true);
+        target.setAuthenticated(true);
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertTrue(dataFlowShell.hasAccess(null, OpsType.AGGREGATE_COUNTER));
-	}
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertTrue(dataFlowShell.hasAccess(null, OpsType.AGGREGATE_COUNTER));
+    }
 
-	@Test
-	public void testHasAccessWithOperationsAndAuthenticationEnabledAndAuthenticatedAndAuthorizationDisabled() {
-		final Target target = new Target("http://myUri", "username", "password", true);
-		target.getTargetCredentials().getRoles().add(RoleType.CREATE);
-		target.setAuthenticationEnabled(true);
-		target.setAuthenticated(true);
-		target.setAuthorizationEnabled(false);
+    @Test
+    public void testHasAccessWithOperationsAndAuthenticationEnabledAndAuthenticatedAndAuthorizationDisabled() {
+        final Target target = new Target("http://myUri", "username", "password", true);
+        target.getTargetCredentials().getRoles().add(RoleType.CREATE);
+        target.setAuthenticationEnabled(true);
+        target.setAuthenticated(true);
+        target.setAuthorizationEnabled(false);
 
-		final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
-		Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
-	}
+        final DataFlowShell dataFlowShell = prepareDataFlowShellWithAggregateCounterOperations(target);
+        Assert.assertTrue(dataFlowShell.hasAccess(RoleType.VIEW, OpsType.AGGREGATE_COUNTER));
+    }
 
-	private DataFlowShell prepareDataFlowShellWithAggregateCounterOperations(Target target) {
-		final DataFlowShell dataFlowShell = new DataFlowShell();
+    private DataFlowShell prepareDataFlowShellWithAggregateCounterOperations(Target target) {
+        final DataFlowShell dataFlowShell = new DataFlowShell();
 
-		final DataFlowOperations dataFlowOperations = Mockito.mock(DataFlowOperations.class);
-		final AggregateCounterOperations aggregateCounterOperations = Mockito.mock(AggregateCounterOperations.class);
-		Mockito.when(dataFlowOperations.aggregateCounterOperations()).thenReturn(aggregateCounterOperations);
-		dataFlowShell.setDataFlowOperations(dataFlowOperations);
+        final DataFlowOperations dataFlowOperations = Mockito.mock(DataFlowOperations.class);
+        final AggregateCounterOperations aggregateCounterOperations = Mockito.mock(AggregateCounterOperations.class);
+        Mockito.when(dataFlowOperations.aggregateCounterOperations()).thenReturn(aggregateCounterOperations);
+        dataFlowShell.setDataFlowOperations(dataFlowOperations);
 
-		final TargetHolder targetHolder = new TargetHolder();
-		targetHolder.setTarget(target);
-		dataFlowShell.setTargetHolder(targetHolder);
-		return dataFlowShell;
-	}
+        final TargetHolder targetHolder = new TargetHolder();
+        targetHolder.setTarget(target);
+        dataFlowShell.setTargetHolder(targetHolder);
+        return dataFlowShell;
+    }
 }

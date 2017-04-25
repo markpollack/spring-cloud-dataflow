@@ -16,7 +16,6 @@
 package org.springframework.cloud.dataflow.server.config.security;
 
 import org.junit.Test;
-
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.dataflow.server.config.security.support.OnSecurityEnabledAndOAuth2Enabled;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -28,103 +27,101 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
-*
-* @author Gunnar Hillert
-*
-*/
+ * @author Gunnar Hillert
+ */
 public class OnSecurityEnabledAndOAuth2EnabledTests {
 
-	@Test
-	public void neither() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class);
-		assertThat(context.containsBean("myBean"), equalTo(false));
-		context.close();
-	}
+    @Test
+    public void neither() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class);
+        assertThat(context.containsBean("myBean"), equalTo(false));
+        context.close();
+    }
 
-	@Test
-	public void propertySecurityEnabled() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class, "security.basic.enabled:true");
-		assertThat(context.containsBean("myBean"), equalTo(false));
-		context.close();
-	}
+    @Test
+    public void propertySecurityEnabled() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class, "security.basic.enabled:true");
+        assertThat(context.containsBean("myBean"), equalTo(false));
+        context.close();
+    }
 
-	@Test
-	public void propertySecurityOauth() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class, "security.oauth2");
-		assertThat(context.containsBean("myBean"), equalTo(false));
-		context.close();
-	}
+    @Test
+    public void propertySecurityOauth() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class, "security.oauth2");
+        assertThat(context.containsBean("myBean"), equalTo(false));
+        context.close();
+    }
 
-	@Test
-	public void both() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.basic.enabled:true", "security.oauth2");
-		assertThat(context.containsBean("myBean"), equalTo(false));
-		context.close();
-	}
+    @Test
+    public void both() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.basic.enabled:true", "security.oauth2");
+        assertThat(context.containsBean("myBean"), equalTo(false));
+        context.close();
+    }
 
-	@Test
-	public void both2() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.basic.enabled:true", "security.oauth2.client.client-id:12345");
-		assertThat(context.containsBean("myBean"), equalTo(true));
-		context.close();
-	}
+    @Test
+    public void both2() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.basic.enabled:true", "security.oauth2.client.client-id:12345");
+        assertThat(context.containsBean("myBean"), equalTo(true));
+        context.close();
+    }
 
-	@Test
-	public void clientIdOnly() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.oauth2.client.client-id:12345");
-		assertThat(context.containsBean("myBean"), equalTo(true));
-		context.close();
-	}
+    @Test
+    public void clientIdOnly() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.oauth2.client.client-id:12345");
+        assertThat(context.containsBean("myBean"), equalTo(true));
+        context.close();
+    }
 
-	@Test
-	public void clientIdOnlyWithNoValue() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.oauth2.client.client-id");
-		assertThat(context.containsBean("myBean"), equalTo(true));
-		context.close();
-	}
+    @Test
+    public void clientIdOnlyWithNoValue() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.oauth2.client.client-id");
+        assertThat(context.containsBean("myBean"), equalTo(true));
+        context.close();
+    }
 
-	@Test
-	public void both3() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.basic.enabled:true", "security.oauth2.client.client-id");
-		assertThat(context.containsBean("myBean"), equalTo(true));
-		context.close();
-	}
+    @Test
+    public void both3() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.basic.enabled:true", "security.oauth2.client.client-id");
+        assertThat(context.containsBean("myBean"), equalTo(true));
+        context.close();
+    }
 
-	@Test
-	public void oneTrueOneFalse() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.basic.enabled:false", "security.oauth2");
-		assertThat(context.containsBean("myBean"), equalTo(false));
-		context.close();
-	}
+    @Test
+    public void oneTrueOneFalse() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.basic.enabled:false", "security.oauth2");
+        assertThat(context.containsBean("myBean"), equalTo(false));
+        context.close();
+    }
 
-	@Test
-	public void oneTrueOneFalse2() throws Exception {
-		AnnotationConfigApplicationContext context = load(Config.class,
-			"security.basic.enabled:false", "security.oauth2.client.client-id:12345");
-		assertThat(context.containsBean("myBean"), equalTo(true));
-		context.close();
-	}
+    @Test
+    public void oneTrueOneFalse2() throws Exception {
+        AnnotationConfigApplicationContext context = load(Config.class,
+                "security.basic.enabled:false", "security.oauth2.client.client-id:12345");
+        assertThat(context.containsBean("myBean"), equalTo(true));
+        context.close();
+    }
 
-	@Configuration
-	@Conditional(OnSecurityEnabledAndOAuth2Enabled.class)
-	public static class Config {
-		@Bean
-		public String myBean() {
-			return "myBean";
-		}
-	}
+    private AnnotationConfigApplicationContext load(Class<?> config, String... env) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(context, env);
+        context.register(config);
+        context.refresh();
+        return context;
+    }
 
-	private AnnotationConfigApplicationContext load(Class<?> config, String... env) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, env);
-		context.register(config);
-		context.refresh();
-		return context;
-	}
+    @Configuration
+    @Conditional(OnSecurityEnabledAndOAuth2Enabled.class)
+    public static class Config {
+        @Bean
+        public String myBean() {
+            return "myBean";
+        }
+    }
 }

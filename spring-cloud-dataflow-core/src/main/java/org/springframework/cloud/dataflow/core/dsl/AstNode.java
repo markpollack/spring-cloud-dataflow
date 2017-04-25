@@ -23,29 +23,29 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public abstract class AstNode {
 
-	protected int startPos;
+    protected int startPos;
 
-	protected int endPos;
+    protected int endPos;
 
-	public AstNode(int startPos, int endPos) {
-		this.startPos = startPos;
-		this.endPos = endPos;
-	}
+    public AstNode(int startPos, int endPos) {
+        this.startPos = startPos;
+        this.endPos = endPos;
+    }
 
-	public int getStartPos() {
-		return startPos;
-	}
+    public int getStartPos() {
+        return startPos;
+    }
 
-	public int getEndPos() {
-		return endPos;
-	}
+    public int getEndPos() {
+        return endPos;
+    }
 
-	/**
-	 * @return a string representation of the AST. Useful for debugging/testing.
-	 */
-	public abstract String stringify(boolean includePositionInfo);
+    /**
+     * @return a string representation of the AST. Useful for debugging/testing.
+     */
+    public abstract String stringify(boolean includePositionInfo);
 
-	public String stringify() {
-		return stringify(false);
-	}
+    public String stringify() {
+        return stringify(false);
+    }
 }

@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import org.h2.tools.Server;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -69,72 +68,72 @@ import static org.springframework.hateoas.config.EnableHypermediaSupport.Hyperme
 @EnableSpringDataWebSupport
 @Configuration
 @Import({CompletionConfiguration.class, FeaturesConfiguration.class, WebConfiguration.class,
-		BasicAuthSecurityConfiguration.class, FileAuthenticationConfiguration.class,
-		DefaultBootUserAuthenticationConfiguration.class,
-		LdapAuthenticationConfiguration.class, OAuthSecurityConfiguration.class})
+        BasicAuthSecurityConfiguration.class, FileAuthenticationConfiguration.class,
+        DefaultBootUserAuthenticationConfiguration.class,
+        LdapAuthenticationConfiguration.class, OAuthSecurityConfiguration.class})
 @EnableConfigurationProperties({BatchProperties.class, CommonApplicationProperties.class})
 public class DataFlowServerConfiguration {
 
-	@Configuration
-	@ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing = true)
-	@ConditionalOnExpression("#{'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:')}")
-	public static class H2ServerConfiguration {
+    @Configuration
+    @ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnExpression("#{'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:')}")
+    public static class H2ServerConfiguration {
 
-		private static final org.slf4j.Logger logger = LoggerFactory.getLogger(H2ServerConfiguration.class);
+        private static final org.slf4j.Logger logger = LoggerFactory.getLogger(H2ServerConfiguration.class);
 
-		@Value("${spring.datasource.url:#{null}}")
-		private String dataSourceUrl;
+        @Value("${spring.datasource.url:#{null}}")
+        private String dataSourceUrl;
 
-		@Bean(destroyMethod = "stop")
-		public Server initH2TCPServer() {
-			Server server = null;
-			logger.info("Starting H2 Server with URL: " + dataSourceUrl);
-			try {
-				server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort",
-						getH2Port(dataSourceUrl)).start();
-			} catch (SQLException e) {
-				throw new IllegalStateException(e);
-			}
-			return server;
-		}
+        @Bean(destroyMethod = "stop")
+        public Server initH2TCPServer() {
+            Server server = null;
+            logger.info("Starting H2 Server with URL: " + dataSourceUrl);
+            try {
+                server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort",
+                        getH2Port(dataSourceUrl)).start();
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }
+            return server;
+        }
 
-		private String getH2Port(String url) {
-			String[] tokens = StringUtils.tokenizeToStringArray(url, ":");
-			Assert.isTrue(tokens.length >= 5, "URL not properly formatted");
-			return tokens[4].substring(0, tokens[4].indexOf("/"));
-		}
+        private String getH2Port(String url) {
+            String[] tokens = StringUtils.tokenizeToStringArray(url, ":");
+            Assert.isTrue(tokens.length >= 5, "URL not properly formatted");
+            return tokens[4].substring(0, tokens[4].indexOf("/"));
+        }
 
-		@Bean
-		@DependsOn("initH2TCPServer")
-		public DataSourceTransactionManager transactionManagerForServer(DataSource dataSource) {
-			return new DataSourceTransactionManager(dataSource);
-		}
+        @Bean
+        @DependsOn("initH2TCPServer")
+        public DataSourceTransactionManager transactionManagerForServer(DataSource dataSource) {
+            return new DataSourceTransactionManager(dataSource);
+        }
 
-		@Bean
-		@DependsOn("initH2TCPServer")
-		public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
-			DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
-			dataflowRdbmsInitializer.setDataSource(dataSource);
-			return dataflowRdbmsInitializer;
-		}
-	}
+        @Bean
+        @DependsOn("initH2TCPServer")
+        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
+            DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
+            dataflowRdbmsInitializer.setDataSource(dataSource);
+            return dataflowRdbmsInitializer;
+        }
+    }
 
-	@Configuration
-	@ConditionalOnExpression("#{!'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:') || " +
-			"('${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:') &&" +
-			"'${spring.dataflow.embedded.database.enabled}'.equals('false'))}")
-	public static class NoH2ServerConfiguration {
+    @Configuration
+    @ConditionalOnExpression("#{!'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:') || " +
+            "('${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:') &&" +
+            "'${spring.dataflow.embedded.database.enabled}'.equals('false'))}")
+    public static class NoH2ServerConfiguration {
 
-		@Bean
-		public DataSourceTransactionManager transactionManager(DataSource dataSource) {
-			return new DataSourceTransactionManager(dataSource);
-		}
+        @Bean
+        public DataSourceTransactionManager transactionManager(DataSource dataSource) {
+            return new DataSourceTransactionManager(dataSource);
+        }
 
-		@Bean
-		public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
-			DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
-			dataflowRdbmsInitializer.setDataSource(dataSource);
-			return dataflowRdbmsInitializer;
-		}
-	}
+        @Bean
+        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
+            DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
+            dataflowRdbmsInitializer.setDataSource(dataSource);
+            return dataflowRdbmsInitializer;
+        }
+    }
 }

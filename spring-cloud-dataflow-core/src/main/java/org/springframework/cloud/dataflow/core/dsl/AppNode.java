@@ -25,100 +25,96 @@ import java.util.Properties;
  */
 public class AppNode extends AstNode {
 
-	private static final ArgumentNode[] NO_ARGUMENTS = new ArgumentNode[0];
+    private static final ArgumentNode[] NO_ARGUMENTS = new ArgumentNode[0];
+    private final String appName;
+    private LabelNode label;
+    private ArgumentNode[] arguments;
 
-	private LabelNode label;
+    public AppNode(LabelNode label, String appName, int startPos, int endPos, ArgumentNode[] arguments) {
+        super(startPos, endPos);
+        this.label = label;
+        this.appName = appName;
+        if (arguments != null) {
+            this.arguments = Arrays.copyOf(arguments, arguments.length);
+            // adjust end pos for app node to end of final argument
+            super.endPos = this.arguments[this.arguments.length - 1].endPos;
+        } else {
+            this.arguments = NO_ARGUMENTS;
+        }
+    }
 
-	private final String appName;
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        if (label != null) {
+            s.append(label.toString());
+            s.append(" ");
+        }
+        s.append(appName);
+        if (arguments != null) {
+            for (ArgumentNode argumentNode : arguments) {
+                s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
+            }
+        }
+        return s.toString();
+    }
 
-	private ArgumentNode[] arguments;
+    @Override
+    public String stringify(boolean includePositionalInfo) {
+        StringBuilder s = new StringBuilder();
+        s.append("(");
+        if (label != null) {
+            s.append(label.stringify(includePositionalInfo));
+            s.append(" ");
+        }
+        s.append("AppNode:").append(appName);
+        if (arguments != null) {
+            for (ArgumentNode argumentNode : arguments) {
+                s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
+            }
+        }
+        if (includePositionalInfo) {
+            s.append(":");
+            s.append(getStartPos()).append(">").append(getEndPos());
+        }
+        s.append(")");
+        return s.toString();
+    }
 
-	public AppNode(LabelNode label, String appName, int startPos, int endPos, ArgumentNode[] arguments) {
-		super(startPos, endPos);
-		this.label = label;
-		this.appName = appName;
-		if (arguments != null) {
-			this.arguments = Arrays.copyOf(arguments, arguments.length);
-			// adjust end pos for app node to end of final argument
-			super.endPos = this.arguments[this.arguments.length - 1].endPos;
-		}
-		else {
-			this.arguments = NO_ARGUMENTS;
-		}
-	}
+    public String getName() {
+        return appName;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		if (label != null) {
-			s.append(label.toString());
-			s.append(" ");
-		}
-		s.append(appName);
-		if (arguments != null) {
-			for (ArgumentNode argumentNode : arguments) {
-				s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
-			}
-		}
-		return s.toString();
-	}
+    public ArgumentNode[] getArguments() {
+        return arguments;
+    }
 
-	@Override
-	public String stringify(boolean includePositionalInfo) {
-		StringBuilder s = new StringBuilder();
-		s.append("(");
-		if (label != null) {
-			s.append(label.stringify(includePositionalInfo));
-			s.append(" ");
-		}
-		s.append("AppNode:").append(appName);
-		if (arguments != null) {
-			for (ArgumentNode argumentNode : arguments) {
-				s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
-			}
-		}
-		if (includePositionalInfo) {
-			s.append(":");
-			s.append(getStartPos()).append(">").append(getEndPos());
-		}
-		s.append(")");
-		return s.toString();
-	}
+    public boolean hasArguments() {
+        return arguments != null;
+    }
 
-	public String getName() {
-		return appName;
-	}
+    /**
+     * Return the label for this app, that is:
+     * <ul>
+     * <li>an explicit label if provided</li>
+     * <li>the app name if no label was provided</li>
+     * </ul>
+     */
+    public String getLabelName() {
+        return (label != null) ? label.getLabelName() : appName;
+    }
 
-	public ArgumentNode[] getArguments() {
-		return arguments;
-	}
-
-	public boolean hasArguments() {
-		return arguments != null;
-	}
-
-	/**
-	 * Return the label for this app, that is:
-	 * <ul>
-	 * <li>an explicit label if provided</li>
-	 * <li>the app name if no label was provided</li>
-	 * </ul>
-	 */
-	public String getLabelName() {
-		return (label != null) ? label.getLabelName() : appName;
-	}
-
-	/**
-	 * @return Retrieve the app arguments as a simple {@link java.util.Properties} object.
-	 */
-	public Properties getArgumentsAsProperties() {
-		Properties props = new Properties();
-		if (arguments != null) {
-			for (ArgumentNode argumentNode : arguments) {
-				props.put(argumentNode.getName(), argumentNode.getValue());
-			}
-		}
-		return props;
-	}
+    /**
+     * @return Retrieve the app arguments as a simple {@link java.util.Properties} object.
+     */
+    public Properties getArgumentsAsProperties() {
+        Properties props = new Properties();
+        if (arguments != null) {
+            for (ArgumentNode argumentNode : arguments) {
+                props.put(argumentNode.getName(), argumentNode.getValue());
+            }
+        }
+        return props;
+    }
 
 }

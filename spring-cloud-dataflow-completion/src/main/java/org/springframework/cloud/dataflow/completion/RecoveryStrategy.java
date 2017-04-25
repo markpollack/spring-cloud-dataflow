@@ -20,28 +20,29 @@ import java.util.List;
 
 /**
  * Used to provide completions on ill-formed stream definitions, after an initial (failed) parse.
- * 
+ *
  * @param <E> the kind of exception that is intercepted during parsing
- * 
  * @author Eric Bottard
  */
 public interface RecoveryStrategy<E extends Exception> {
 
-	/**
-	 * Whether this completion should be triggered.
-	 * @param dslStart the partial DSL text
-	 * @param exception the exception thrown when parsing the DSL text
-	 * @return if proposals to complete the DSL should be provided
-	 */
-	boolean shouldTrigger(String dslStart, Exception exception);
+    /**
+     * Whether this completion should be triggered.
+     *
+     * @param dslStart  the partial DSL text
+     * @param exception the exception thrown when parsing the DSL text
+     * @return if proposals to complete the DSL should be provided
+     */
+    boolean shouldTrigger(String dslStart, Exception exception);
 
-	/**
-	 * Perform code completion by adding proposals to the {@code proposals} list.
-	 * @param dsl the partial DSL text
-	 * @param exception the exception thrown when parsing the DSL text
-	 * @param detailLevel an integer describing the level of detail to include in proposal, starting at 1.
-	 * Higher values request more detail, with values typically in the range [1..5]
-	 * @param proposals the list of completion proposals to show the user
-	 */
-	void addProposals(String dsl, E exception, int detailLevel, List<CompletionProposal> proposals);
+    /**
+     * Perform code completion by adding proposals to the {@code proposals} list.
+     *
+     * @param dsl         the partial DSL text
+     * @param exception   the exception thrown when parsing the DSL text
+     * @param detailLevel an integer describing the level of detail to include in proposal, starting at 1.
+     *                    Higher values request more detail, with values typically in the range [1..5]
+     * @param proposals   the list of completion proposals to show the user
+     */
+    void addProposals(String dsl, E exception, int detailLevel, List<CompletionProposal> proposals);
 }

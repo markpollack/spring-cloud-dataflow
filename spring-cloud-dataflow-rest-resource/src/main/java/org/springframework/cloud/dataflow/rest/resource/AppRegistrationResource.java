@@ -28,65 +28,65 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class AppRegistrationResource extends ResourceSupport {
 
-	/**
-	 * App name.
-	 */
-	private String name;
+    /**
+     * App name.
+     */
+    private String name;
 
-	/**
-	 * App type.
-	 */
-	private String type;
+    /**
+     * App type.
+     */
+    private String type;
 
-	/**
-	 * URI for app resource, such as {@code maven://groupId:artifactId:version}.
-	 */
-	private String uri;
+    /**
+     * URI for app resource, such as {@code maven://groupId:artifactId:version}.
+     */
+    private String uri;
 
-	/**
-	 * Default constructor for serialization frameworks.
-	 */
-	protected AppRegistrationResource() {
-	}
+    /**
+     * Default constructor for serialization frameworks.
+     */
+    protected AppRegistrationResource() {
+    }
 
-	/**
-	 * Construct a {@code AppRegistrationResource}.
-	 *
-	 * @param name app name
-	 * @param type app type
-	 * @param uri uri for app resource
-	 */
-	public AppRegistrationResource(String name, String type, String uri) {
-		this.name = name;
-		this.type = type;
-		this.uri = uri;
-	}
+    /**
+     * Construct a {@code AppRegistrationResource}.
+     *
+     * @param name app name
+     * @param type app type
+     * @param uri  uri for app resource
+     */
+    public AppRegistrationResource(String name, String type, String uri) {
+        this.name = name;
+        this.type = type;
+        this.uri = uri;
+    }
 
-	/**
-	 * @return the name of the app
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the name of the app
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return type type of the app
-	 */
-	public String getType() {
-		return type;
-	}
+    /**
+     * @return type type of the app
+     */
+    public String getType() {
+        return type;
+    }
 
-	/**
-	 * @return type URI for the app resource
-	 */
-	public String getUri() {
-		return uri;
-	}
+    /**
+     * @return type URI for the app resource
+     */
+    public String getUri() {
+        return uri;
+    }
 
-	/**
-	 * Dedicated subclass to workaround type erasure.
-	 */
-	public static class Page extends PagedResources<AppRegistrationResource> {
-	}
+    /**
+     * Dedicated subclass to workaround type erasure.
+     */
+    public static class Page extends PagedResources<AppRegistrationResource> {
+    }
 
 }

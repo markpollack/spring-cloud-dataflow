@@ -26,7 +26,6 @@ import org.hamcrest.FeatureMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.completion.CompletionConfiguration;
@@ -56,113 +55,113 @@ import static org.junit.Assert.assertThat;
  * @author Ilayaperumal Gopinathan
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { CompletionConfiguration.class, TabOnTapCompletionProviderTests.Mocks.class })
+@SpringBootTest(classes = {CompletionConfiguration.class, TabOnTapCompletionProviderTests.Mocks.class})
 public class TabOnTapCompletionProviderTests {
 
-	@Autowired
-	private StreamCompletionProvider completionProvider;
+    @Autowired
+    private StreamCompletionProvider completionProvider;
 
-	@Before
-	public void setup() {
-		StreamDefinitionRepository streamDefinitionRepository = new InMemoryStreamDefinitionRepository();
-		streamDefinitionRepository.save(new StreamDefinition("foo", "time | transform | log"));
-		streamDefinitionRepository.save(new StreamDefinition("bar", "time | log"));
-		completionProvider.addCompletionRecoveryStrategy(new TapOnDestinationRecoveryStrategy(streamDefinitionRepository));
-	}
+    private static org.hamcrest.Matcher<CompletionProposal> proposalThat(org.hamcrest.Matcher<String> matcher) {
+        return new FeatureMatcher<CompletionProposal, String>(matcher, "a proposal whose text", "text") {
+            @Override
+            protected String featureValueOf(CompletionProposal actual) {
+                return actual.getText();
+            }
+        };
+    }
+
+    @Before
+    public void setup() {
+        StreamDefinitionRepository streamDefinitionRepository = new InMemoryStreamDefinitionRepository();
+        streamDefinitionRepository.save(new StreamDefinition("foo", "time | transform | log"));
+        streamDefinitionRepository.save(new StreamDefinition("bar", "time | log"));
+        completionProvider.addCompletionRecoveryStrategy(new TapOnDestinationRecoveryStrategy(streamDefinitionRepository));
+    }
 
     @Test
     // :foo  ==> add appropriate app names
     public void testAppNamesAfterStreamName() {
         assertThat(completionProvider.complete(":foo", 1), hasItems(
-				proposalThat(is(":foo.time")),
-				proposalThat(is(":foo.transform"))
-		));
+                proposalThat(is(":foo.time")),
+                proposalThat(is(":foo.transform"))
+        ));
     }
 
-	@Test
-	// :foo.  ==> add appropriate app names
-	public void testAppNamesAfterStreamNameWithDotAfterStreamName() {
-		assertThat(completionProvider.complete(":foo.", 1), hasItems(
-				proposalThat(is(":foo.time")),
-				proposalThat(is(":foo.transform"))
-		));
-	}
+    @Test
+    // :foo.  ==> add appropriate app names
+    public void testAppNamesAfterStreamNameWithDotAfterStreamName() {
+        assertThat(completionProvider.complete(":foo.", 1), hasItems(
+                proposalThat(is(":foo.time")),
+                proposalThat(is(":foo.transform"))
+        ));
+    }
 
-	@Test
-	// :  ==> add stream name
-	public void testStreamNameAfterColon() {
-		assertThat(completionProvider.complete(":", 1), hasItems(
-				proposalThat(is(":foo")),
-				proposalThat(is(":bar"))
-		));
-	}
+    @Test
+    // :  ==> add stream name
+    public void testStreamNameAfterColon() {
+        assertThat(completionProvider.complete(":", 1), hasItems(
+                proposalThat(is(":foo")),
+                proposalThat(is(":bar"))
+        ));
+    }
 
-	private static org.hamcrest.Matcher<CompletionProposal> proposalThat(org.hamcrest.Matcher<String> matcher) {
-		return new FeatureMatcher<CompletionProposal, String>(matcher, "a proposal whose text", "text") {
-			@Override
-			protected String featureValueOf(CompletionProposal actual) {
-				return actual.getText();
-			}
-		};
-	}
+    /**
+     * A set of mocks that consider the contents of the {@literal apps/} directory as app
+     * archives.
+     *
+     * @author Eric Bottard
+     * @author Mark Fisher
+     */
+    @Configuration
+    public static class Mocks {
 
-	/**
-	 * A set of mocks that consider the contents of the {@literal apps/} directory as app
-	 * archives.
-	 *
-	 * @author Eric Bottard
-	 * @author Mark Fisher
-	 */
-	@Configuration
-	public static class Mocks {
+        private static final File ROOT = new File("src/test/resources/apps");
 
-		private static final File ROOT = new File("src/test/resources/apps");
+        private static final FileFilter FILTER = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory() && pathname.getName().matches(".+-.+");
+            }
+        };
 
-		private static final FileFilter FILTER = new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory() && pathname.getName().matches(".+-.+");
-			}
-		};
+        @Bean
+        public AppRegistry appRegistry() {
+            final ResourceLoader resourceLoader = new FileSystemResourceLoader();
+            return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
+                @Override
+                public AppRegistration find(String name, ApplicationType type) {
+                    String filename = name + "-" + type;
+                    File file = new File(ROOT, filename);
+                    if (file.exists()) {
+                        return new AppRegistration(name, type, file.toURI(), resourceLoader);
+                    } else {
+                        return null;
+                    }
+                }
 
-		@Bean
-		public AppRegistry appRegistry() {
-			final ResourceLoader resourceLoader = new FileSystemResourceLoader();
-			return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
-				@Override
-				public AppRegistration find(String name, ApplicationType type) {
-					String filename = name + "-" + type;
-					File file = new File(ROOT, filename);
-					if (file.exists()) {
-						return new AppRegistration(name, type, file.toURI(), resourceLoader);
-					} else {
-						return null;
-					}
-				}
+                @Override
+                public List<AppRegistration> findAll() {
+                    List<AppRegistration> result = new ArrayList<>();
+                    for (File file : ROOT.listFiles(FILTER)) {
+                        result.add(makeAppRegistration(file));
+                    }
+                    return result;
+                }
 
-				@Override
-				public List<AppRegistration> findAll() {
-					List<AppRegistration> result = new ArrayList<>();
-					for (File file : ROOT.listFiles(FILTER)) {
-						result.add(makeAppRegistration(file));
-					}
-					return result;
-				}
+                private AppRegistration makeAppRegistration(File file) {
+                    String fileName = file.getName();
+                    Matcher matcher = Pattern.compile("(?<name>.+)-(?<type>.+)").matcher(fileName);
+                    Assert.isTrue(matcher.matches());
+                    String name = matcher.group("name");
+                    ApplicationType type = ApplicationType.valueOf(matcher.group("type"));
+                    return new AppRegistration(name, type, file.toURI(), resourceLoader);
+                }
+            };
+        }
 
-				private AppRegistration makeAppRegistration(File file) {
-					String fileName = file.getName();
-					Matcher matcher = Pattern.compile("(?<name>.+)-(?<type>.+)").matcher(fileName);
-					Assert.isTrue(matcher.matches());
-					String name = matcher.group("name");
-					ApplicationType type = ApplicationType.valueOf(matcher.group("type"));
-					return new AppRegistration(name, type, file.toURI(), resourceLoader);
-				}
-			};
-		}
-
-		@Bean
-		public ApplicationConfigurationMetadataResolver configurationMetadataResolver() {
-			return new BootApplicationConfigurationMetadataResolver(null);
-		}
-	}
+        @Bean
+        public ApplicationConfigurationMetadataResolver configurationMetadataResolver() {
+            return new BootApplicationConfigurationMetadataResolver(null);
+        }
+    }
 }

@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.cloud.dataflow.rest.util.HttpUtils;
 import org.springframework.cloud.dataflow.server.config.MetricsProperties;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,103 +45,100 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Implemented via hystrix command having a fallback to empty response.
  *
  * @author Janne Valkealahti
- *
  */
 public class MetricStore {
 
-	private static Log logger = LogFactory.getLog(MetricStore.class);
-	private final RestTemplate restTemplate;
-	private final MetricsProperties metricsProperties;
-	private final static List<ApplicationsMetrics> EMPTY_RESPONSE = new ArrayList<ApplicationsMetrics>();
-	private String collectorEndpoint;
+    private final static List<ApplicationsMetrics> EMPTY_RESPONSE = new ArrayList<ApplicationsMetrics>();
+    private static Log logger = LogFactory.getLog(MetricStore.class);
+    private final RestTemplate restTemplate;
+    private final MetricsProperties metricsProperties;
+    private String collectorEndpoint;
 
-	/**
-	 * Instantiates a new metric store.
-	 *
-	 * @param metricsProperties the metrics properties
-	 */
-	public MetricStore(MetricsProperties metricsProperties) {
-		this.metricsProperties = metricsProperties;
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		mapper.registerModule(new Jackson2HalModule());
-		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-		messageConverter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
-		messageConverter.setObjectMapper(mapper);
-		restTemplate = new RestTemplate(Arrays.asList(messageConverter));
-		String baseURI = metricsProperties.getCollector().getUri();
-		if(StringUtils.hasText(baseURI)){
-			try {
-				URI uri = new URI(baseURI);
-				this.collectorEndpoint = UriComponentsBuilder.fromUri(uri).path("/collector/metrics/streams").build().toString();
-				logger.info("Metrics Collector URI = [" + collectorEndpoint + "]");
-				validateUsernamePassword(metricsProperties.getCollector().getUsername(),
-						metricsProperties.getCollector().getPassword());
-				if (StringUtils.hasText(metricsProperties.getCollector().getUsername()) &&
-						StringUtils.hasText(metricsProperties.getCollector().getPassword())) {
-					HttpUtils.prepareRestTemplate(this.restTemplate, new URI(collectorEndpoint),
-							metricsProperties.getCollector().getUsername(),
-							metricsProperties.getCollector().getPassword(),
-							metricsProperties.getCollector().isSkipSslValidation());
-					logger.debug("Configured basic security for Metrics Collector endpoint");
-				} else {
-					logger.debug("Not configuring basic security for Metrics Collector endpoint");
-				}
-			}
-			catch (URISyntaxException e) {
-				logger.warn("Could not parse collector URI, stream metrics monitoring will not be available");
-			}
-		} else {
-			logger.info("Metrics Collector URI = []");
-		}
-	}
+    /**
+     * Instantiates a new metric store.
+     *
+     * @param metricsProperties the metrics properties
+     */
+    public MetricStore(MetricsProperties metricsProperties) {
+        this.metricsProperties = metricsProperties;
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new Jackson2HalModule());
+        MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+        messageConverter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
+        messageConverter.setObjectMapper(mapper);
+        restTemplate = new RestTemplate(Arrays.asList(messageConverter));
+        String baseURI = metricsProperties.getCollector().getUri();
+        if (StringUtils.hasText(baseURI)) {
+            try {
+                URI uri = new URI(baseURI);
+                this.collectorEndpoint = UriComponentsBuilder.fromUri(uri).path("/collector/metrics/streams").build().toString();
+                logger.info("Metrics Collector URI = [" + collectorEndpoint + "]");
+                validateUsernamePassword(metricsProperties.getCollector().getUsername(),
+                        metricsProperties.getCollector().getPassword());
+                if (StringUtils.hasText(metricsProperties.getCollector().getUsername()) &&
+                        StringUtils.hasText(metricsProperties.getCollector().getPassword())) {
+                    HttpUtils.prepareRestTemplate(this.restTemplate, new URI(collectorEndpoint),
+                            metricsProperties.getCollector().getUsername(),
+                            metricsProperties.getCollector().getPassword(),
+                            metricsProperties.getCollector().isSkipSslValidation());
+                    logger.debug("Configured basic security for Metrics Collector endpoint");
+                } else {
+                    logger.debug("Not configuring basic security for Metrics Collector endpoint");
+                }
+            } catch (URISyntaxException e) {
+                logger.warn("Could not parse collector URI, stream metrics monitoring will not be available");
+            }
+        } else {
+            logger.info("Metrics Collector URI = []");
+        }
+    }
 
-	@HystrixCommand(fallbackMethod = "defaultMetrics")
-	public List<ApplicationsMetrics> getMetrics() {
-		List<ApplicationsMetrics> metrics = null;
-		if (StringUtils.hasText(this.collectorEndpoint)) {
-			try {
-				PagedResources<ApplicationsMetrics> response = restTemplate.exchange(this.collectorEndpoint,
-						HttpMethod.GET, null, new ParameterizedTypeReference<PagedResources<ApplicationsMetrics>>() {
-						}).getBody();
-				metrics = new ArrayList<>(response.getContent());
-				if (logger.isDebugEnabled()) {
-					logger.debug("Metrics = " + metrics);
-				}
-			} catch (Exception e) {
-				if (e instanceof HttpClientErrorException && e.getMessage().startsWith("401")) {
-					logger.warn(String.format(
-							"Failure while requesting metrics from url '%s': '%s'. "
-									+ "Unauthorized, please provide valid credentials.",
-							this.collectorEndpoint, e.getMessage()));
-				}
-				else {
-					logger.warn(String.format("Failure while requesting metrics from url '%s': %s",
-							this.collectorEndpoint ,e.getMessage()));
-				}
-				if (logger.isDebugEnabled()) {
-					logger.debug("The metrics request failed with:", e);
-				}
-				throw e;
-			}
-		} else {
-			metrics = defaultMetrics();
-		}
-		return metrics;
-	}
+    @HystrixCommand(fallbackMethod = "defaultMetrics")
+    public List<ApplicationsMetrics> getMetrics() {
+        List<ApplicationsMetrics> metrics = null;
+        if (StringUtils.hasText(this.collectorEndpoint)) {
+            try {
+                PagedResources<ApplicationsMetrics> response = restTemplate.exchange(this.collectorEndpoint,
+                        HttpMethod.GET, null, new ParameterizedTypeReference<PagedResources<ApplicationsMetrics>>() {
+                        }).getBody();
+                metrics = new ArrayList<>(response.getContent());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Metrics = " + metrics);
+                }
+            } catch (Exception e) {
+                if (e instanceof HttpClientErrorException && e.getMessage().startsWith("401")) {
+                    logger.warn(String.format(
+                            "Failure while requesting metrics from url '%s': '%s'. "
+                                    + "Unauthorized, please provide valid credentials.",
+                            this.collectorEndpoint, e.getMessage()));
+                } else {
+                    logger.warn(String.format("Failure while requesting metrics from url '%s': %s",
+                            this.collectorEndpoint, e.getMessage()));
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("The metrics request failed with:", e);
+                }
+                throw e;
+            }
+        } else {
+            metrics = defaultMetrics();
+        }
+        return metrics;
+    }
 
-	public List<ApplicationsMetrics> defaultMetrics() {
-		return EMPTY_RESPONSE;
-	}
+    public List<ApplicationsMetrics> defaultMetrics() {
+        return EMPTY_RESPONSE;
+    }
 
 
-	private void validateUsernamePassword(String userName, String password) {
-		if (!StringUtils.isEmpty(password) && StringUtils.isEmpty(userName)) {
-			logger.warn("A password may be specified only together with a username");
-		}
+    private void validateUsernamePassword(String userName, String password) {
+        if (!StringUtils.isEmpty(password) && StringUtils.isEmpty(userName)) {
+            logger.warn("A password may be specified only together with a username");
+        }
 
-		if (StringUtils.isEmpty(password) && !StringUtils.isEmpty(userName)) {
-			logger.warn("A username may be specified only together with a password");
-		}
-	}
+        if (StringUtils.isEmpty(password) && !StringUtils.isEmpty(userName)) {
+            logger.warn("A username may be specified only together with a password");
+        }
+    }
 }

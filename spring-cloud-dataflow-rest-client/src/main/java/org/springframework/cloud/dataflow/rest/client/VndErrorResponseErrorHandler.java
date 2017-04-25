@@ -36,28 +36,26 @@ import org.springframework.web.client.ResponseExtractor;
  */
 public class VndErrorResponseErrorHandler extends DefaultResponseErrorHandler {
 
-	private ResponseExtractor<VndErrors> vndErrorsExtractor;
-	private ResponseExtractor<VndError> vndErrorExtractor;
+    private ResponseExtractor<VndErrors> vndErrorsExtractor;
+    private ResponseExtractor<VndError> vndErrorExtractor;
 
-	public VndErrorResponseErrorHandler(List<HttpMessageConverter<?>> messageConverters) {
-		vndErrorsExtractor = new HttpMessageConverterExtractor<VndErrors>(VndErrors.class, messageConverters);
-		vndErrorExtractor = new HttpMessageConverterExtractor<VndError>(VndError.class, messageConverters);
-	}
+    public VndErrorResponseErrorHandler(List<HttpMessageConverter<?>> messageConverters) {
+        vndErrorsExtractor = new HttpMessageConverterExtractor<VndErrors>(VndErrors.class, messageConverters);
+        vndErrorExtractor = new HttpMessageConverterExtractor<VndError>(VndError.class, messageConverters);
+    }
 
-	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
-		VndErrors vndErrors = null;
-		try {
-			if (HttpStatus.FORBIDDEN.equals(response.getStatusCode())) {
-				vndErrors = new VndErrors(vndErrorExtractor.extractData(response));
-			}
-			else {
-				vndErrors = vndErrorsExtractor.extractData(response);
-			}
-		}
-		catch (Exception e) {
-			super.handleError(response);
-		}
-		throw new DataFlowClientException(vndErrors);
-	}
+    @Override
+    public void handleError(ClientHttpResponse response) throws IOException {
+        VndErrors vndErrors = null;
+        try {
+            if (HttpStatus.FORBIDDEN.equals(response.getStatusCode())) {
+                vndErrors = new VndErrors(vndErrorExtractor.extractData(response));
+            } else {
+                vndErrors = vndErrorsExtractor.extractData(response);
+            }
+        } catch (Exception e) {
+            super.handleError(response);
+        }
+        throw new DataFlowClientException(vndErrors);
+    }
 }

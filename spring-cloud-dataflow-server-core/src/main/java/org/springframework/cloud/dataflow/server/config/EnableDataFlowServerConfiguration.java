@@ -30,10 +30,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EnableDataFlowServerConfiguration {
 
-	@Bean
-	public Marker enableConfigServerMarker() {
-		return new Marker();
-	}
+    @Bean
+    public Marker enableConfigServerMarker() {
+        return new Marker();
+    }
 
-	class Marker {}
+    class Marker {
+    }
 }

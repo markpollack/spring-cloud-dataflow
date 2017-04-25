@@ -22,34 +22,33 @@ package org.springframework.cloud.dataflow.core;
  * @author Ilayaperumal Gopinathan
  */
 public class DataFlowPropertyKeys {
-	
-	public static final String PREFIX = "spring.cloud.dataflow.";
 
-	/**
-	 * Data Flow Stream property key prefix.
-	 */
-	private static final String STREAM_PREFIX = PREFIX + "stream.";
+    public static final String PREFIX = "spring.cloud.dataflow.";
 
-	/**
-	 * Stream name property key.
-	 */
-	public static final String STREAM_NAME = STREAM_PREFIX + "name";
+    /**
+     * Data Flow Stream property key prefix.
+     */
+    private static final String STREAM_PREFIX = PREFIX + "stream.";
 
-	/**
-	 * Data Flow Stream app key prefix.
-	 */
-	private static final String STREAM_APP_PREFIX = STREAM_PREFIX + "app.";
+    /**
+     * Stream name property key.
+     */
+    public static final String STREAM_NAME = STREAM_PREFIX + "name";
 
-	/**
-	 * Stream app label property key.
-	 */
-	public static final String STREAM_APP_LABEL = STREAM_APP_PREFIX + "label";
+    /**
+     * Data Flow Stream app key prefix.
+     */
+    private static final String STREAM_APP_PREFIX = STREAM_PREFIX + "app.";
 
-	/**
-	 * Stream app type property key.
-	 */
-	public static final String STREAM_APP_TYPE = STREAM_APP_PREFIX + "type";
+    /**
+     * Stream app label property key.
+     */
+    public static final String STREAM_APP_LABEL = STREAM_APP_PREFIX + "label";
 
+    /**
+     * Stream app type property key.
+     */
+    public static final String STREAM_APP_TYPE = STREAM_APP_PREFIX + "type";
 
 
 }

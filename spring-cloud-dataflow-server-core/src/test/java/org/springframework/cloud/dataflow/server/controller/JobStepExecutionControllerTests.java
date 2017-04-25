@@ -22,7 +22,6 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
@@ -62,120 +61,120 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Glenn Renfro
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { EmbeddedDataSourceConfiguration.class,
-		JobDependencies.class, PropertyPlaceholderAutoConfiguration.class, BatchProperties.class })
+@SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
+        JobDependencies.class, PropertyPlaceholderAutoConfiguration.class, BatchProperties.class})
 @DirtiesContext
 public class JobStepExecutionControllerTests {
 
-	private final static String BASE_JOB_NAME = "myJob";
+    private final static String BASE_JOB_NAME = "myJob";
 
-	private final static String JOB_NAME_ORIG = BASE_JOB_NAME + "_ORIG";
+    private final static String JOB_NAME_ORIG = BASE_JOB_NAME + "_ORIG";
 
-	private final static String JOB_NAME_FOO = BASE_JOB_NAME + "_FOO";
+    private final static String JOB_NAME_FOO = BASE_JOB_NAME + "_FOO";
 
-	private final static String JOB_NAME_FOOBAR = BASE_JOB_NAME + "_FOOBAR";
+    private final static String JOB_NAME_FOOBAR = BASE_JOB_NAME + "_FOOBAR";
 
-	private final static String BASE_STEP_NAME = "myStep";
+    private final static String BASE_STEP_NAME = "myStep";
 
-	private final static String STEP_NAME_ORIG = BASE_STEP_NAME + "_ORIG";
+    private final static String STEP_NAME_ORIG = BASE_STEP_NAME + "_ORIG";
 
-	private final static String STEP_NAME_FOO = BASE_STEP_NAME + "_FOO";
+    private final static String STEP_NAME_FOO = BASE_STEP_NAME + "_FOO";
 
-	private final static String STEP_NAME_FOOBAR = BASE_STEP_NAME + "_FOOBAR";
+    private final static String STEP_NAME_FOOBAR = BASE_STEP_NAME + "_FOOBAR";
 
 
-	private static boolean initialized = false;
+    private static boolean initialized = false;
 
-	@Autowired
-	private TaskExecutionDao dao;
+    @Autowired
+    private TaskExecutionDao dao;
 
-	@Autowired
-	private JobRepository jobRepository;
+    @Autowired
+    private JobRepository jobRepository;
 
-	@Autowired
-	private TaskBatchDao taskBatchDao;
+    @Autowired
+    private TaskBatchDao taskBatchDao;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	@Autowired
-	private RequestMappingHandlerAdapter adapter;
+    @Autowired
+    private RequestMappingHandlerAdapter adapter;
 
-	@Before
-	public void setupMockMVC() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
-				get("/").accept(MediaType.APPLICATION_JSON)).build();
-		if (!initialized) {
-			createStepExecution(JOB_NAME_ORIG, STEP_NAME_ORIG);
-			createStepExecution(JOB_NAME_FOO, STEP_NAME_ORIG, STEP_NAME_FOO);
-			createStepExecution(JOB_NAME_FOOBAR, STEP_NAME_ORIG, STEP_NAME_FOO, STEP_NAME_FOOBAR);
-			initialized = true;
-		}
-		for (HttpMessageConverter<?> converter : adapter.getMessageConverters()) {
-			if (converter instanceof MappingJackson2HttpMessageConverter) {
-				final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
-				jacksonConverter.getObjectMapper().addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
-				jacksonConverter.getObjectMapper().addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
-				jacksonConverter.getObjectMapper().setDateFormat(new ISO8601DateFormatWithMilliSeconds());
-			}
-		}
-	}
+    @Before
+    public void setupMockMVC() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
+                get("/").accept(MediaType.APPLICATION_JSON)).build();
+        if (!initialized) {
+            createStepExecution(JOB_NAME_ORIG, STEP_NAME_ORIG);
+            createStepExecution(JOB_NAME_FOO, STEP_NAME_ORIG, STEP_NAME_FOO);
+            createStepExecution(JOB_NAME_FOOBAR, STEP_NAME_ORIG, STEP_NAME_FOO, STEP_NAME_FOOBAR);
+            initialized = true;
+        }
+        for (HttpMessageConverter<?> converter : adapter.getMessageConverters()) {
+            if (converter instanceof MappingJackson2HttpMessageConverter) {
+                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+                jacksonConverter.getObjectMapper().addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
+                jacksonConverter.getObjectMapper().addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
+                jacksonConverter.getObjectMapper().setDateFormat(new ISO8601DateFormatWithMilliSeconds());
+            }
+        }
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testJobStepExecutionControllerConstructorMissingRepository() {
-		new JobStepExecutionController(null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void testJobStepExecutionControllerConstructorMissingRepository() {
+        new JobStepExecutionController(null);
+    }
 
-	@Test
-	public void testGetExecutionNotFound() throws Exception {
-		mockMvc.perform(
-				get("/jobs/executions/1342434234/steps").accept(MediaType.APPLICATION_JSON)
-		).andExpect(status().isNotFound());
-	}
+    @Test
+    public void testGetExecutionNotFound() throws Exception {
+        mockMvc.perform(
+                get("/jobs/executions/1342434234/steps").accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
 
-	@Test
-	public void testSingleGetStepExecution() throws Exception {
-		mockMvc.perform(
-				get("/jobs/executions/1/steps/1").accept(MediaType.APPLICATION_JSON)
-		).andExpect(status().isOk()).andExpect(content().json("{jobExecutionId: " +
-				1 + "}"));
-	}
+    @Test
+    public void testSingleGetStepExecution() throws Exception {
+        mockMvc.perform(
+                get("/jobs/executions/1/steps/1").accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk()).andExpect(content().json("{jobExecutionId: " +
+                1 + "}"));
+    }
 
-	@Test
-	public void testGetMultipleStepExecutions() throws Exception {
-		mockMvc.perform(
-				get("/jobs/executions/3/steps").accept(MediaType.APPLICATION_JSON)
-		).andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[*]", hasSize(3)))
-				.andExpect(jsonPath("$.content[0].stepExecution.id", is(4)))
-				.andExpect(jsonPath("$.content[1].stepExecution.id", is(5)))
-				.andExpect(jsonPath("$.content[2].stepExecution.id", is(6)));
-	}
+    @Test
+    public void testGetMultipleStepExecutions() throws Exception {
+        mockMvc.perform(
+                get("/jobs/executions/3/steps").accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*]", hasSize(3)))
+                .andExpect(jsonPath("$.content[0].stepExecution.id", is(4)))
+                .andExpect(jsonPath("$.content[1].stepExecution.id", is(5)))
+                .andExpect(jsonPath("$.content[2].stepExecution.id", is(6)));
+    }
 
-	@Test
-	public void testSingleGetStepExecutionProgress() throws Exception {
-		mockMvc.perform(
-				get("/jobs/executions/1/steps/1/progress").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().json("{finished: " + false + "}"))
-				.andExpect(content().json("{percentageComplete: " + 0.5 + "}"))
-				.andExpect(jsonPath("$.stepExecutionHistory.count", is(0)))
-				.andExpect(jsonPath("$.stepExecutionHistory.commitCount.count", is(0)));
-	}
+    @Test
+    public void testSingleGetStepExecutionProgress() throws Exception {
+        mockMvc.perform(
+                get("/jobs/executions/1/steps/1/progress").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{finished: " + false + "}"))
+                .andExpect(content().json("{percentageComplete: " + 0.5 + "}"))
+                .andExpect(jsonPath("$.stepExecutionHistory.count", is(0)))
+                .andExpect(jsonPath("$.stepExecutionHistory.commitCount.count", is(0)));
+    }
 
-	private void createStepExecution(String jobName, String... stepNames) {
-		JobInstance instance = jobRepository.createJobInstance(jobName, new JobParameters());
-		JobExecution jobExecution = jobRepository.createJobExecution(
-				instance, new JobParameters(), null);
-		for(String stepName : stepNames) {
-			StepExecution stepExecution = new StepExecution(stepName, jobExecution, 1L);
-			stepExecution.setId(null);
-			jobRepository.add(stepExecution);
-		}
-		TaskExecution taskExecution = dao.createTaskExecution(
-				jobName, new Date(), new ArrayList<String>(), null);
-		taskBatchDao.saveRelationship(taskExecution, jobExecution);
-	}
+    private void createStepExecution(String jobName, String... stepNames) {
+        JobInstance instance = jobRepository.createJobInstance(jobName, new JobParameters());
+        JobExecution jobExecution = jobRepository.createJobExecution(
+                instance, new JobParameters(), null);
+        for (String stepName : stepNames) {
+            StepExecution stepExecution = new StepExecution(stepName, jobExecution, 1L);
+            stepExecution.setId(null);
+            jobRepository.add(stepExecution);
+        }
+        TaskExecution taskExecution = dao.createTaskExecution(
+                jobName, new Date(), new ArrayList<String>(), null);
+        taskBatchDao.saveRelationship(taskExecution, jobExecution);
+    }
 }

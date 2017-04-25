@@ -31,24 +31,25 @@ import org.springframework.boot.configurationmetadata.ValueHint;
  */
 public class BooleanValueHintProvider implements ValueHintProvider {
 
-	private static final List<ValueHint> BOOLEANS;
-	static {
-		ValueHint yes = new ValueHint();
-		yes.setValue(true);
-		ValueHint no = new ValueHint();
-		no.setValue(false);
-		BOOLEANS = Collections.unmodifiableList(Arrays.asList(yes, no));
-	}
+    private static final List<ValueHint> BOOLEANS;
 
-	@Override
-	public List<ValueHint> generateValueHints(ConfigurationMetadataProperty property, ClassLoader classLoader) {
-		return "java.lang.Boolean".equals(property.getType())
-				? BOOLEANS
-				: Collections.<ValueHint>emptyList();
-	}
+    static {
+        ValueHint yes = new ValueHint();
+        yes.setValue(true);
+        ValueHint no = new ValueHint();
+        no.setValue(false);
+        BOOLEANS = Collections.unmodifiableList(Arrays.asList(yes, no));
+    }
 
-	@Override
-	public boolean isExclusive(ConfigurationMetadataProperty property) {
-		return true;
-	}
+    @Override
+    public List<ValueHint> generateValueHints(ConfigurationMetadataProperty property, ClassLoader classLoader) {
+        return "java.lang.Boolean".equals(property.getType())
+                ? BOOLEANS
+                : Collections.<ValueHint>emptyList();
+    }
+
+    @Override
+    public boolean isExclusive(ConfigurationMetadataProperty property) {
+        return true;
+    }
 }

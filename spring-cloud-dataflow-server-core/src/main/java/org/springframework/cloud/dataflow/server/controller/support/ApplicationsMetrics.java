@@ -23,119 +23,118 @@ import java.util.Map;
  * Support domain class to map metrics response from a collector.
  *
  * @author Janne Valkealahti
- *
  */
 public class ApplicationsMetrics {
 
-	private String name;
-	private List<Application> applications;
+    private String name;
+    private List<Application> applications;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public List<Application> getApplications() {
-		return applications;
-	}
+    public List<Application> getApplications() {
+        return applications;
+    }
 
-	public void setApplications(List<Application> applications) {
-		this.applications = applications;
-	}
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
+    }
 
-	public static class Application {
+    public static class Application {
 
-		private String name;
-		private List<Instance> instances;
-		private List<Metric> aggregateMetrics;
+        private String name;
+        private List<Instance> instances;
+        private List<Metric> aggregateMetrics;
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+        public void setName(String name) {
+            this.name = name;
+        }
 
-		public List<Instance> getInstances() {
-			return instances;
-		}
+        public List<Instance> getInstances() {
+            return instances;
+        }
 
-		public void setInstances(List<Instance> instances) {
-			this.instances = instances;
-		}
+        public void setInstances(List<Instance> instances) {
+            this.instances = instances;
+        }
 
-		public List<Metric> getAggregateMetrics() {
-			return aggregateMetrics;
-		}
+        public List<Metric> getAggregateMetrics() {
+            return aggregateMetrics;
+        }
 
-		public void setAggregateMetrics(List<Metric> aggregateMetrics) {
-			this.aggregateMetrics = aggregateMetrics;
-		}
-	}
+        public void setAggregateMetrics(List<Metric> aggregateMetrics) {
+            this.aggregateMetrics = aggregateMetrics;
+        }
+    }
 
-	public static class Instance {
+    public static class Instance {
 
-		private String guid;
-		private int index;
-		private Map<String, Object> properties;
-		private List<Metric> metrics;
+        private String guid;
+        private int index;
+        private Map<String, Object> properties;
+        private List<Metric> metrics;
 
-		public String getGuid() {
-			return guid;
-		}
+        public String getGuid() {
+            return guid;
+        }
 
-		public void setGuid(String guid) {
-			this.guid = guid;
-		}
+        public void setGuid(String guid) {
+            this.guid = guid;
+        }
 
-		public int getIndex() {
-			return index;
-		}
+        public int getIndex() {
+            return index;
+        }
 
-		public void setIndex(int index) {
-			this.index = index;
-		}
+        public void setIndex(int index) {
+            this.index = index;
+        }
 
-		public Map<String, Object> getProperties() {
-			return properties;
-		}
+        public Map<String, Object> getProperties() {
+            return properties;
+        }
 
-		public void setProperties(Map<String, Object> properties) {
-			this.properties = properties;
-		}
+        public void setProperties(Map<String, Object> properties) {
+            this.properties = properties;
+        }
 
-		public List<Metric> getMetrics() {
-			return metrics;
-		}
+        public List<Metric> getMetrics() {
+            return metrics;
+        }
 
-		public void setMetrics(List<Metric> metrics) {
-			this.metrics = metrics;
-		}
-	}
+        public void setMetrics(List<Metric> metrics) {
+            this.metrics = metrics;
+        }
+    }
 
-	public static class Metric {
+    public static class Metric {
 
-		private String name;
-		private Object value;
+        private String name;
+        private Object value;
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+        public void setName(String name) {
+            this.name = name;
+        }
 
-		public Object getValue() {
-			return value;
-		}
+        public Object getValue() {
+            return value;
+        }
 
-		public void setValue(Object value) {
-			this.value = value;
-		}
-	}
+        public void setValue(Object value) {
+            this.value = value;
+        }
+    }
 }

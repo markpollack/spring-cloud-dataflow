@@ -23,31 +23,31 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public class LabelNode extends AstNode {
 
-	private final String label;
+    private final String label;
 
-	public LabelNode(String label, int startpos, int endpos) {
-		super(startpos, endpos);
-		this.label = label;
-	}
+    public LabelNode(String label, int startpos, int endpos) {
+        super(startpos, endpos);
+        this.label = label;
+    }
 
-	@Override
-	public String stringify(boolean includePositionalInfo) {
-		StringBuilder s = new StringBuilder();
-		s.append("(").append("Label:").append(label);
-		if (includePositionalInfo) {
-			s.append(":");
-			s.append(getStartPos()).append(">").append(getEndPos());
-		}
-		s.append(")");
-		return s.toString();
-	}
+    @Override
+    public String stringify(boolean includePositionalInfo) {
+        StringBuilder s = new StringBuilder();
+        s.append("(").append("Label:").append(label);
+        if (includePositionalInfo) {
+            s.append(":");
+            s.append(getStartPos()).append(">").append(getEndPos());
+        }
+        s.append(")");
+        return s.toString();
+    }
 
-	public String toString() {
-		return label + ":";
-	}
+    public String toString() {
+        return label + ":";
+    }
 
-	public String getLabelName() {
-		return label;
-	}
+    public String getLabelName() {
+        return label;
+    }
 
 }

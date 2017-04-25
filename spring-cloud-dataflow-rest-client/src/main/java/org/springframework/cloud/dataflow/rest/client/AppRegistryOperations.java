@@ -34,68 +34,67 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface AppRegistryOperations {
 
-	/**
-	 * Return a list of all application registrations.
-	 *
-	 * @return list of all application registrations
-	 */
-	PagedResources<AppRegistrationResource> list();
+    /**
+     * Return a list of all application registrations.
+     *
+     * @return list of all application registrations
+     */
+    PagedResources<AppRegistrationResource> list();
 
-	/**
-	 * Return a list of all application registrations for the given {@link ApplicationType}.
-	 *
-	 * @param type application type for which to return a list of registrations
-	 * @return list of all application registrations for the given application type
-	 */
-	PagedResources<AppRegistrationResource> list(ApplicationType type);
+    /**
+     * Return a list of all application registrations for the given {@link ApplicationType}.
+     *
+     * @param type application type for which to return a list of registrations
+     * @return list of all application registrations for the given application type
+     */
+    PagedResources<AppRegistrationResource> list(ApplicationType type);
 
-	/**
-	 * Retrieve information about an application registration.
-	 *
-	 * @param name name of application
-	 * @param type application type
-	 *
-	 * @return detailed information about an application registration
-	 */
-	DetailedAppRegistrationResource info(String name, ApplicationType type);
+    /**
+     * Retrieve information about an application registration.
+     *
+     * @param name name of application
+     * @param type application type
+     * @return detailed information about an application registration
+     */
+    DetailedAppRegistrationResource info(String name, ApplicationType type);
 
-	/**
-	 * Register an application name and type with its Maven coordinates.
-	 *
-	 * @param name  application name
-	 * @param type  application type
-	 * @param uri   URI for the application artifact
-	 * @param metadataUri   URI for the application metadata artifact
-	 * @param force if {@code true}, overwrites a pre-existing registration
-	 * @return the new app registration
-	 */
-	AppRegistrationResource register(String name, ApplicationType type,
-			String uri, String metadataUri, boolean force);
+    /**
+     * Register an application name and type with its Maven coordinates.
+     *
+     * @param name        application name
+     * @param type        application type
+     * @param uri         URI for the application artifact
+     * @param metadataUri URI for the application metadata artifact
+     * @param force       if {@code true}, overwrites a pre-existing registration
+     * @return the new app registration
+     */
+    AppRegistrationResource register(String name, ApplicationType type,
+                                     String uri, String metadataUri, boolean force);
 
-	/**
-	 * Unregister an application name and type.
-	 *
-	 * @param name  application name
-	 * @param type  application type
-	 */
-	void unregister(String name, ApplicationType type);
+    /**
+     * Unregister an application name and type.
+     *
+     * @param name application name
+     * @param type application type
+     */
+    void unregister(String name, ApplicationType type);
 
-	/**
-	 * Register all applications listed in a properties file.
-	 *
-	 * @param uri   URI for the properties file
-	 * @param force if {@code true}, overwrites any pre-existing registrations
-	 * @return the paged list of new app registrations
-	 */
-	PagedResources<AppRegistrationResource> importFromResource(String uri, boolean force);
+    /**
+     * Register all applications listed in a properties file.
+     *
+     * @param uri   URI for the properties file
+     * @param force if {@code true}, overwrites any pre-existing registrations
+     * @return the paged list of new app registrations
+     */
+    PagedResources<AppRegistrationResource> importFromResource(String uri, boolean force);
 
-	/**
-	 * Register all applications provided as key/value pairs.
-	 *
-	 * @param apps   the apps as key/value pairs where key is "type.name" and value is a URI
-	 * @param force if {@code true}, overwrites any pre-existing registrations
-	 * @return the paged list of new app registrations
-	 */
-	PagedResources<AppRegistrationResource> registerAll(Properties apps, boolean force);
+    /**
+     * Register all applications provided as key/value pairs.
+     *
+     * @param apps  the apps as key/value pairs where key is "type.name" and value is a URI
+     * @param force if {@code true}, overwrites any pre-existing registrations
+     * @return the paged list of new app registrations
+     */
+    PagedResources<AppRegistrationResource> registerAll(Properties apps, boolean force);
 
 }

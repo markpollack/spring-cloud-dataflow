@@ -23,7 +23,7 @@ package org.springframework.cloud.dataflow.server.controller;
  */
 public class StreamAlreadyDeployingException extends RuntimeException {
 
-	public StreamAlreadyDeployingException(String name) {
-		super(String.format("Stream '%s' is already being deployed", name));
-	}
+    public StreamAlreadyDeployingException(String name) {
+        super(String.format("Stream '%s' is already being deployed", name));
+    }
 }

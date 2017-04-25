@@ -19,7 +19,6 @@ package org.springframework.cloud.dataflow.server.local.security;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.rules.ExternalResource;
-
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.dataflow.server.local.security.support.OAuth2TestServer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,54 +31,48 @@ import org.springframework.util.SocketUtils;
  */
 public class OAuth2ServerResource extends ExternalResource {
 
-	private final Log LOGGER = LogFactory.getLog(OAuth2ServerResource.class);
+    private static final String OAUTH2_PORT_PROPERTY = "oauth2.port";
+    private final Log LOGGER = LogFactory.getLog(OAuth2ServerResource.class);
+    private String originalOAuth2Port;
+    private int oauth2ServerPort;
+    private ConfigurableApplicationContext application;
 
-	private String originalOAuth2Port;
+    public OAuth2ServerResource() {
+        super();
+    }
 
-	private int oauth2ServerPort;
+    @Override
+    protected void before() throws Throwable {
 
-	private static final String OAUTH2_PORT_PROPERTY = "oauth2.port";
+        originalOAuth2Port = System.getProperty(OAUTH2_PORT_PROPERTY);
 
-	public OAuth2ServerResource() {
-		super();
-	}
+        this.oauth2ServerPort = SocketUtils.findAvailableTcpPort();
 
-	private ConfigurableApplicationContext application;
+        LOGGER.info("Setting OAuth2 Server port to " + this.oauth2ServerPort);
 
-	@Override
-	protected void before() throws Throwable {
+        System.setProperty(OAUTH2_PORT_PROPERTY, String.valueOf(this.oauth2ServerPort));
 
-		originalOAuth2Port = System.getProperty(OAUTH2_PORT_PROPERTY);
+        this.application = new SpringApplicationBuilder(OAuth2TestServer.class)
+                .build()
+                .run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security/support/oauth2TestServerConfig.yml");
 
-		this.oauth2ServerPort = SocketUtils.findAvailableTcpPort();
+    }
 
-		LOGGER.info("Setting OAuth2 Server port to " + this.oauth2ServerPort);
+    @Override
+    protected void after() {
+        try {
+            application.stop();
+        } finally {
+            if (originalOAuth2Port != null) {
+                System.setProperty(OAUTH2_PORT_PROPERTY, originalOAuth2Port);
+            } else {
+                System.clearProperty(OAUTH2_PORT_PROPERTY);
+            }
+        }
+    }
 
-		System.setProperty(OAUTH2_PORT_PROPERTY, String.valueOf(this.oauth2ServerPort));
-
-		this.application = new SpringApplicationBuilder(OAuth2TestServer.class)
-			.build()
-			.run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security/support/oauth2TestServerConfig.yml");
-
-	}
-
-	@Override
-	protected void after() {
-		try {
-			application.stop();
-		}
-		finally {
-			if (originalOAuth2Port != null) {
-				System.setProperty(OAUTH2_PORT_PROPERTY, originalOAuth2Port);
-			}
-			else {
-				System.clearProperty(OAUTH2_PORT_PROPERTY);
-			}
-		}
-	}
-
-	public int getOauth2ServerPort() {
-		return oauth2ServerPort;
-	}
+    public int getOauth2ServerPort() {
+        return oauth2ServerPort;
+    }
 
 }

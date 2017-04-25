@@ -27,7 +27,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.configuration.metadata.BootApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.core.StreamAppDefinition;
@@ -50,93 +49,86 @@ import static org.hamcrest.CoreMatchers.not;
 @RunWith(MockitoJUnitRunner.class)
 public class StreamDeploymentControllerTests {
 
-	private StreamDeploymentController controller;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    private StreamDeploymentController controller;
+    @Mock
+    private StreamDefinitionRepository streamDefinitionRepository;
+    @Mock
+    private DeploymentIdRepository deploymentIdRepository;
+    @Mock
+    private AppRegistry appRegistry;
+    @Mock
+    private AppDeployer appDeployer;
+    private ApplicationConfigurationMetadataResolver metadataResolver = new BootApplicationConfigurationMetadataResolver();
+    @Mock
+    private CommonApplicationProperties commonApplicationProperties;
 
-	@Mock
-	private StreamDefinitionRepository streamDefinitionRepository;
+    @Before
+    public void setup() {
+        controller = new StreamDeploymentController(streamDefinitionRepository, deploymentIdRepository,
+                appRegistry, appDeployer, metadataResolver, commonApplicationProperties);
+    }
 
-	@Mock
-	private DeploymentIdRepository deploymentIdRepository;
+    @Test
+    public void testRequalifyShortWhiteListedProperty() {
+        StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
+                .setRegisteredAppName("my-app")
+                .setProperty("timezone", "GMT+2")
+                .build("streamname");
 
-	@Mock
-	private AppRegistry appRegistry;
+        Resource app = new ClassPathResource("/apps/whitelist-source");
+        AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
 
-	@Mock
-	private AppDeployer appDeployer;
+        Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.timezone", "GMT+2"));
+        Assert.assertThat(modified.getProperties(), not(IsMapContaining.hasKey("timezone")));
+    }
 
-	private ApplicationConfigurationMetadataResolver metadataResolver = new BootApplicationConfigurationMetadataResolver();
+    @Test
+    public void testSameNamePropertiesOKAsLongAsNotUsedAsShorthand() {
+        StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
+                .setRegisteredAppName("my-app")
+                .setProperty("time.format", "hh")
+                .setProperty("date.format", "yy")
+                .build("streamname");
 
-	@Mock
-	private CommonApplicationProperties commonApplicationProperties;
+        Resource app = new ClassPathResource("/apps/whitelist-source");
+        AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
 
-	@Rule
-	public ExpectedException thrown= ExpectedException.none();
+        Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.format", "yy"));
+        Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("time.format", "hh"));
+    }
 
-	@Before
-	public void setup() {
-		controller = new StreamDeploymentController(streamDefinitionRepository, deploymentIdRepository,
-				appRegistry, appDeployer, metadataResolver, commonApplicationProperties);
-	}
+    @Test
+    public void testSameNamePropertiesKOWhenShorthand() {
+        StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
+                .setRegisteredAppName("my-app")
+                .setProperty("format", "hh")
+                .build("streamname");
 
-	@Test
-	public void testRequalifyShortWhiteListedProperty() {
-		StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
-				.setRegisteredAppName("my-app")
-				.setProperty("timezone", "GMT+2")
-				.build("streamname");
+        Resource app = new ClassPathResource("/apps/whitelist-source");
 
-		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Ambiguous short form property 'format'");
+        thrown.expectMessage("date.format");
+        thrown.expectMessage("time.format");
 
-		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.timezone", "GMT+2"));
-		Assert.assertThat(modified.getProperties(), not(IsMapContaining.hasKey("timezone")));
-	}
+        controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
 
-	@Test
-	public void testSameNamePropertiesOKAsLongAsNotUsedAsShorthand() {
-		StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
-				.setRegisteredAppName("my-app")
-				.setProperty("time.format", "hh")
-				.setProperty("date.format", "yy")
-				.build("streamname");
+    }
 
-		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+    @Test
+    public void testShorthandsAcceptRelaxedVariations() {
+        StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
+                .setRegisteredAppName("my-app")
+                .setProperty("someLongProperty", "yy") // Use camelCase here
+                .build("streamname");
 
-		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.format", "yy"));
-		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("time.format", "hh"));
-	}
+        Resource app = new ClassPathResource("/apps/whitelist-source");
+        AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
 
-	@Test
-	public void testSameNamePropertiesKOWhenShorthand() {
-		StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
-				.setRegisteredAppName("my-app")
-				.setProperty("format", "hh")
-				.build("streamname");
+        Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.some-long-property", "yy"));
 
-		Resource app = new ClassPathResource("/apps/whitelist-source");
-
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Ambiguous short form property 'format'");
-		thrown.expectMessage("date.format");
-		thrown.expectMessage("time.format");
-
-		controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
-
-	}
-
-	@Test
-	public void testShorthandsAcceptRelaxedVariations() {
-		StreamAppDefinition appDefinition = new StreamAppDefinition.Builder()
-				.setRegisteredAppName("my-app")
-				.setProperty("someLongProperty", "yy") // Use camelCase here
-				.build("streamname");
-
-		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
-
-		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.some-long-property", "yy"));
-
-	}
+    }
 
 }

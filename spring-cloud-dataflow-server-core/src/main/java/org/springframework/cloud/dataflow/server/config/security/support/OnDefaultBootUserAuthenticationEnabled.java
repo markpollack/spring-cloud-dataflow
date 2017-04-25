@@ -25,17 +25,18 @@ import org.springframework.context.annotation.Condition;
  *
  * @author Gunnar Hillert
  * @since 1.2.0
- *
  */
 public class OnDefaultBootUserAuthenticationEnabled extends NoneNestedConditions {
 
-	public OnDefaultBootUserAuthenticationEnabled() {
-		super(ConfigurationPhase.REGISTER_BEAN);
-	}
+    public OnDefaultBootUserAuthenticationEnabled() {
+        super(ConfigurationPhase.REGISTER_BEAN);
+    }
 
-	@ConditionalOnProperty(DataFlowPropertyKeys.PREFIX + "security.authentication.file.enabled")
-	static class fileAuthenticationEnabled { }
+    @ConditionalOnProperty(DataFlowPropertyKeys.PREFIX + "security.authentication.file.enabled")
+    static class fileAuthenticationEnabled {
+    }
 
-	@ConditionalOnProperty(DataFlowPropertyKeys.PREFIX + "security.authentication.ldap.enabled")
-	static class ldapAuthenticationEnabled { }
+    @ConditionalOnProperty(DataFlowPropertyKeys.PREFIX + "security.authentication.ldap.enabled")
+    static class ldapAuthenticationEnabled {
+    }
 }

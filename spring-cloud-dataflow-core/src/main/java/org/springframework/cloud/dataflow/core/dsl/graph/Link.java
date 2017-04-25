@@ -33,59 +33,58 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_EMPTY)
 public class Link {
 
-	public final static String PROPERTY_TRANSITION_NAME = "transitionName";
+    public final static String PROPERTY_TRANSITION_NAME = "transitionName";
 
-	public String from;
+    public String from;
 
-	public String to;
+    public String to;
+    /**
+     * Properties on a link can capture the name of a potential transition that
+     * would lead to this link being taken when the 'from' job completes.
+     */
+    public Map<String, String> properties = null;
 
-	Link() {
+    Link() {
 
-	}
+    }
 
-	/**
-	 * Properties on a link can capture the name of a potential transition that
-	 * would lead to this link being taken when the 'from' job completes.
-	 */
-	public Map<String, String> properties = null;
+    public Link(String sourceId, String targetId) {
+        this.from = sourceId;
+        this.to = targetId;
+    }
 
-	public Link(String sourceId, String targetId) {
-		this.from = sourceId;
-		this.to = targetId;
-	}
+    public Link(String sourceId, String targetId, String transitionName) {
+        this.from = sourceId;
+        this.to = targetId;
+        properties = new HashMap<>();
+        properties.put(PROPERTY_TRANSITION_NAME, transitionName);
+    }
 
-	public Link(String sourceId, String targetId, String transitionName) {
-		this.from = sourceId;
-		this.to = targetId;
-		properties = new HashMap<>();
-		properties.put(PROPERTY_TRANSITION_NAME, transitionName);
-	}
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Link[from=").append(from).append(",to=").append(to);
+        if (properties != null) {
+            s.append(",properties=").append(properties);
+        }
+        s.append("]");
+        return s.toString();
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("Link[from=").append(from).append(",to=").append(to);
-		if (properties != null) {
-			s.append(",properties=").append(properties);
-		}
-		s.append("]");
-		return s.toString();
-	}
+    public boolean hasTransitionSet() {
+        return properties != null && properties.containsKey(PROPERTY_TRANSITION_NAME);
+    }
 
-	public boolean hasTransitionSet() {
-		return properties != null && properties.containsKey(PROPERTY_TRANSITION_NAME);
-	}
+    @JsonIgnore
+    public String getTransitionName() {
+        return properties != null ? properties.get(PROPERTY_TRANSITION_NAME) : null;
+    }
 
-	@JsonIgnore
-	public String getTransitionName() {
-		return properties != null ? properties.get(PROPERTY_TRANSITION_NAME) : null;
-	}
-	
-	public void updateFrom(String newFrom) {
-		this.from = newFrom;
-	}
-	
-	public void updateTo(String newTo) {
-		this.to = newTo;
-	}
+    public void updateFrom(String newFrom) {
+        this.from = newFrom;
+    }
+
+    public void updateTo(String newTo) {
+        this.to = newTo;
+    }
 }

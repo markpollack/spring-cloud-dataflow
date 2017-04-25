@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -47,63 +46,62 @@ import org.springframework.core.io.Resource;
  */
 public class DefaultEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-	private static Log logger = LogFactory.getLog(DefaultEnvironmentPostProcessor.class);
-	private final Resource serverResource = new ClassPathResource("/dataflow-server.yml");
-	private final Resource serverDefaultsResource = new ClassPathResource("META-INF/dataflow-server-defaults.yml");
+    private static Log logger = LogFactory.getLog(DefaultEnvironmentPostProcessor.class);
+    private final Resource serverResource = new ClassPathResource("/dataflow-server.yml");
+    private final Resource serverDefaultsResource = new ClassPathResource("META-INF/dataflow-server-defaults.yml");
 
-	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		Map<String, Object> internalDefaults = new HashMap<>();
-		Map<String, Object> defaults = new HashMap<>();
-		MutablePropertySources existingPropertySources = environment.getPropertySources();
+    private static void contributeDefaults(Map<String, Object> defaults, Resource resource) {
+        if (resource.exists()) {
+            YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
+            yamlPropertiesFactoryBean.setResources(resource);
+            yamlPropertiesFactoryBean.afterPropertiesSet();
+            Properties p = yamlPropertiesFactoryBean.getObject();
+            for (Object k : p.keySet()) {
+                String key = k.toString();
+                defaults.put(key, p.get(key));
+            }
+        }
+    }
 
-		contributeDefaults(internalDefaults, serverDefaultsResource);
-		contributeDefaults(defaults, serverResource);
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        Map<String, Object> internalDefaults = new HashMap<>();
+        Map<String, Object> defaults = new HashMap<>();
+        MutablePropertySources existingPropertySources = environment.getPropertySources();
 
-		String defaultPropertiesKey = "defaultProperties";
+        contributeDefaults(internalDefaults, serverDefaultsResource);
+        contributeDefaults(defaults, serverResource);
 
-		if (!existingPropertySources.contains(defaultPropertiesKey) ||
-				existingPropertySources.get(defaultPropertiesKey) == null) {
-			existingPropertySources.addLast(new MapPropertySource(defaultPropertiesKey, internalDefaults));
-			existingPropertySources.addLast(new MapPropertySource(defaultPropertiesKey, defaults));
-		}
-		else {
-			PropertySource<?> propertySource = existingPropertySources.get(defaultPropertiesKey);
-			@SuppressWarnings("unchecked")
-			Map<String, Object> mapOfProperties = Map.class.cast(propertySource.getSource());
-			for (String k : internalDefaults.keySet()) {
-				Set<String> setOfPropertyKeys = mapOfProperties.keySet();
-				if (!setOfPropertyKeys.contains(k)) {
-					mapOfProperties.put(k, internalDefaults.get(k));
-					logger.debug(k + '=' + internalDefaults.get(k));
-				}
-			}
-			for (String k : defaults.keySet()) {
-				Set<String> setOfPropertyKeys = mapOfProperties.keySet();
-				if (!setOfPropertyKeys.contains(k)) {
-					mapOfProperties.put(k, defaults.get(k));
-					logger.debug(k + '=' + defaults.get(k));
-				}
-			}
-		}
+        String defaultPropertiesKey = "defaultProperties";
 
-	}
+        if (!existingPropertySources.contains(defaultPropertiesKey) ||
+                existingPropertySources.get(defaultPropertiesKey) == null) {
+            existingPropertySources.addLast(new MapPropertySource(defaultPropertiesKey, internalDefaults));
+            existingPropertySources.addLast(new MapPropertySource(defaultPropertiesKey, defaults));
+        } else {
+            PropertySource<?> propertySource = existingPropertySources.get(defaultPropertiesKey);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> mapOfProperties = Map.class.cast(propertySource.getSource());
+            for (String k : internalDefaults.keySet()) {
+                Set<String> setOfPropertyKeys = mapOfProperties.keySet();
+                if (!setOfPropertyKeys.contains(k)) {
+                    mapOfProperties.put(k, internalDefaults.get(k));
+                    logger.debug(k + '=' + internalDefaults.get(k));
+                }
+            }
+            for (String k : defaults.keySet()) {
+                Set<String> setOfPropertyKeys = mapOfProperties.keySet();
+                if (!setOfPropertyKeys.contains(k)) {
+                    mapOfProperties.put(k, defaults.get(k));
+                    logger.debug(k + '=' + defaults.get(k));
+                }
+            }
+        }
 
-	@Override
-	public int getOrder() {
-		return 0;
-	}
+    }
 
-	private static void contributeDefaults(Map<String, Object> defaults, Resource resource) {
-		if (resource.exists()) {
-			YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
-			yamlPropertiesFactoryBean.setResources(resource);
-			yamlPropertiesFactoryBean.afterPropertiesSet();
-			Properties p = yamlPropertiesFactoryBean.getObject();
-			for (Object k : p.keySet()) {
-				String key = k.toString();
-				defaults.put(key, p.get(key));
-			}
-		}
-	}
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

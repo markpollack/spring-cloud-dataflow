@@ -26,22 +26,25 @@ import org.springframework.cloud.dataflow.core.DataFlowPropertyKeys;
 @ConfigurationProperties(prefix = VersionInfoProperties.VERSION_INFO_PREFIX)
 public class VersionInfoProperties {
 
-	public static final String VERSION_INFO_PREFIX = DataFlowPropertyKeys.PREFIX + "version-info";
+    public static final String VERSION_INFO_PREFIX = DataFlowPropertyKeys.PREFIX + "version-info";
 
-	private String dataflowCoreVersion;
-	private String dataflowDashboardVersion;
+    private String dataflowCoreVersion;
+    private String dataflowDashboardVersion;
 
-	public String getDataflowCoreVersion() {
-		return dataflowCoreVersion;
-	}
-	public void setDataflowCoreVersion(String dataflowCoreVersion) {
-		this.dataflowCoreVersion = dataflowCoreVersion;
-	}
-	public String getDataflowDashboardVersion() {
-		return dataflowDashboardVersion;
-	}
-	public void setDataflowDashboardVersion(String dataflowDashboardVersion) {
-		this.dataflowDashboardVersion = dataflowDashboardVersion;
-	}
+    public String getDataflowCoreVersion() {
+        return dataflowCoreVersion;
+    }
+
+    public void setDataflowCoreVersion(String dataflowCoreVersion) {
+        this.dataflowCoreVersion = dataflowCoreVersion;
+    }
+
+    public String getDataflowDashboardVersion() {
+        return dataflowDashboardVersion;
+    }
+
+    public void setDataflowDashboardVersion(String dataflowDashboardVersion) {
+        this.dataflowDashboardVersion = dataflowDashboardVersion;
+    }
 
 }

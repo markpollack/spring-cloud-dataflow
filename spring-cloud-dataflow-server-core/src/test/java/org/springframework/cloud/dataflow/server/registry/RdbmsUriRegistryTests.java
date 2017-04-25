@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -47,96 +46,94 @@ import static org.junit.Assert.fail;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class, RdbmsUriRegistryTests.TestConfig.class})
+        PropertyPlaceholderAutoConfiguration.class, RdbmsUriRegistryTests.TestConfig.class})
 public class RdbmsUriRegistryTests {
 
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	private RdbmsUriRegistry registry;
+    private RdbmsUriRegistry registry;
 
-	private JdbcTemplate template;
+    private JdbcTemplate template;
 
-	@Before
-	public void setup() throws Exception{
-		registry = new RdbmsUriRegistry(dataSource);
-		template = new JdbcTemplate(dataSource);
-		template.execute("DELETE FROM URI_REGISTRY");
-	}
-	
-	@Test
-	public void testFind() throws Exception {
-		URI test1URI = new URI("http://test1URI");
-		URI test2URI = new URI("http://test2URI");
-		registry.register("source.test1", test1URI);
-		registry.register("sink.test2", test2URI);
-		assertEquals(test1URI, registry.find("source.test1"));
-		assertEquals(test2URI, registry.find("sink.test2"));
-	}
+    @Before
+    public void setup() throws Exception {
+        registry = new RdbmsUriRegistry(dataSource);
+        template = new JdbcTemplate(dataSource);
+        template.execute("DELETE FROM URI_REGISTRY");
+    }
 
-	@Test
-	public void testFindNonRegisteredURI() throws Exception {
-		try {
-			registry.find("source.foo");
-			fail("IllegalArgumentException is expected when finding non registered app.");
-		}
-		catch (IllegalArgumentException e) {
-			assertTrue(e.getMessage().contains("No URI is registered for [source.foo]"));
-		}
-	}
+    @Test
+    public void testFind() throws Exception {
+        URI test1URI = new URI("http://test1URI");
+        URI test2URI = new URI("http://test2URI");
+        registry.register("source.test1", test1URI);
+        registry.register("sink.test2", test2URI);
+        assertEquals(test1URI, registry.find("source.test1"));
+        assertEquals(test2URI, registry.find("sink.test2"));
+    }
 
-	@Test
-	public void testFindAll() throws Exception {
-		URI test1URI = new URI("http://test1URI");
-		URI test2URI = new URI("http://test2URI");
-		Map<String, URI> map = new HashMap<>();
-		map.put("source.test1", test1URI);
-		map.put("sink.test2", test2URI);
-		registry.register("source.test1", test1URI);
-		registry.register("sink.test2", test2URI);
-		assertEquals(map, registry.findAll());
-	}
+    @Test
+    public void testFindNonRegisteredURI() throws Exception {
+        try {
+            registry.find("source.foo");
+            fail("IllegalArgumentException is expected when finding non registered app.");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("No URI is registered for [source.foo]"));
+        }
+    }
 
-	@Test
-	public void testRegisterOverwrite() throws Exception {
-		URI test1URI = new URI("http://test1URI");
-		URI test2URI = new URI("http://test2URI");
-		registry.register("source.test1", test1URI);
-		assertEquals(test1URI, registry.find("source.test1"));
-		registry.register("source.test1", test2URI);
-		assertEquals(test2URI, registry.find("source.test1"));
-	}
+    @Test
+    public void testFindAll() throws Exception {
+        URI test1URI = new URI("http://test1URI");
+        URI test2URI = new URI("http://test2URI");
+        Map<String, URI> map = new HashMap<>();
+        map.put("source.test1", test1URI);
+        map.put("sink.test2", test2URI);
+        registry.register("source.test1", test1URI);
+        registry.register("sink.test2", test2URI);
+        assertEquals(map, registry.findAll());
+    }
 
-	@Test
-	public void testUnregister() throws Exception {
-		URI test1URI = new URI("http://test1URI");
-		URI test2URI = new URI("http://test2URI");
-		registry.register("source.test1", test1URI);
-		registry.register("sink.test2", test2URI);
-		assertEquals(test1URI, registry.find("source.test1"));
-		registry.unregister("source.test1");
-		try {
-			registry.find("source.test1");
-			fail("[source.test1] should have been unregistered");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(test2URI, registry.find("sink.test2"));
-	}
+    @Test
+    public void testRegisterOverwrite() throws Exception {
+        URI test1URI = new URI("http://test1URI");
+        URI test2URI = new URI("http://test2URI");
+        registry.register("source.test1", test1URI);
+        assertEquals(test1URI, registry.find("source.test1"));
+        registry.register("source.test1", test2URI);
+        assertEquals(test2URI, registry.find("source.test1"));
+    }
 
-	@Configuration
-	protected static class TestConfig {
+    @Test
+    public void testUnregister() throws Exception {
+        URI test1URI = new URI("http://test1URI");
+        URI test2URI = new URI("http://test2URI");
+        registry.register("source.test1", test1URI);
+        registry.register("sink.test2", test2URI);
+        assertEquals(test1URI, registry.find("source.test1"));
+        registry.unregister("source.test1");
+        try {
+            registry.find("source.test1");
+            fail("[source.test1] should have been unregistered");
+        } catch (IllegalArgumentException e) {
+        }
+        assertEquals(test2URI, registry.find("sink.test2"));
+    }
 
-		@Bean
-		public FeaturesProperties featuresProperties() {
-			return new FeaturesProperties();
-		}
+    @Configuration
+    protected static class TestConfig {
 
-		@Bean
-		public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-			DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
-			definitionRepositoryInitializer.setDataSource(dataSource);
-			return definitionRepositoryInitializer;
-		}
-	}
+        @Bean
+        public FeaturesProperties featuresProperties() {
+            return new FeaturesProperties();
+        }
+
+        @Bean
+        public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
+            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+            definitionRepositoryInitializer.setDataSource(dataSource);
+            return definitionRepositoryInitializer;
+        }
+    }
 }

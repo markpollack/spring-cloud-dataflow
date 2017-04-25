@@ -41,128 +41,124 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
 /**
  * Attempts to fill in possible values after a {@literal --foo=prefix}
  * (syntactically valid) construct in the DSL.
+ *
  * @author Eric Bottard
  * @author Mark Fisher
  */
 public class ConfigurationPropertyValueHintExpansionStrategy implements ExpansionStrategy {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	private final ApplicationConfigurationMetadataResolver metadataResolver;
+    private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	@Autowired
-	private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
+    @Autowired
+    private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
 
-	ConfigurationPropertyValueHintExpansionStrategy(AppRegistry appRegistry,
-			ApplicationConfigurationMetadataResolver metadataResolver) {
-		this.appRegistry = appRegistry;
-		this.metadataResolver = metadataResolver;
-	}
+    ConfigurationPropertyValueHintExpansionStrategy(AppRegistry appRegistry,
+                                                    ApplicationConfigurationMetadataResolver metadataResolver) {
+        this.appRegistry = appRegistry;
+        this.metadataResolver = metadataResolver;
+    }
 
-	@Override
-	public boolean addProposals(String text, StreamDefinition parseResult,
-			int detailLevel, List<CompletionProposal> collector) {
-		Set<String> propertyNames = new HashSet<>(parseResult.getDeploymentOrderIterator()
-				.next().getProperties().keySet());
-		propertyNames.removeAll(CompletionUtils.IMPLICIT_PARAMETER_NAMES);
-		if (text.endsWith(" ") || propertyNames.isEmpty()) {
-			return false;
-		}
+    @Override
+    public boolean addProposals(String text, StreamDefinition parseResult,
+                                int detailLevel, List<CompletionProposal> collector) {
+        Set<String> propertyNames = new HashSet<>(parseResult.getDeploymentOrderIterator()
+                .next().getProperties().keySet());
+        propertyNames.removeAll(CompletionUtils.IMPLICIT_PARAMETER_NAMES);
+        if (text.endsWith(" ") || propertyNames.isEmpty()) {
+            return false;
+        }
 
-		String propertyName = recoverPropertyName(text);
+        String propertyName = recoverPropertyName(text);
 
-		StreamAppDefinition lastApp = parseResult.getDeploymentOrderIterator().next();
-		String alreadyTyped = lastApp.getProperties().get(propertyName);
+        StreamAppDefinition lastApp = parseResult.getDeploymentOrderIterator().next();
+        String alreadyTyped = lastApp.getProperties().get(propertyName);
 
-		String lastAppName = lastApp.getName();
-		AppRegistration lastAppRegistration = null;
-		for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
-			lastAppRegistration = appRegistry.find(lastAppName, appType);
-			if (lastAppRegistration != null) {
-				break;
-			}
-		}
+        String lastAppName = lastApp.getName();
+        AppRegistration lastAppRegistration = null;
+        for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
+            lastAppRegistration = appRegistry.find(lastAppName, appType);
+            if (lastAppRegistration != null) {
+                break;
+            }
+        }
 
-		if (lastAppRegistration == null) {
-			// Not a valid app name, do nothing
-			return false;
-		}
-		Resource metadataResource = lastAppRegistration.getMetadataResource();
+        if (lastAppRegistration == null) {
+            // Not a valid app name, do nothing
+            return false;
+        }
+        Resource metadataResource = lastAppRegistration.getMetadataResource();
 
-		CompletionProposal.Factory proposals = expanding(text);
+        CompletionProposal.Factory proposals = expanding(text);
 
-		List<ConfigurationMetadataProperty> allProps = metadataResolver.listProperties(metadataResource, true);
-		List<ConfigurationMetadataProperty> whiteListedProps = metadataResolver.listProperties(metadataResource);
+        List<ConfigurationMetadataProperty> allProps = metadataResolver.listProperties(metadataResource, true);
+        List<ConfigurationMetadataProperty> whiteListedProps = metadataResolver.listProperties(metadataResource);
 
-		URLClassLoader classLoader = null;
-		try {
-			for (ConfigurationMetadataProperty property : allProps) {
-				if (CompletionUtils.isMatchingProperty(propertyName, property, whiteListedProps)) {
-					if (classLoader == null) {
-						classLoader = metadataResolver.createAppClassLoader(metadataResource);
-					}
-					for (ValueHintProvider valueHintProvider : valueHintProviders) {
-						List<ValueHint> valueHints = valueHintProvider.generateValueHints(property, classLoader);
-						if (!valueHints.isEmpty() && valueHintProvider.isExclusive(property)) {
-							collector.clear();
-						}
-						for (ValueHint valueHint : valueHints) {
-							String candidate = String.valueOf(valueHint.getValue());
-							if (!candidate.equals(alreadyTyped) && candidate.startsWith(alreadyTyped)) {
-								collector.add(proposals.withSuffix(candidate.substring(alreadyTyped.length()),
-										valueHint.getShortDescription()));
-							}
-						}
-						if (!valueHints.isEmpty() && valueHintProvider.isExclusive(property)) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		finally {
-			if (classLoader != null) {
-				try {
-					classLoader.close();
-				}
-				catch (IOException e) {
-					// ignore
-				}
-			}
-		}
+        URLClassLoader classLoader = null;
+        try {
+            for (ConfigurationMetadataProperty property : allProps) {
+                if (CompletionUtils.isMatchingProperty(propertyName, property, whiteListedProps)) {
+                    if (classLoader == null) {
+                        classLoader = metadataResolver.createAppClassLoader(metadataResource);
+                    }
+                    for (ValueHintProvider valueHintProvider : valueHintProviders) {
+                        List<ValueHint> valueHints = valueHintProvider.generateValueHints(property, classLoader);
+                        if (!valueHints.isEmpty() && valueHintProvider.isExclusive(property)) {
+                            collector.clear();
+                        }
+                        for (ValueHint valueHint : valueHints) {
+                            String candidate = String.valueOf(valueHint.getValue());
+                            if (!candidate.equals(alreadyTyped) && candidate.startsWith(alreadyTyped)) {
+                                collector.add(proposals.withSuffix(candidate.substring(alreadyTyped.length()),
+                                        valueHint.getShortDescription()));
+                            }
+                        }
+                        if (!valueHints.isEmpty() && valueHintProvider.isExclusive(property)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (classLoader != null) {
+                try {
+                    classLoader.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	// This may be the safest way to backtrack to the property name
-	// to avoid dealing with escaped space characters, etc.
-	private String recoverPropertyName(String text) {
-		try {
-			new StreamDefinition("__dummy", text + " --");
-		}
-		catch (CheckPointedParseException exception) {
-			List<Token> tokens = exception.getTokens();
-			int end = tokens.size() - 1 - 2; // -2 for skipping dangling -- and space preceding it
-			int tokenPointer = end;
-			while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
-				tokenPointer--;
-			}
-			StringBuilder builder;
-			for (builder = new StringBuilder(); tokenPointer < end; tokenPointer++) {
-				Token t = tokens.get(tokenPointer);
-				if (t.isIdentifier()) {
-					builder.append(t.stringValue());
-				}
-				else {
-					builder.append(t.getKind().getTokenChars());
-				}
-			}
-			return builder.toString();
-		}
-		throw new AssertionError("Can't be reached");
-	}
+    // This may be the safest way to backtrack to the property name
+    // to avoid dealing with escaped space characters, etc.
+    private String recoverPropertyName(String text) {
+        try {
+            new StreamDefinition("__dummy", text + " --");
+        } catch (CheckPointedParseException exception) {
+            List<Token> tokens = exception.getTokens();
+            int end = tokens.size() - 1 - 2; // -2 for skipping dangling -- and space preceding it
+            int tokenPointer = end;
+            while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
+                tokenPointer--;
+            }
+            StringBuilder builder;
+            for (builder = new StringBuilder(); tokenPointer < end; tokenPointer++) {
+                Token t = tokens.get(tokenPointer);
+                if (t.isIdentifier()) {
+                    builder.append(t.stringValue());
+                } else {
+                    builder.append(t.getKind().getTokenChars());
+                }
+            }
+            return builder.toString();
+        }
+        throw new AssertionError("Can't be reached");
+    }
 
 }

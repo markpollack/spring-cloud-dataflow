@@ -24,45 +24,46 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * Interface defining the functionality to be provided for generating paging queries.
+ *
  * @author Glenn Renfro
  */
 public interface PagingQueryProvider {
 
-	/**
-	 * Initialize the query provider using the provided {@link DataSource} if necessary.
-	 *
-	 * @param dataSource DataSource to use for any initialization
-	 * @throws Exception if can't create the SQL for a paging query clause
-	 */
-	void init(DataSource dataSource) throws Exception;
+    /**
+     * Initialize the query provider using the provided {@link DataSource} if necessary.
+     *
+     * @param dataSource DataSource to use for any initialization
+     * @throws Exception if can't create the SQL for a paging query clause
+     */
+    void init(DataSource dataSource) throws Exception;
 
-	/**
-	 * The number of parameters that are declared in the query
-	 * @return number of parameters
-	 */
-	int getParameterCount();
+    /**
+     * The number of parameters that are declared in the query
+     *
+     * @return number of parameters
+     */
+    int getParameterCount();
 
-	/**
-	 * Indicate whether the generated queries use named parameter syntax.
-	 *
-	 * @return true if named parameter syntax is used
-	 */
-	boolean isUsingNamedParameters();
+    /**
+     * Indicate whether the generated queries use named parameter syntax.
+     *
+     * @return true if named parameter syntax is used
+     */
+    boolean isUsingNamedParameters();
 
-	/**
-	 * The sort keys.  A Map of the columns that make up the key and a Boolean indicating ascending or descending
-	 * (ascending = true).
-	 *
-	 * @return the sort keys used to order the query
-	 */
-	Map<String, Order> getSortKeys();
+    /**
+     * The sort keys.  A Map of the columns that make up the key and a Boolean indicating ascending or descending
+     * (ascending = true).
+     *
+     * @return the sort keys used to order the query
+     */
+    Map<String, Order> getSortKeys();
 
-	/**
-	 *
-	 * Generate the query that will provide the jump to item query.
-	 *
-	 * @param pageable the coordinates to pull the next page from the datasource
-	 * @return the generated query
-	 */
-	String getPageQuery(Pageable pageable);
+    /**
+     * Generate the query that will provide the jump to item query.
+     *
+     * @param pageable the coordinates to pull the next page from the datasource
+     * @return the generated query
+     */
+    String getPageQuery(Pageable pageable);
 }

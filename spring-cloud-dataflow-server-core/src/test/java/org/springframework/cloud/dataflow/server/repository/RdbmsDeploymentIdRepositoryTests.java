@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -41,54 +40,54 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class, RdbmsDeploymentIdRepositoryTests.TestConfig.class})
+        PropertyPlaceholderAutoConfiguration.class, RdbmsDeploymentIdRepositoryTests.TestConfig.class})
 public class RdbmsDeploymentIdRepositoryTests {
 
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	private DeploymentIdRepository repository;
+    private DeploymentIdRepository repository;
 
-	private JdbcTemplate template;
+    private JdbcTemplate template;
 
-	@Before
-	public void setup() throws Exception{
-		repository = new RdbmsDeploymentIdRepository(dataSource);
-		template = new JdbcTemplate(dataSource);
-		template.execute("DELETE FROM DEPLOYMENT_IDS");
-	}
-	
-	@Test
-	public void testFindOne() {
-		repository.save("key1", "time.1");
-		repository.save("key2", "log.0");
+    @Before
+    public void setup() throws Exception {
+        repository = new RdbmsDeploymentIdRepository(dataSource);
+        template = new JdbcTemplate(dataSource);
+        template.execute("DELETE FROM DEPLOYMENT_IDS");
+    }
 
-		assertEquals("log.0", repository.findOne("key2"));
-	}
+    @Test
+    public void testFindOne() {
+        repository.save("key1", "time.1");
+        repository.save("key2", "log.0");
 
-	@Test
-	public void testDelete() {
-		repository.save("key1", "time.1");
-		repository.save("key2", "log.0");
+        assertEquals("log.0", repository.findOne("key2"));
+    }
 
-		assertEquals("log.0", repository.findOne("key2"));
-		repository.delete("key2");
-		assertNull(repository.findOne("key2"));
-	}
+    @Test
+    public void testDelete() {
+        repository.save("key1", "time.1");
+        repository.save("key2", "log.0");
 
-	@Configuration
-	protected static class TestConfig {
+        assertEquals("log.0", repository.findOne("key2"));
+        repository.delete("key2");
+        assertNull(repository.findOne("key2"));
+    }
 
-		@Bean
-		public FeaturesProperties featuresProperties() {
-			return new FeaturesProperties();
-		}
+    @Configuration
+    protected static class TestConfig {
 
-		@Bean
-		public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-			DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
-			definitionRepositoryInitializer.setDataSource(dataSource);
-			return definitionRepositoryInitializer;
-		}
-	}
+        @Bean
+        public FeaturesProperties featuresProperties() {
+            return new FeaturesProperties();
+        }
+
+        @Bean
+        public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
+            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+            definitionRepositoryInitializer.setDataSource(dataSource);
+            return definitionRepositoryInitializer;
+        }
+    }
 }

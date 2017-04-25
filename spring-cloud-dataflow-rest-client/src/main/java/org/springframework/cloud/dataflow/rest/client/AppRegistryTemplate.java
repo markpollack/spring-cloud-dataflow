@@ -40,83 +40,82 @@ import org.springframework.web.client.RestTemplate;
  */
 public class AppRegistryTemplate implements AppRegistryOperations {
 
-	/**
-	 * Template used for http interaction.
-	 */
-	protected RestTemplate restTemplate;
+    /**
+     * Template for URI creation.
+     */
+    private final UriTemplate uriTemplate;
+    /**
+     * Template used for http interaction.
+     */
+    protected RestTemplate restTemplate;
 
-	/**
-	 * Template for URI creation.
-	 */
-	private final UriTemplate uriTemplate;
+    /**
+     * Construct a {@code AppRegistryTemplate} object.
+     *
+     * @param restTemplate    template for HTTP/rest commands
+     * @param resourceSupport HATEOAS link support
+     */
+    public AppRegistryTemplate(RestTemplate restTemplate, ResourceSupport resourceSupport) {
+        this.restTemplate = restTemplate;
+        this.uriTemplate = new UriTemplate(resourceSupport.getLink("apps").getHref());
+    }
 
-	/**
-	 * Construct a {@code AppRegistryTemplate} object.
-	 *
-	 * @param restTemplate template for HTTP/rest commands
-	 * @param resourceSupport HATEOAS link support
-	 */
-	public AppRegistryTemplate(RestTemplate restTemplate, ResourceSupport resourceSupport) {
-		this.restTemplate = restTemplate;
-		this.uriTemplate = new UriTemplate(resourceSupport.getLink("apps").getHref());
-	}
+    @Override
+    public PagedResources<AppRegistrationResource> list() {
+        return list(/* ApplicationType */null);
+    }
 
-	@Override
-	public PagedResources<AppRegistrationResource> list() {
-		return list(/* ApplicationType */null);
-	}
+    @Override
+    public PagedResources<AppRegistrationResource> list(ApplicationType type) {
+        String uri = uriTemplate + "?size=2000" + ((type == null) ? "" : "&type=" + type.name());
+        return restTemplate.getForObject(uri, AppRegistrationResource.Page.class);
+    }
 
-	@Override
-	public PagedResources<AppRegistrationResource> list(ApplicationType type) {
-		String uri = uriTemplate + "?size=2000" + ((type == null) ? "" : "&type=" + type.name());
-		return restTemplate.getForObject(uri, AppRegistrationResource.Page.class);
-	}
+    @Override
+    public void unregister(String name, ApplicationType applicationType) {
+        String uri = uriTemplate.toString() + "/{type}/{name}";
+        restTemplate.delete(uri, applicationType.name(), name);
+    }
 
-	@Override
-	public void unregister(String name, ApplicationType applicationType) {
-		String uri = uriTemplate.toString() + "/{type}/{name}";
-		restTemplate.delete(uri, applicationType.name(), name);
-	}
+    @Override
+    public DetailedAppRegistrationResource info(String name, ApplicationType type) {
+        String uri = uriTemplate.toString() + "/{type}/{name}";
+        return restTemplate.getForObject(uri, DetailedAppRegistrationResource.class, type, name);
+    }
 
-	@Override
-	public DetailedAppRegistrationResource info(String name, ApplicationType type) {
-		String uri = uriTemplate.toString() + "/{type}/{name}";
-		return restTemplate.getForObject(uri, DetailedAppRegistrationResource.class, type, name);
-	}
+    @Override
+    public AppRegistrationResource register(String name, ApplicationType type,
+                                            String uri, String metadataUri, boolean force) {
+        MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
+        values.add("uri", uri);
+        if (metadataUri != null) {
+            values.add("metadata-uri", metadataUri);
+        }
+        values.add("force", Boolean.toString(force));
 
-	@Override
-	public AppRegistrationResource register(String name, ApplicationType type,
-			String uri, String metadataUri, boolean force) {
-		MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
-		values.add("uri", uri);
-		if (metadataUri != null) {
-			values.add("metadata-uri", metadataUri);
-		}
-		values.add("force", Boolean.toString(force));
+        return restTemplate.postForObject(uriTemplate.toString() + "/{type}/{name}", values,
+                AppRegistrationResource.class, type, name);
+    }
 
-		return restTemplate.postForObject(uriTemplate.toString() + "/{type}/{name}", values,
-				AppRegistrationResource.class, type, name);
-	}
+    @Override
+    public PagedResources<AppRegistrationResource> importFromResource(String uri, boolean force) {
+        MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
+        values.add("uri", uri);
+        values.add("force", Boolean.toString(force));
+        return restTemplate.postForObject(uriTemplate.toString(), values,
+                AppRegistrationResource.Page.class);
+    }
 
-	@Override
-	public PagedResources<AppRegistrationResource> importFromResource(String uri, boolean force) {
-		MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
-		values.add("uri", uri);
-		values.add("force", Boolean.toString(force));
-		return restTemplate.postForObject(uriTemplate.toString(), values,
-				AppRegistrationResource.Page.class);
-	}
-
-	@Override
-	public PagedResources<AppRegistrationResource> registerAll(Properties apps, boolean force) {
-		MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
-		StringBuffer buffer = new StringBuffer();
-		for (String key : apps.stringPropertyNames()) {
-			buffer.append(String.format("%s=%s\n", key, apps.getProperty(key)));
-		}
-		values.add("apps", buffer.toString());
-		values.add("force", Boolean.toString(force));
-		return restTemplate.postForObject(uriTemplate.toString(), values,
-				AppRegistrationResource.Page.class);
-	}
+    @Override
+    public PagedResources<AppRegistrationResource> registerAll(Properties apps, boolean force) {
+        MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
+        StringBuffer buffer = new StringBuffer();
+        for (String key : apps.stringPropertyNames()) {
+            buffer.append(String.format("%s=%s\n", key, apps.getProperty(key)));
+        }
+        values.add("apps", buffer.toString());
+        values.add("force", Boolean.toString(force));
+        return restTemplate.postForObject(uriTemplate.toString(), values,
+                AppRegistrationResource.Page.class);
+    }
 }

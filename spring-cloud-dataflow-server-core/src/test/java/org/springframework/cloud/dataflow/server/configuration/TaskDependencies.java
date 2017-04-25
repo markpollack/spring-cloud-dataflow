@@ -39,32 +39,32 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @EnableSpringDataWebSupport
 public class TaskDependencies {
 
-	@Bean
-	public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
-		TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
-		taskRepositoryInitializer.setDataSource(dataSource);
-		return taskRepositoryInitializer;
-	}
+    @Bean
+    public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
+        TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
+        taskRepositoryInitializer.setDataSource(dataSource);
+        return taskRepositoryInitializer;
+    }
 
-	@Bean
-	public FeaturesProperties featuresProperties() {
-		return new FeaturesProperties();
-	}
+    @Bean
+    public FeaturesProperties featuresProperties() {
+        return new FeaturesProperties();
+    }
 
-	@Bean
-	public TaskExplorer taskExplorer(DataSource dataSource) {
-		return new SimpleTaskExplorer(new TaskExecutionDaoFactoryBean(dataSource));
-	}
+    @Bean
+    public TaskExplorer taskExplorer(DataSource dataSource) {
+        return new SimpleTaskExplorer(new TaskExecutionDaoFactoryBean(dataSource));
+    }
 
-	@Bean
-	public TaskDefinitionRepository taskDefinitionRepository(DataSource dataSource) throws Exception {
-		return new RdbmsTaskDefinitionRepository(dataSource);
-	}
+    @Bean
+    public TaskDefinitionRepository taskDefinitionRepository(DataSource dataSource) throws Exception {
+        return new RdbmsTaskDefinitionRepository(dataSource);
+    }
 
-	@Bean
-	public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-		DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
-		definitionRepositoryInitializer.setDataSource(dataSource);
-		return definitionRepositoryInitializer;
-	}
+    @Bean
+    public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
+        DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+        definitionRepositoryInitializer.setDataSource(dataSource);
+        return definitionRepositoryInitializer;
+    }
 }

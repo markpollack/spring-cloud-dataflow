@@ -35,21 +35,21 @@ import org.springframework.retry.support.RetryTemplate;
 @ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.ANALYTICS_ENABLED, matchIfMissing = true)
 public class AnalyticsConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public MetricRepository metricRepository(RedisConnectionFactory redisConnectionFactory) {
-		return new RedisMetricRepository(redisConnectionFactory);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public MetricRepository metricRepository(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisMetricRepository(redisConnectionFactory);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public FieldValueCounterRepository fieldValueCounterReader(RedisConnectionFactory redisConnectionFactory) {
-		return new RedisFieldValueCounterRepository(redisConnectionFactory, new RetryTemplate());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public FieldValueCounterRepository fieldValueCounterReader(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisFieldValueCounterRepository(redisConnectionFactory, new RetryTemplate());
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	public AggregateCounterRepository aggregateCounterReader(RedisConnectionFactory redisConnectionFactory) {
-		return new RedisAggregateCounterRepository(redisConnectionFactory, new RetryTemplate());
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public AggregateCounterRepository aggregateCounterReader(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisAggregateCounterRepository(redisConnectionFactory, new RetryTemplate());
+    }
 }

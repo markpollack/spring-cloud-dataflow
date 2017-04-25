@@ -24,13 +24,13 @@ package org.springframework.cloud.dataflow.server.repository;
  */
 public class DuplicateTaskException extends RuntimeException {
 
-	private static final long serialVersionUID = 4902348644982085508L;
+    private static final long serialVersionUID = 4902348644982085508L;
 
-	public DuplicateTaskException() {
-		super();
-	}
+    public DuplicateTaskException() {
+        super();
+    }
 
-	public DuplicateTaskException(String message) {
-		super(message);
-	}
+    public DuplicateTaskException(String message) {
+        super(message);
+    }
 }

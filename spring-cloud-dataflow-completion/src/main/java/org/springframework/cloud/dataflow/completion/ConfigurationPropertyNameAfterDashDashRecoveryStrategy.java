@@ -36,63 +36,64 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
 /**
  * Provides completion proposals when the user has typed the two dashes that
  * precede an app configuration property.
+ *
  * @author Eric Bottard
  * @author Mark Fisher
  */
 class ConfigurationPropertyNameAfterDashDashRecoveryStrategy
-		extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
+        extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	private final ApplicationConfigurationMetadataResolver metadataResolver;
+    private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	ConfigurationPropertyNameAfterDashDashRecoveryStrategy(AppRegistry appRegistry,
-	                                                       ApplicationConfigurationMetadataResolver metadataResolver) {
-		super(CheckPointedParseException.class, "file --", "file | foo --");
-		this.appRegistry = appRegistry;
-		this.metadataResolver = metadataResolver;
-	}
+    ConfigurationPropertyNameAfterDashDashRecoveryStrategy(AppRegistry appRegistry,
+                                                           ApplicationConfigurationMetadataResolver metadataResolver) {
+        super(CheckPointedParseException.class, "file --", "file | foo --");
+        this.appRegistry = appRegistry;
+        this.metadataResolver = metadataResolver;
+    }
 
-	@Override
-	public void addProposals(String dsl, CheckPointedParseException exception,
-	                         int detailLevel, List<CompletionProposal> collector) {
+    @Override
+    public void addProposals(String dsl, CheckPointedParseException exception,
+                             int detailLevel, List<CompletionProposal> collector) {
 
-		String safe = exception.getExpressionStringUntilCheckpoint();
-		StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
-		StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
+        String safe = exception.getExpressionStringUntilCheckpoint();
+        StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
+        StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
 
-		String lastAppName = lastApp.getName();
-		AppRegistration lastAppRegistration = null;
-		for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
-			lastAppRegistration = appRegistry.find(lastAppName, appType);
-			if (lastAppRegistration != null) {
-				break;
-			}
-		}
-		if (lastAppRegistration == null) {
-			// Not a valid app name, do nothing
-			return;
-		}
-		Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
+        String lastAppName = lastApp.getName();
+        AppRegistration lastAppRegistration = null;
+        for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
+            lastAppRegistration = appRegistry.find(lastAppName, appType);
+            if (lastAppRegistration != null) {
+                break;
+            }
+        }
+        if (lastAppRegistration == null) {
+            // Not a valid app name, do nothing
+            return;
+        }
+        Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
 
-		Resource metadataResource = lastAppRegistration.getMetadataResource();
+        Resource metadataResource = lastAppRegistration.getMetadataResource();
 
-		CompletionProposal.Factory proposals = expanding(dsl);
+        CompletionProposal.Factory proposals = expanding(dsl);
 
-		// For whitelisted properties, use their shortname
-		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
-			if (!alreadyPresentOptions.contains(property.getName())) {
-				collector.add(proposals.withSuffix(property.getName() + "=", property.getShortDescription()));
-			}
-		}
+        // For whitelisted properties, use their shortname
+        for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
+            if (!alreadyPresentOptions.contains(property.getName())) {
+                collector.add(proposals.withSuffix(property.getName() + "=", property.getShortDescription()));
+            }
+        }
 
-		// For other properties, use their fully qualified name
-		if (detailLevel > 1) {
-			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-				if (!alreadyPresentOptions.contains(property.getId())) {
-					collector.add(proposals.withSuffix(property.getId() + "=", property.getShortDescription()));
-				}
-			}
-		}
-	}
+        // For other properties, use their fully qualified name
+        if (detailLevel > 1) {
+            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+                if (!alreadyPresentOptions.contains(property.getId())) {
+                    collector.add(proposals.withSuffix(property.getId() + "=", property.getShortDescription()));
+                }
+            }
+        }
+    }
 }

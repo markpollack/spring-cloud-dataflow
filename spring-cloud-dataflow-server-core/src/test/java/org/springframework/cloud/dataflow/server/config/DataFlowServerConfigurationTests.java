@@ -23,7 +23,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -53,108 +52,108 @@ import static org.mockito.Mockito.mock;
  */
 public class DataFlowServerConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-	private ConfigurableEnvironment environment;
-	private MutablePropertySources propertySources;
+    private AnnotationConfigApplicationContext context;
+    private ConfigurableEnvironment environment;
+    private MutablePropertySources propertySources;
 
-	@Before
-	public void setup() {
-		context = new AnnotationConfigApplicationContext();
-		context.setId("testDataFlowConfig");
-		context.register(
-				DataFlowServerConfigurationTests.TestConfiguration.class,
-				RedisAutoConfiguration.class,
-				SecurityAutoConfiguration.class,
-				DataFlowServerAutoConfiguration.class,
-				DataFlowControllerAutoConfiguration.class,
-				DataSourceAutoConfiguration.class,
-				DataFlowServerConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		environment = new StandardEnvironment();
-		propertySources = environment.getPropertySources();
-	}
+    @Before
+    public void setup() {
+        context = new AnnotationConfigApplicationContext();
+        context.setId("testDataFlowConfig");
+        context.register(
+                DataFlowServerConfigurationTests.TestConfiguration.class,
+                RedisAutoConfiguration.class,
+                SecurityAutoConfiguration.class,
+                DataFlowServerAutoConfiguration.class,
+                DataFlowControllerAutoConfiguration.class,
+                DataSourceAutoConfiguration.class,
+                DataFlowServerConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        environment = new StandardEnvironment();
+        propertySources = environment.getPropertySources();
+    }
 
-	@After
-	public void teardown() {
-		if(context != null && context.isActive()) {
-			context.close();
-		}
-	}
+    @After
+    public void teardown() {
+        if (context != null && context.isActive()) {
+            context.close();
+        }
+    }
 
-	/**
-	 * Verify that embedded server starts if h2 url is specified with default
-	 * properties.
-	 */
-	@Test
-	public void testStartEmbeddedH2Server(){
-		Map myMap = new HashMap();
-		myMap.put("spring.datasource.url", "jdbc:h2:tcp://localhost:19092/mem:dataflow");
-		propertySources.addFirst(new MapPropertySource("EnvrionmentTestPropsource", myMap));
-		context.setEnvironment(environment);
+    /**
+     * Verify that embedded server starts if h2 url is specified with default
+     * properties.
+     */
+    @Test
+    public void testStartEmbeddedH2Server() {
+        Map myMap = new HashMap();
+        myMap.put("spring.datasource.url", "jdbc:h2:tcp://localhost:19092/mem:dataflow");
+        propertySources.addFirst(new MapPropertySource("EnvrionmentTestPropsource", myMap));
+        context.setEnvironment(environment);
 
-		context.refresh();
-		assertTrue(context.containsBean("initH2TCPServer"));
-	}
+        context.refresh();
+        assertTrue(context.containsBean("initH2TCPServer"));
+    }
 
-	/**
-	 * Verify that embedded h2 does not start if h2 url is specified with
-	 * with the spring.dataflow.embedded.database.enabled is set to false.
-	 * @throws Throwable if any error occurs and should be handled by the caller.
-	 */
-	@Test (expected = ConnectException.class)
-	public void testDoNotStartEmbeddedH2Server() throws Throwable{
-		Throwable exceptionResult = null;
-		Map myMap = new HashMap();
-		myMap.put("spring.datasource.url", "jdbc:h2:tcp://localhost:19092/mem:dataflow");
-		myMap.put("spring.dataflow.embedded.database.enabled", "false");
-		propertySources.addFirst(new MapPropertySource("EnvrionmentTestPropsource", myMap));
-		context.setEnvironment(environment);
-		try {
-			context.refresh();
-		}
-		catch (BeanCreationException exception) {
-			exceptionResult = exception.getRootCause();
-		}
-		assertNotNull(exceptionResult);
-		throw exceptionResult;
-	}
+    /**
+     * Verify that embedded h2 does not start if h2 url is specified with
+     * with the spring.dataflow.embedded.database.enabled is set to false.
+     *
+     * @throws Throwable if any error occurs and should be handled by the caller.
+     */
+    @Test(expected = ConnectException.class)
+    public void testDoNotStartEmbeddedH2Server() throws Throwable {
+        Throwable exceptionResult = null;
+        Map myMap = new HashMap();
+        myMap.put("spring.datasource.url", "jdbc:h2:tcp://localhost:19092/mem:dataflow");
+        myMap.put("spring.dataflow.embedded.database.enabled", "false");
+        propertySources.addFirst(new MapPropertySource("EnvrionmentTestPropsource", myMap));
+        context.setEnvironment(environment);
+        try {
+            context.refresh();
+        } catch (BeanCreationException exception) {
+            exceptionResult = exception.getRootCause();
+        }
+        assertNotNull(exceptionResult);
+        throw exceptionResult;
+    }
 
-	/**
-	 * 	Verify that the embedded server is not started if h2 string is not
-	 * 	specified.
-	 */
-	@Test
-	public void testNoServer(){
-		context.refresh();
-		assertFalse(context.containsBean("initH2TCPServer"));
-	}
+    /**
+     * Verify that the embedded server is not started if h2 string is not
+     * specified.
+     */
+    @Test
+    public void testNoServer() {
+        context.refresh();
+        assertFalse(context.containsBean("initH2TCPServer"));
+    }
 
-	@EnableDataFlowServer
-	private static class TestConfiguration {
+    @EnableDataFlowServer
+    private static class TestConfiguration {
 
-		@Bean
-		public AppDeployer appDeployer() {
-			return mock(AppDeployer.class);
-		}
+        @Bean
+        public AppDeployer appDeployer() {
+            return mock(AppDeployer.class);
+        }
 
-		@Bean
-		public TaskLauncher taskLauncher() {
-			return mock(TaskLauncher.class);
-		}
+        @Bean
+        public TaskLauncher taskLauncher() {
+            return mock(TaskLauncher.class);
+        }
 
-		@Bean
-		public AuthenticationManager authenticationManager() {
-			return mock(AuthenticationManager.class);
-		}
+        @Bean
+        public AuthenticationManager authenticationManager() {
+            return mock(AuthenticationManager.class);
+        }
 
-		@Bean
-		public TaskService taskService() {
-			return mock(DefaultTaskService.class);
-		}
+        @Bean
+        public TaskService taskService() {
+            return mock(DefaultTaskService.class);
+        }
 
-		@Bean
-		public TaskRepository taskRepository() {
-			return mock(TaskRepository.class);
-		}
-	}
+        @Bean
+        public TaskRepository taskRepository() {
+            return mock(TaskRepository.class);
+        }
+    }
 }

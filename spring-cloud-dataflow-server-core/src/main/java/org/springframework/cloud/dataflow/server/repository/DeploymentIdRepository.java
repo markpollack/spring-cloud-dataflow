@@ -28,26 +28,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeploymentIdRepository extends org.springframework.data.repository.Repository<String, String> {
 
-	/**
-	 * Associates a given app deployment key with an identifier.
-	 *
-	 * @param key the app deployment key
-	 * @param id the identifier
-	 */
-	void save(String key, String id);
+    /**
+     * Associates a given app deployment key with an identifier.
+     *
+     * @param key the app deployment key
+     * @param id  the identifier
+     */
+    void save(String key, String id);
 
-	/**
-	 * Find an identifier by its key.
-	 *
-	 * @param key the app deployment key
-	 * @return the identifier
-	 */
-	String findOne(String key);
+    /**
+     * Find an identifier by its key.
+     *
+     * @param key the app deployment key
+     * @return the identifier
+     */
+    String findOne(String key);
 
-	/**
-	 * Delete the entries associated with the app deployment key.
-	 *
-	 * @param key the app deployment key
-	 */
-	void delete(String key);
+    /**
+     * Delete the entries associated with the app deployment key.
+     *
+     * @param key the app deployment key
+     */
+    void delete(String key);
 }

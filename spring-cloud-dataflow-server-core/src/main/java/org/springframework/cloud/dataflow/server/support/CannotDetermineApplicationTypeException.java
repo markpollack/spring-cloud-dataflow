@@ -25,13 +25,12 @@ import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
  * determined.
  *
  * @author Gunnar Hillert
- *
  */
 public class CannotDetermineApplicationTypeException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public CannotDetermineApplicationTypeException(String message) {
-		super(message);
-	}
+    public CannotDetermineApplicationTypeException(String message) {
+        super(message);
+    }
 }

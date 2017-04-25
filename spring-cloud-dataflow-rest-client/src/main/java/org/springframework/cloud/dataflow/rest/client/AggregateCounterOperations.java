@@ -24,35 +24,37 @@ import org.springframework.hateoas.PagedResources;
 
 /**
  * Interface defining operations available when dealing with Aggregate Counters.
- * 
+ *
  * @author Ilayaperumal Gopinathan
  */
 public interface AggregateCounterOperations {
 
-	/**
-	 * Retrieve the information for the given named AggregateCounter
-	 *
-	 * @param name the name of the aggregate counter to retrieve information for
-	 * @param from the start date
-	 * @param to  the end date
-	 * @param resolution the resolution (minute, hour, day, or month) of the aggregate counter data
-	 * @return the aggregate counter
-	 */
-	AggregateCounterResource retrieve(String name, Date from, Date to, Resolution resolution);
+    /**
+     * Retrieve the information for the given named AggregateCounter
+     *
+     * @param name       the name of the aggregate counter to retrieve information for
+     * @param from       the start date
+     * @param to         the end date
+     * @param resolution the resolution (minute, hour, day, or month) of the aggregate counter data
+     * @return the aggregate counter
+     */
+    AggregateCounterResource retrieve(String name, Date from, Date to, Resolution resolution);
 
-	/**
-	 * Retrieve basic information (i.e. names) for existing counters.
-	 * @return the paged list of metrics
-	 */
-	PagedResources<MetricResource> list();
+    /**
+     * Retrieve basic information (i.e. names) for existing counters.
+     *
+     * @return the paged list of metrics
+     */
+    PagedResources<MetricResource> list();
 
-	/**
-	 * Delete the aggregate counter with given name.
-	 * @param name the name of the aggregate counter
-	 */
-	void reset(String name);
+    /**
+     * Delete the aggregate counter with given name.
+     *
+     * @param name the name of the aggregate counter
+     */
+    void reset(String name);
 
-	public static enum Resolution {
-		minute, hour, day, month
-	}
+    public static enum Resolution {
+        minute, hour, day, month
+    }
 }

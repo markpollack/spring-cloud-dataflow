@@ -27,153 +27,153 @@ import java.util.Map;
  */
 public class RuntimeEnvironmentDetails {
 
-	/**
-	 * The implementation version of this deployer.
-	 */
-	private String deployerImplementationVersion;
+    /**
+     * The implementation version of this deployer.
+     */
+    private String deployerImplementationVersion;
 
-	/**
-	 * The name of this deployer (could be simple class name).
-	 */
-	private String deployerName;
+    /**
+     * The name of this deployer (could be simple class name).
+     */
+    private String deployerName;
 
-	/**
-	 * The SPI version used by this deployer.
-	 */
-	private String deployerSpiVersion;
+    /**
+     * The SPI version used by this deployer.
+     */
+    private String deployerSpiVersion;
 
-	/**
-	 * The Java version used by this deployer.
-	 */
-	private String javaVersion;
+    /**
+     * The Java version used by this deployer.
+     */
+    private String javaVersion;
 
-	/**
-	 * The deployment platform API for this deployer.
-	 */
-	private String platformApiVersion;
+    /**
+     * The deployment platform API for this deployer.
+     */
+    private String platformApiVersion;
 
-	/**
-	 * The client library version used by this deployer.
-	 */
-	private String platformClientVersion;
+    /**
+     * The client library version used by this deployer.
+     */
+    private String platformClientVersion;
 
-	/**
-	 * The version running on the host of the platform used by this deployer.
-	 */
-	private String platformHostVersion;
+    /**
+     * The version running on the host of the platform used by this deployer.
+     */
+    private String platformHostVersion;
 
-	/**
-	 * Platform specific properties
-	 */
-	private Map<String, String> platformSpecificInfo = new HashMap<>();
+    /**
+     * Platform specific properties
+     */
+    private Map<String, String> platformSpecificInfo = new HashMap<>();
 
-	/**
-	 * The deployment platform for this deployer.
-	 */
-	private String platformType;
+    /**
+     * The deployment platform for this deployer.
+     */
+    private String platformType;
 
-	/**
-	 * The Spring Boot version used by this deployer.
-	 */
-	private String springBootVersion;
+    /**
+     * The Spring Boot version used by this deployer.
+     */
+    private String springBootVersion;
 
-	/**
-	 * The Spring Framework version used by this deployer.
-	 */
-	private String springVersion;
+    /**
+     * The Spring Framework version used by this deployer.
+     */
+    private String springVersion;
 
-	/**
-	 * Default constructor for serialization frameworks.
-	 */
-	public RuntimeEnvironmentDetails() {
-	}
+    /**
+     * Default constructor for serialization frameworks.
+     */
+    public RuntimeEnvironmentDetails() {
+    }
 
-	public String getDeployerImplementationVersion() {
-		return deployerImplementationVersion;
-	}
+    public String getDeployerImplementationVersion() {
+        return deployerImplementationVersion;
+    }
 
-	public String getDeployerName() {
-		return deployerName;
-	}
+    public void setDeployerImplementationVersion(String deployerImplementationVersion) {
+        this.deployerImplementationVersion = deployerImplementationVersion;
+    }
 
-	public String getDeployerSpiVersion() {
-		return deployerSpiVersion;
-	}
+    public String getDeployerName() {
+        return deployerName;
+    }
 
-	public String getJavaVersion() {
-		return javaVersion;
-	}
+    public void setDeployerName(String deployerName) {
+        this.deployerName = deployerName;
+    }
 
-	public String getPlatformApiVersion() {
-		return platformApiVersion;
-	}
+    public String getDeployerSpiVersion() {
+        return deployerSpiVersion;
+    }
 
-	public String getPlatformClientVersion() {
-		return platformClientVersion;
-	}
+    public void setDeployerSpiVersion(String deployerSpiVersion) {
+        this.deployerSpiVersion = deployerSpiVersion;
+    }
 
-	public String getPlatformHostVersion() {
-		return platformHostVersion;
-	}
+    public String getJavaVersion() {
+        return javaVersion;
+    }
 
-	public Map<String, String> getPlatformSpecificInfo() {
-		return platformSpecificInfo;
-	}
+    public void setJavaVersion(String javaVersion) {
+        this.javaVersion = javaVersion;
+    }
 
-	public String getPlatformType() {
-		return platformType;
-	}
+    public String getPlatformApiVersion() {
+        return platformApiVersion;
+    }
 
-	public String getSpringBootVersion() {
-		return springBootVersion;
-	}
+    public void setPlatformApiVersion(String platformApiVersion) {
+        this.platformApiVersion = platformApiVersion;
+    }
 
-	public String getSpringVersion() {
-		return springVersion;
-	}
+    public String getPlatformClientVersion() {
+        return platformClientVersion;
+    }
 
-	public void setDeployerImplementationVersion(String deployerImplementationVersion) {
-		this.deployerImplementationVersion = deployerImplementationVersion;
-	}
+    public void setPlatformClientVersion(String platformClientVersion) {
+        this.platformClientVersion = platformClientVersion;
+    }
 
-	public void setDeployerName(String deployerName) {
-		this.deployerName = deployerName;
-	}
+    public String getPlatformHostVersion() {
+        return platformHostVersion;
+    }
 
-	public void setDeployerSpiVersion(String deployerSpiVersion) {
-		this.deployerSpiVersion = deployerSpiVersion;
-	}
+    public void setPlatformHostVersion(String platformHostVersion) {
+        this.platformHostVersion = platformHostVersion;
+    }
 
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion = javaVersion;
-	}
+    public Map<String, String> getPlatformSpecificInfo() {
+        return platformSpecificInfo;
+    }
 
-	public void setPlatformApiVersion(String platformApiVersion) {
-		this.platformApiVersion = platformApiVersion;
-	}
+    public void setPlatformSpecificInfo(Map<String, String> platformSpecificInfo) {
+        this.platformSpecificInfo = platformSpecificInfo;
+    }
 
-	public void setPlatformClientVersion(String platformClientVersion) {
-		this.platformClientVersion = platformClientVersion;
-	}
+    public String getPlatformType() {
+        return platformType;
+    }
 
-	public void setPlatformHostVersion(String platformHostVersion) {
-		this.platformHostVersion = platformHostVersion;
-	}
+    public void setPlatformType(String platformType) {
+        this.platformType = platformType;
+    }
 
-	public void setPlatformSpecificInfo(Map<String, String> platformSpecificInfo) {
-		this.platformSpecificInfo = platformSpecificInfo;
-	}
+    public String getSpringBootVersion() {
+        return springBootVersion;
+    }
 
-	public void setPlatformType(String platformType) {
-		this.platformType = platformType;
-	}
+    public void setSpringBootVersion(String springBootVersion) {
+        this.springBootVersion = springBootVersion;
+    }
 
-	public void setSpringBootVersion(String springBootVersion) {
-		this.springBootVersion = springBootVersion;
-	}
+    public String getSpringVersion() {
+        return springVersion;
+    }
 
-	public void setSpringVersion(String springVersion) {
-		this.springVersion = springVersion;
-	}
+    public void setSpringVersion(String springVersion) {
+        this.springVersion = springVersion;
+    }
 
 }

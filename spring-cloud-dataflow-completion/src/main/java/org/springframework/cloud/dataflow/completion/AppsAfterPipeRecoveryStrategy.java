@@ -34,32 +34,32 @@ import static org.springframework.cloud.dataflow.core.ApplicationType.sink;
  * @author Mark Fisher
  */
 public class AppsAfterPipeRecoveryStrategy extends
-		StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
+        StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	AppsAfterPipeRecoveryStrategy(AppRegistry appRegistry) {
-		super(CheckPointedParseException.class, "foo |", "foo | ");
-		this.appRegistry = appRegistry;
-	}
+    AppsAfterPipeRecoveryStrategy(AppRegistry appRegistry) {
+        super(CheckPointedParseException.class, "foo |", "foo | ");
+        this.appRegistry = appRegistry;
+    }
 
 
-	@Override
-	public void addProposals(String dsl, CheckPointedParseException exception,
-			int detailLevel, List<CompletionProposal> collector) {
+    @Override
+    public void addProposals(String dsl, CheckPointedParseException exception,
+                             int detailLevel, List<CompletionProposal> collector) {
 
-		StreamDefinition streamDefinition = new StreamDefinition("__dummy",
-				exception.getExpressionStringUntilCheckpoint());
+        StreamDefinition streamDefinition = new StreamDefinition("__dummy",
+                exception.getExpressionStringUntilCheckpoint());
 
-		CompletionProposal.Factory proposals = CompletionProposal.expanding(dsl);
+        CompletionProposal.Factory proposals = CompletionProposal.expanding(dsl);
 
-		// We only support full streams at the moment, so completions can only be processor or sink
-		for (AppRegistration appRegistration : appRegistry.findAll()) {
-			if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
-				String expansion = CompletionUtils.maybeQualifyWithLabel(appRegistration.getName(), streamDefinition);
-				collector.add(proposals.withSeparateTokens(expansion,
-						"Continue stream definition with a " + appRegistration.getType()));
-			}
-		}
-	}
+        // We only support full streams at the moment, so completions can only be processor or sink
+        for (AppRegistration appRegistration : appRegistry.findAll()) {
+            if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
+                String expansion = CompletionUtils.maybeQualifyWithLabel(appRegistration.getName(), streamDefinition);
+                collector.add(proposals.withSeparateTokens(expansion,
+                        "Continue stream definition with a " + appRegistration.getType()));
+            }
+        }
+    }
 }

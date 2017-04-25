@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -57,505 +56,507 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class, RdbmsStreamDefinitionRepositoryTests.TestConfig.class})
+        PropertyPlaceholderAutoConfiguration.class, RdbmsStreamDefinitionRepositoryTests.TestConfig.class})
 public class RdbmsStreamDefinitionRepositoryTests {
 
-	@Autowired
-	private DataSource dataSource;
-
-	@Autowired
-	private StreamDefinitionRepository repository;
-
-	private JdbcTemplate template;
-
-	@Configuration
-	static class TestConfig {
-
-		@Bean
-		public FeaturesProperties featuresProperties() {
-			return new FeaturesProperties();
-		}
-
-		@Bean
-		public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-			DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
-			definitionRepositoryInitializer.setDataSource(dataSource);
-			return definitionRepositoryInitializer;
-		}
-
-		@Bean
-		@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
-		public StreamDefinitionRepository rdbmsStreamDefinitionRepository(DataSource dataSource) {
-			return new RdbmsStreamDefinitionRepository(dataSource);
-		}
-	}
-
-	@Before
-	public void setup() throws Exception{
-		template = new JdbcTemplate(dataSource);
-		template.execute("DELETE FROM STREAM_DEFINITIONS");
-	}
-
-	@Test
-	public void testFindOne() {
-		StreamDefinition definition1 = new StreamDefinition("stream1", "time | log");
-		StreamDefinition definition2 = new StreamDefinition("stream2", "http | jdbc");
-		StreamDefinition definition3 = new StreamDefinition("stream3", "twitterstream | hdfs");
-		repository.save(definition1);
-		repository.save(definition2);
-		repository.save(definition3);
-
-		assertEquals(definition1, repository.findOne("stream1"));
-		assertEquals(definition2, repository.findOne("stream2"));
-		assertEquals(definition3, repository.findOne("stream3"));
-	}
-
-	@Test
-	public void testFindAllNone() {
-		Pageable pageable = new PageRequest(1, 10);
-
-		Page<StreamDefinition> page = repository.findAll(pageable);
-
-		assertEquals(page.getTotalElements(), 0);
-		assertEquals(page.getNumber(), 1);
-		assertEquals(page.getNumberOfElements(), 0);
-		assertEquals(page.getSize(), 10);
-		assertEquals(page.getContent().size(), 0);
-	}
-
-	@Test
-	public void testFindAllPageable() {
-		initializeRepository();
-		Pageable pageable = new PageRequest(0, 10);
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private StreamDefinitionRepository repository;
+
+    private JdbcTemplate template;
+
+    @Before
+    public void setup() throws Exception {
+        template = new JdbcTemplate(dataSource);
+        template.execute("DELETE FROM STREAM_DEFINITIONS");
+    }
+
+    @Test
+    public void testFindOne() {
+        StreamDefinition definition1 = new StreamDefinition("stream1", "time | log");
+        StreamDefinition definition2 = new StreamDefinition("stream2", "http | jdbc");
+        StreamDefinition definition3 = new StreamDefinition("stream3", "twitterstream | hdfs");
+        repository.save(definition1);
+        repository.save(definition2);
+        repository.save(definition3);
 
-		Page<StreamDefinition> page = repository.findAll(pageable);
+        assertEquals(definition1, repository.findOne("stream1"));
+        assertEquals(definition2, repository.findOne("stream2"));
+        assertEquals(definition3, repository.findOne("stream3"));
+    }
 
-		assertEquals(page.getTotalElements(), 3);
-		assertEquals(page.getNumber(), 0);
-		assertEquals(page.getNumberOfElements(), 3);
-		assertEquals(page.getSize(), 10);
-		assertEquals(page.getContent().size(), 3);
-	}
+    @Test
+    public void testFindAllNone() {
+        Pageable pageable = new PageRequest(1, 10);
 
-	@Test(expected = DuplicateStreamDefinitionException.class)
-	public void testSaveDuplicate() {
-		repository.save(new StreamDefinition("stream1", "time | log"));
-		repository.save(new StreamDefinition("stream1", "time | log"));
-	}
+        Page<StreamDefinition> page = repository.findAll(pageable);
 
-	@Test(expected = DuplicateStreamDefinitionException.class)
-	public void testSaveAllDuplicate() {
-		List<StreamDefinition> definitions = new ArrayList<>();
-		definitions.add(new StreamDefinition("stream1", "time | log"));
+        assertEquals(page.getTotalElements(), 0);
+        assertEquals(page.getNumber(), 1);
+        assertEquals(page.getNumberOfElements(), 0);
+        assertEquals(page.getSize(), 10);
+        assertEquals(page.getContent().size(), 0);
+    }
 
-		repository.save(new StreamDefinition("stream1", "time | log"));
-		repository.save(definitions);
-	}
+    @Test
+    public void testFindAllPageable() {
+        initializeRepository();
+        Pageable pageable = new PageRequest(0, 10);
 
-	@Test
-	public void testFindOneNoneFound() {
-		assertNull(repository.findOne("notFound"));
+        Page<StreamDefinition> page = repository.findAll(pageable);
 
-		initializeRepository();
+        assertEquals(page.getTotalElements(), 3);
+        assertEquals(page.getNumber(), 0);
+        assertEquals(page.getNumberOfElements(), 3);
+        assertEquals(page.getSize(), 10);
+        assertEquals(page.getContent().size(), 3);
+    }
 
-		assertNull(repository.findOne("notFound"));
-	}
+    @Test(expected = DuplicateStreamDefinitionException.class)
+    public void testSaveDuplicate() {
+        repository.save(new StreamDefinition("stream1", "time | log"));
+        repository.save(new StreamDefinition("stream1", "time | log"));
+    }
 
-	@Test
-	public void testExists() {
-		assertFalse(repository.exists("exists"));
+    @Test(expected = DuplicateStreamDefinitionException.class)
+    public void testSaveAllDuplicate() {
+        List<StreamDefinition> definitions = new ArrayList<>();
+        definitions.add(new StreamDefinition("stream1", "time | log"));
 
-		repository.save(new StreamDefinition("exists", "time | log"));
+        repository.save(new StreamDefinition("stream1", "time | log"));
+        repository.save(definitions);
+    }
 
-		assertTrue(repository.exists("exists"));
-		assertFalse(repository.exists("nothere"));
-	}
+    @Test
+    public void testFindOneNoneFound() {
+        assertNull(repository.findOne("notFound"));
 
-	@Test
-	public void testFindAll() {
-		assertFalse(repository.findAll().iterator().hasNext());
+        initializeRepository();
 
-		initializeRepository();
+        assertNull(repository.findOne("notFound"));
+    }
 
-		Iterable<StreamDefinition> items = repository.findAll();
+    @Test
+    public void testExists() {
+        assertFalse(repository.exists("exists"));
 
-		int count = 0;
-		for (@SuppressWarnings("unused") StreamDefinition item : items) {
-			count++;
-		}
+        repository.save(new StreamDefinition("exists", "time | log"));
 
-		assertEquals(3, count);
-	}
+        assertTrue(repository.exists("exists"));
+        assertFalse(repository.exists("nothere"));
+    }
 
-	@Test
-	public void testFindAllSpecific() {
-		assertFalse(repository.findAll().iterator().hasNext());
+    @Test
+    public void testFindAll() {
+        assertFalse(repository.findAll().iterator().hasNext());
 
-		initializeRepository();
+        initializeRepository();
 
-		List<String> names = new ArrayList<>();
-		names.add("stream1");
-		names.add("stream2");
+        Iterable<StreamDefinition> items = repository.findAll();
 
-		Iterable<StreamDefinition> items = repository.findAll(names);
+        int count = 0;
+        for (@SuppressWarnings("unused") StreamDefinition item : items) {
+            count++;
+        }
 
-		int count = 0;
-		for (@SuppressWarnings("unused") StreamDefinition item : items) {
-			count++;
-		}
+        assertEquals(3, count);
+    }
 
-		assertEquals(2, count);
-	}
+    @Test
+    public void testFindAllSpecific() {
+        assertFalse(repository.findAll().iterator().hasNext());
 
-	@Test
-	public void testCount() {
-		assertEquals(0, repository.count());
+        initializeRepository();
 
-		initializeRepository();
+        List<String> names = new ArrayList<>();
+        names.add("stream1");
+        names.add("stream2");
 
-		assertEquals(3, repository.count());
-	}
+        Iterable<StreamDefinition> items = repository.findAll(names);
 
-	@Test
-	public void testDeleteNotFound() {
-		repository.delete("notFound");
-	}
+        int count = 0;
+        for (@SuppressWarnings("unused") StreamDefinition item : items) {
+            count++;
+        }
 
-	@Test
-	public void testDelete() {
-		initializeRepository();
+        assertEquals(2, count);
+    }
 
-		assertNotNull(repository.findOne("stream2"));
+    @Test
+    public void testCount() {
+        assertEquals(0, repository.count());
 
-		repository.delete("stream2");
+        initializeRepository();
 
-		assertNull(repository.findOne("stream2"));
-	}
+        assertEquals(3, repository.count());
+    }
 
-	@Test
-	public void testDeleteDefinition() {
-		initializeRepository();
+    @Test
+    public void testDeleteNotFound() {
+        repository.delete("notFound");
+    }
 
-		assertNotNull(repository.findOne("stream2"));
+    @Test
+    public void testDelete() {
+        initializeRepository();
+
+        assertNotNull(repository.findOne("stream2"));
 
-		repository.delete(new StreamDefinition("stream2", "time | log"));
-
-		assertNull(repository.findOne("stream2"));
-	}
-
-	@Test
-	public void testDeleteMultipleDefinitions() {
-		initializeRepository();
-
-		assertNotNull(repository.findOne("stream1"));
-		assertNotNull(repository.findOne("stream2"));
-
-		repository.delete(Arrays.asList(new StreamDefinition("stream1", "time | log"), new StreamDefinition("stream2", "time | log")));
-
-		assertNull(repository.findOne("stream1"));
-		assertNull(repository.findOne("stream2"));
-	}
-
-	@Test
-	public void testDeleteAllNone() {
-		repository.deleteAll();
-	}
-
-	@Test
-	public void testDeleteAll() {
-		initializeRepository();
-
-		assertEquals(3, repository.count());
-		repository.deleteAll();
-		assertEquals(0, repository.count());
-	}
-
-	private void initializeRepository() {
-		repository.save(new StreamDefinition("stream1", "time | log"));
-		repository.save(new StreamDefinition("stream2", "time | log"));
-		repository.save(new StreamDefinition("stream3", "time | log"));
-	}
-
-	protected void initializeRepositoryNotInOrder() {
-		repository.save(new StreamDefinition("stream2", "time | logB"));
-		repository.save(new StreamDefinition("stream3", "time | logA"));
-		repository.save(new StreamDefinition("stream1", "time | logC"));
-	}
-
-	@Test
-	public void findAllSortTestASC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllSort(sort, names);
-	}
-
-	@Test
-	public void findAllPageableTestASC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllSortTestDESC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		String[] names = new String[]{"stream3", "stream2", "stream1"};
-		findAllSort(sort, names);
-	}
-
-	@Test
-	public void findAllPageableTestDESC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		String[] names = new String[]{"stream3", "stream2", "stream1"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllSortTestASCNameOnly() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllSort(sort, names);
-	}
-
-	@Test
-	public void findAllPageableTestASCNameOnly() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllSortTestASCDefinitionOnly() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllSort(sort, names);
-	}
-
-	@Test
-	public void findAllPageableTestDESCDefinitionOnly() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllPageablePage2TestASC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(1, 2, sort);
-		String[] names = new String[]{"stream3"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllPageablePage2TestDESC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		Pageable pageable = new PageRequest(1, 2, sort);
-		String[] names = new String[]{"stream1"};
-		findAllPageable(pageable, names);
-	}
-
-	@Test
-	public void findAllPageableDefinitionStringTestDESC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		Pageable pageable = new PageRequest(1, 2, sort);
-		String[] names = new String[]{"stream3"};
-		findAllPageable(pageable, names);
-	}
-
-	// Search Tests
-
-	@Test
-	public void findAllUsingSearchPageablePage2TestDESC() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		Pageable pageable = new PageRequest(1, 2, sort);
-		final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream1"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableDefinitionStringTestDESC() {
-		final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		final Pageable pageable = new PageRequest(0, 2, sort);
-		final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{ "stream1", "stream2"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageablePartialDefinitionStringTestDESC() {
-		final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		final Pageable pageable = new PageRequest(0, 10, sort);
-		final SearchPageable searchPageable = new SearchPageable(pageable, "eam");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{ "stream1", "stream2", "stream3"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableDefinitionStringTestDESC2() {
-		final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-		final Pageable pageable = new PageRequest(1, 2, sort);
-		final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{ "stream3"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC1() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC2() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "stream1");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream1"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC3() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "str");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream1", "stream2", "stream3"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC4() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "m1");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream1"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC5() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "m3");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream3"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC6() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "does not exist");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");;
-
-		String[] names = new String[]{};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC7() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "logB");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");;
-
-		String[] names = new String[]{"stream2"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	@Test
-	public void findAllUsingSearchPageableTestASC8() {
-		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
-		Pageable pageable = new PageRequest(0, 10, sort);
-
-		final SearchPageable searchPageable = new SearchPageable(pageable, "LOGB");
-		searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-
-		String[] names = new String[]{"stream2"};
-		findAllUsingSearchPageable(searchPageable, names);
-	}
-
-	private void findAllUsingSearchPageable(SearchPageable searchPageable, String[] expectedOrder) {
-
-		assertFalse(repository.findAll().iterator().hasNext());
-		initializeRepositoryNotInOrder();
-
-		final Iterable<StreamDefinition> items = repository.search(searchPageable);
-
-		makeSortAssertions(items, expectedOrder);
-
-	}
-
-	private void findAllPageable(Pageable pageable, String[] expectedOrder) {
-
-		assertFalse(repository.findAll().iterator().hasNext());
-		initializeRepositoryNotInOrder();
-
-		final Iterable<StreamDefinition> items = repository.findAll(pageable);
-
-		makeSortAssertions(items, expectedOrder);
-
-	}
-
-	private void findAllSort(Sort sort, String[] expectedOrder) {
-		assertFalse(repository.findAll().iterator().hasNext());
-		initializeRepositoryNotInOrder();
-
-		final Iterable<StreamDefinition> items = repository.findAll(sort);
-
-		makeSortAssertions(items, expectedOrder);
-	}
-
-	private void makeSortAssertions(Iterable<StreamDefinition> items, String[] expectedOrder) {
-		int count = 0;
-		List<StreamDefinition> definitions = new ArrayList<>();
-		for (StreamDefinition item : items) {
-			definitions.add(item);
-			count++;
-		}
-
-		assertEquals(expectedOrder.length, count);
-		int currentDefinitionOffset = 0;
-		for (String name : expectedOrder) {
-			assertEquals("definition name retrieve was not in the order expected", name,
-					definitions.get(currentDefinitionOffset++).getName());
-		}
-	}
+        repository.delete("stream2");
+
+        assertNull(repository.findOne("stream2"));
+    }
+
+    @Test
+    public void testDeleteDefinition() {
+        initializeRepository();
+
+        assertNotNull(repository.findOne("stream2"));
+
+        repository.delete(new StreamDefinition("stream2", "time | log"));
+
+        assertNull(repository.findOne("stream2"));
+    }
+
+    @Test
+    public void testDeleteMultipleDefinitions() {
+        initializeRepository();
+
+        assertNotNull(repository.findOne("stream1"));
+        assertNotNull(repository.findOne("stream2"));
+
+        repository.delete(Arrays.asList(new StreamDefinition("stream1", "time | log"), new StreamDefinition("stream2", "time | log")));
+
+        assertNull(repository.findOne("stream1"));
+        assertNull(repository.findOne("stream2"));
+    }
+
+    @Test
+    public void testDeleteAllNone() {
+        repository.deleteAll();
+    }
+
+    @Test
+    public void testDeleteAll() {
+        initializeRepository();
+
+        assertEquals(3, repository.count());
+        repository.deleteAll();
+        assertEquals(0, repository.count());
+    }
+
+    private void initializeRepository() {
+        repository.save(new StreamDefinition("stream1", "time | log"));
+        repository.save(new StreamDefinition("stream2", "time | log"));
+        repository.save(new StreamDefinition("stream3", "time | log"));
+    }
+
+    protected void initializeRepositoryNotInOrder() {
+        repository.save(new StreamDefinition("stream2", "time | logB"));
+        repository.save(new StreamDefinition("stream3", "time | logA"));
+        repository.save(new StreamDefinition("stream1", "time | logC"));
+    }
+
+    @Test
+    public void findAllSortTestASC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllSort(sort, names);
+    }
+
+    @Test
+    public void findAllPageableTestASC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllSortTestDESC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        String[] names = new String[]{"stream3", "stream2", "stream1"};
+        findAllSort(sort, names);
+    }
+
+    @Test
+    public void findAllPageableTestDESC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        String[] names = new String[]{"stream3", "stream2", "stream1"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllSortTestASCNameOnly() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllSort(sort, names);
+    }
+
+    @Test
+    public void findAllPageableTestASCNameOnly() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllSortTestASCDefinitionOnly() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllSort(sort, names);
+    }
+
+    @Test
+    public void findAllPageableTestDESCDefinitionOnly() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllPageablePage2TestASC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(1, 2, sort);
+        String[] names = new String[]{"stream3"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllPageablePage2TestDESC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Pageable pageable = new PageRequest(1, 2, sort);
+        String[] names = new String[]{"stream1"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllPageableDefinitionStringTestDESC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Pageable pageable = new PageRequest(1, 2, sort);
+        String[] names = new String[]{"stream3"};
+        findAllPageable(pageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageablePage2TestDESC() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Pageable pageable = new PageRequest(1, 2, sort);
+        final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    // Search Tests
+
+    @Test
+    public void findAllUsingSearchPageableDefinitionStringTestDESC() {
+        final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        final Pageable pageable = new PageRequest(0, 2, sort);
+        final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1", "stream2"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageablePartialDefinitionStringTestDESC() {
+        final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        final Pageable pageable = new PageRequest(0, 10, sort);
+        final SearchPageable searchPageable = new SearchPageable(pageable, "eam");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableDefinitionStringTestDESC2() {
+        final Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        final Pageable pageable = new PageRequest(1, 2, sort);
+        final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream3"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC1() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC2() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "stream1");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC3() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "str");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1", "stream2", "stream3"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC4() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "m1");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream1"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC5() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "m3");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream3"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC6() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "does not exist");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+        ;
+
+        String[] names = new String[]{};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC7() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "logB");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+        ;
+
+        String[] names = new String[]{"stream2"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    @Test
+    public void findAllUsingSearchPageableTestASC8() {
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Pageable pageable = new PageRequest(0, 10, sort);
+
+        final SearchPageable searchPageable = new SearchPageable(pageable, "LOGB");
+        searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+
+        String[] names = new String[]{"stream2"};
+        findAllUsingSearchPageable(searchPageable, names);
+    }
+
+    private void findAllUsingSearchPageable(SearchPageable searchPageable, String[] expectedOrder) {
+
+        assertFalse(repository.findAll().iterator().hasNext());
+        initializeRepositoryNotInOrder();
+
+        final Iterable<StreamDefinition> items = repository.search(searchPageable);
+
+        makeSortAssertions(items, expectedOrder);
+
+    }
+
+    private void findAllPageable(Pageable pageable, String[] expectedOrder) {
+
+        assertFalse(repository.findAll().iterator().hasNext());
+        initializeRepositoryNotInOrder();
+
+        final Iterable<StreamDefinition> items = repository.findAll(pageable);
+
+        makeSortAssertions(items, expectedOrder);
+
+    }
+
+    private void findAllSort(Sort sort, String[] expectedOrder) {
+        assertFalse(repository.findAll().iterator().hasNext());
+        initializeRepositoryNotInOrder();
+
+        final Iterable<StreamDefinition> items = repository.findAll(sort);
+
+        makeSortAssertions(items, expectedOrder);
+    }
+
+    private void makeSortAssertions(Iterable<StreamDefinition> items, String[] expectedOrder) {
+        int count = 0;
+        List<StreamDefinition> definitions = new ArrayList<>();
+        for (StreamDefinition item : items) {
+            definitions.add(item);
+            count++;
+        }
+
+        assertEquals(expectedOrder.length, count);
+        int currentDefinitionOffset = 0;
+        for (String name : expectedOrder) {
+            assertEquals("definition name retrieve was not in the order expected", name,
+                    definitions.get(currentDefinitionOffset++).getName());
+        }
+    }
+
+    @Configuration
+    static class TestConfig {
+
+        @Bean
+        public FeaturesProperties featuresProperties() {
+            return new FeaturesProperties();
+        }
+
+        @Bean
+        public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
+            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+            definitionRepositoryInitializer.setDataSource(dataSource);
+            return definitionRepositoryInitializer;
+        }
+
+        @Bean
+        @ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
+        public StreamDefinitionRepository rdbmsStreamDefinitionRepository(DataSource dataSource) {
+            return new RdbmsStreamDefinitionRepository(dataSource);
+        }
+    }
 
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import org.springframework.hateoas.ResourceSupport;
 
 /**
@@ -30,43 +29,43 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class CompletionProposalsResource extends ResourceSupport {
 
-	private List<Proposal> proposals = new ArrayList<>();
+    private List<Proposal> proposals = new ArrayList<>();
 
-	public void addProposal(String text, String explanation) {
-		proposals.add(new Proposal(text, explanation));
-	}
+    public void addProposal(String text, String explanation) {
+        proposals.add(new Proposal(text, explanation));
+    }
 
-	public List<Proposal> getProposals() {
-		return proposals;
-	}
+    public List<Proposal> getProposals() {
+        return proposals;
+    }
 
-	/**
-	 * Represents a completion proposal for the DSL when using <i>e.g.</i> TAB completion in the Shell.
-	 *
-	 * @author Eric Bottard
-	 */
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class Proposal {
+    /**
+     * Represents a completion proposal for the DSL when using <i>e.g.</i> TAB completion in the Shell.
+     *
+     * @author Eric Bottard
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Proposal {
 
-		private String text;
+        private String text;
 
-		private String explanation;
+        private String explanation;
 
-		private Proposal() {
-			// No-arg constructor for Json serialization purposes
-		}
+        private Proposal() {
+            // No-arg constructor for Json serialization purposes
+        }
 
-		public Proposal(String text, String explanation) {
-			this.text = text;
-			this.explanation = explanation;
-		}
+        public Proposal(String text, String explanation) {
+            this.text = text;
+            this.explanation = explanation;
+        }
 
-		public String getText() {
-			return text;
-		}
+        public String getText() {
+            return text;
+        }
 
-		public String getExplanation() {
-			return explanation;
-		}
-	}
+        public String getExplanation() {
+            return explanation;
+        }
+    }
 }

@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.junit.Test;
-
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.core.io.ClassPathResource;
 
@@ -38,33 +37,33 @@ import static org.junit.Assert.assertThat;
  */
 public class BootApplicationConfigurationMetadataResolverTests {
 
-	private ApplicationConfigurationMetadataResolver resolver = new BootApplicationConfigurationMetadataResolver();
+    private ApplicationConfigurationMetadataResolver resolver = new BootApplicationConfigurationMetadataResolver();
 
-	@Test
-	public void appSpecificWhitelistedPropsShouldBeVisible() {
-		List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()));
-		assertThat(properties, hasItem(configPropertyIdentifiedAs("filter.expression")));
-		assertThat(properties, hasItem(configPropertyIdentifiedAs("some.other.property.whitelisted.prefix.expresso2")));
-	}
+    @Test
+    public void appSpecificWhitelistedPropsShouldBeVisible() {
+        List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()));
+        assertThat(properties, hasItem(configPropertyIdentifiedAs("filter.expression")));
+        assertThat(properties, hasItem(configPropertyIdentifiedAs("some.other.property.whitelisted.prefix.expresso2")));
+    }
 
-	@Test
-	public void otherPropertiesShouldOnlyBeVisibleInExtensiveCall() {
-		List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()));
-		assertThat(properties, not(hasItem(configPropertyIdentifiedAs("some.prefix.hidden.by.default.secret"))));
-		properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()), true);
-		assertThat(properties, hasItem(configPropertyIdentifiedAs("some.prefix.hidden.by.default.secret")));
-	}
+    @Test
+    public void otherPropertiesShouldOnlyBeVisibleInExtensiveCall() {
+        List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()));
+        assertThat(properties, not(hasItem(configPropertyIdentifiedAs("some.prefix.hidden.by.default.secret"))));
+        properties = resolver.listProperties(new ClassPathResource("apps/filter-processor", getClass()), true);
+        assertThat(properties, hasItem(configPropertyIdentifiedAs("some.prefix.hidden.by.default.secret")));
+    }
 
-	@Test
-	public void shouldReturnEverythingWhenNoDescriptors() {
-		List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/no-whitelist", getClass()));
-		List<ConfigurationMetadataProperty> full = resolver.listProperties(new ClassPathResource("apps/no-whitelist", getClass()), true);
-		assertThat(properties.size(), greaterThan(0));
-		assertThat(properties.size(), is(full.size()));
-	}
+    @Test
+    public void shouldReturnEverythingWhenNoDescriptors() {
+        List<ConfigurationMetadataProperty> properties = resolver.listProperties(new ClassPathResource("apps/no-whitelist", getClass()));
+        List<ConfigurationMetadataProperty> full = resolver.listProperties(new ClassPathResource("apps/no-whitelist", getClass()), true);
+        assertThat(properties.size(), greaterThan(0));
+        assertThat(properties.size(), is(full.size()));
+    }
 
-	private Matcher<ConfigurationMetadataProperty> configPropertyIdentifiedAs(String name) {
-		return hasProperty("id", is(name));
-	}
+    private Matcher<ConfigurationMetadataProperty> configPropertyIdentifiedAs(String name) {
+        return hasProperty("id", is(name));
+    }
 
 }

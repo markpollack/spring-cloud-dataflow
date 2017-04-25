@@ -32,24 +32,23 @@ import org.springframework.util.Assert;
  */
 class ExpandOneDashToTwoDashesTaskRecoveryStrategy extends StacktraceFingerprintingTaskRecoveryStrategy<ParseException> {
 
-	@Autowired
-	private ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy recoveryAfterDashDash;
+    @Autowired
+    private ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy recoveryAfterDashDash;
 
-	public ExpandOneDashToTwoDashesTaskRecoveryStrategy() {
-		super(ParseException.class, "file -");
-	}
+    public ExpandOneDashToTwoDashesTaskRecoveryStrategy() {
+        super(ParseException.class, "file -");
+    }
 
-	@Override
-	public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal> proposals) {
-		// Pretend there was an additional dash and invoke the dedicated strategy for that case
-		String withDashDash = dsl + "-";
-		try {
-			new TaskDefinition("__dummy", withDashDash);
-		}
-		catch (CheckPointedParseException recoverable) {
-			Assert.isTrue(recoveryAfterDashDash.shouldTrigger(withDashDash, recoverable));
-			recoveryAfterDashDash.addProposals(withDashDash, recoverable, detailLevel, proposals);
-		}
-	}
+    @Override
+    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal> proposals) {
+        // Pretend there was an additional dash and invoke the dedicated strategy for that case
+        String withDashDash = dsl + "-";
+        try {
+            new TaskDefinition("__dummy", withDashDash);
+        } catch (CheckPointedParseException recoverable) {
+            Assert.isTrue(recoveryAfterDashDash.shouldTrigger(withDashDash, recoverable));
+            recoveryAfterDashDash.addProposals(withDashDash, recoverable, detailLevel, proposals);
+        }
+    }
 
 }

@@ -37,71 +37,70 @@ import org.springframework.util.Assert;
 @Deprecated
 public class RedisUriRegistry implements UriRegistry {
 
-	/**
-	 * Redis operations template.
-	 */
-	private final RedisOperations<String, String> redisOperations;
+    /**
+     * Redis operations template.
+     */
+    private final RedisOperations<String, String> redisOperations;
 
 
-	/**
-	 * Construct a {@code RedisArtifactRegistry} with the provided
-	 * {@link RedisConnectionFactory}.
-	 *
-	 * @param redisConnectionFactory connection factory for Redis
-	 */
-	public RedisUriRegistry(RedisConnectionFactory redisConnectionFactory) {
-		redisOperations = new StringRedisTemplate(redisConnectionFactory);
-	}
+    /**
+     * Construct a {@code RedisArtifactRegistry} with the provided
+     * {@link RedisConnectionFactory}.
+     *
+     * @param redisConnectionFactory connection factory for Redis
+     */
+    public RedisUriRegistry(RedisConnectionFactory redisConnectionFactory) {
+        redisOperations = new StringRedisTemplate(redisConnectionFactory);
+    }
 
-	@Override
-	public URI find(String key) {
-		String uri = hashOps().get(key);
-		Assert.notNull(uri, String.format("No URI registered for %s", key));
-		return toUri(uri);
-	}
+    @Override
+    public URI find(String key) {
+        String uri = hashOps().get(key);
+        Assert.notNull(uri, String.format("No URI registered for %s", key));
+        return toUri(uri);
+    }
 
-	@Override
-	public Map<String, URI> findAll() {
-		Map<String, URI> map = new HashMap<>();
-		for (Map.Entry<String, String> entry : hashOps().entries().entrySet()) {
-			map.put(entry.getKey(), toUri(entry.getValue()));
-		}
-		return map;
-	}
+    @Override
+    public Map<String, URI> findAll() {
+        Map<String, URI> map = new HashMap<>();
+        for (Map.Entry<String, String> entry : hashOps().entries().entrySet()) {
+            map.put(entry.getKey(), toUri(entry.getValue()));
+        }
+        return map;
+    }
 
-	@Override
-	public void register(String key, URI uri) {
-		hashOps().put(key, uri.toString());
-	}
+    @Override
+    public void register(String key, URI uri) {
+        hashOps().put(key, uri.toString());
+    }
 
-	@Override
-	public void unregister(String key) {
-		hashOps().delete(key);
-	}
+    @Override
+    public void unregister(String key) {
+        hashOps().delete(key);
+    }
 
-	/**
-	 * Convert the provided string to a {@link URI}.
-	 *
-	 * @param s string to convert to URI
-	 * @return URI for string
-	 * @throws IllegalStateException if URI creation throws {@link URISyntaxException}
-	 */
-	private URI toUri(String s) {
-		try {
-			return new URI(s);
-		}
-		catch (URISyntaxException e) {
-			throw new IllegalStateException(e);
-		}
-	}
+    /**
+     * Convert the provided string to a {@link URI}.
+     *
+     * @param s string to convert to URI
+     * @return URI for string
+     * @throws IllegalStateException if URI creation throws {@link URISyntaxException}
+     */
+    private URI toUri(String s) {
+        try {
+            return new URI(s);
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-	/**
-	 * Return the {@link BoundHashOperations} operation for Redis.
-	 *
-	 * @return {@code BoundHashOperations} for Redis
-	 */
-	private BoundHashOperations<String, String, String> hashOps() {
-		return this.redisOperations.boundHashOps("spring.cloud.resource.uri");
-	}
+    /**
+     * Return the {@link BoundHashOperations} operation for Redis.
+     *
+     * @return {@code BoundHashOperations} for Redis
+     */
+    private BoundHashOperations<String, String, String> hashOps() {
+        return this.redisOperations.boundHashOps("spring.cloud.resource.uri");
+    }
 
 }

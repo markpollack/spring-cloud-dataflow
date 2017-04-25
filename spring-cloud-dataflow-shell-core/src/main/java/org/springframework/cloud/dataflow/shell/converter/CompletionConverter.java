@@ -37,85 +37,82 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompletionConverter implements Converter<String> {
 
-	private static final Pattern NUMBER_OF_INVOCATIONS_CAPTURE = Pattern.compile(String.format(".*%s(\\d+).*",
-			TAB_COMPLETION_COUNT_PREFIX));
+    private static final Pattern NUMBER_OF_INVOCATIONS_CAPTURE = Pattern.compile(String.format(".*%s(\\d+).*",
+            TAB_COMPLETION_COUNT_PREFIX));
+    /**
+     * To appear in the optionContext. Triggers the use of this converter and
+     * specifies which kind of completion is expected.
+     */
+    private static final String COMPLETION_CONTEXT_PREFIX = "completion-";
+    @Autowired
+    private DataFlowShell dataFlowShell;
 
-	@Autowired
-	private DataFlowShell dataFlowShell;
+    @Override
+    public boolean supports(Class<?> type, String optionContext) {
+        return type == String.class && completionKind(optionContext) != null;
+    }
 
-	/**
-	 * To appear in the optionContext. Triggers the use of this converter and
-	 * specifies which kind of completion is expected.
-	 */
-	private static final String COMPLETION_CONTEXT_PREFIX = "completion-";
+    private String completionKind(String optionContext) {
+        String[] options = optionContext.split(" ");
+        for (String option : options) {
+            if (option.startsWith(COMPLETION_CONTEXT_PREFIX)) {
+                return option.substring(COMPLETION_CONTEXT_PREFIX.length());
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public boolean supports(Class<?> type, String optionContext) {
-		return type == String.class && completionKind(optionContext) != null;
-	}
+    @Override
+    public String convertFromText(String value, Class<?> targetType, String optionContext) {
+        return value;
+    }
 
-	private String completionKind(String optionContext) {
-		String[] options = optionContext.split(" ");
-		for (String option : options) {
-			if (option.startsWith(COMPLETION_CONTEXT_PREFIX)) {
-				return option.substring(COMPLETION_CONTEXT_PREFIX.length());
-			}
-		}
-		return null;
-	}
+    @Override
+    public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
+                                        String optionContext, MethodTarget target) {
+        String start = (existingData.startsWith("'") || existingData.startsWith("\"")) ? existingData.substring(1)
+                : existingData;
 
-	@Override
-	public String convertFromText(String value, Class<?> targetType, String optionContext) {
-		return value;
-	}
+        try {
+            int successiveInvocations = determineNumberOfInvocations(optionContext);
+            String kind = completionKind(optionContext);
+            CompletionProposalsResource candidates;
+            switch (kind) {
+                case "stream":
+                    candidates = completionOperations().streamCompletions(start, successiveInvocations);
+                    break;
+                case "task":
+                    candidates = completionOperations().taskCompletions(start, successiveInvocations);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported completion kind: " + kind);
+            }
+            for (CompletionProposalsResource.Proposal candidate : candidates.getProposals()) {
+                completions.add(new Completion(candidate.getText()));
+            }
+            return false;
+        }
+        // Protect from exception in non-command code
+        catch (Exception e) {
+            return false;
+        }
+    }
 
-	@Override
-	public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
-			String optionContext, MethodTarget target) {
-		String start = (existingData.startsWith("'") || existingData.startsWith("\"")) ? existingData.substring(1)
-				: existingData;
+    /**
+     * Reads the {@link Converter#TAB_COMPLETION_COUNT_PREFIX} information and determines how many
+     * times the user has pressed the TAB key.
+     */
+    private int determineNumberOfInvocations(String optionContext) {
+        Matcher matcher = NUMBER_OF_INVOCATIONS_CAPTURE.matcher(optionContext);
+        if (matcher.matches()) {
+            return Integer.parseInt(matcher.group(1));
+        } else {
+            return 1;
+        }
+    }
 
-		try {
-			int successiveInvocations = determineNumberOfInvocations(optionContext);
-			String kind = completionKind(optionContext);
-			CompletionProposalsResource candidates;
-			switch (kind) {
-				case "stream":
-					candidates = completionOperations().streamCompletions(start, successiveInvocations);
-					break;
-				case "task":
-					candidates = completionOperations().taskCompletions(start, successiveInvocations);
-					break;
-				default:
-					throw new IllegalArgumentException("Unsupported completion kind: " + kind);
-			}
-			for (CompletionProposalsResource.Proposal candidate : candidates.getProposals()) {
-				completions.add(new Completion(candidate.getText()));
-			}
-			return false;
-		}
-		// Protect from exception in non-command code
-		catch (Exception e) {
-			return false;
-		}
-	}
-
-	/**
-	 * Reads the {@link Converter#TAB_COMPLETION_COUNT_PREFIX} information and determines how many
-	 * times the user has pressed the TAB key.
-	 */
-	private int determineNumberOfInvocations(String optionContext) {
-		Matcher matcher = NUMBER_OF_INVOCATIONS_CAPTURE.matcher(optionContext);
-		if (matcher.matches()) {
-			return Integer.parseInt(matcher.group(1));
-		}
-		else {
-			return 1;
-		}
-	}
-
-	private CompletionOperations completionOperations() {
-		return dataFlowShell.getDataFlowOperations().completionOperations();
-	}
+    private CompletionOperations completionOperations() {
+        return dataFlowShell.getDataFlowOperations().completionOperations();
+    }
 
 }

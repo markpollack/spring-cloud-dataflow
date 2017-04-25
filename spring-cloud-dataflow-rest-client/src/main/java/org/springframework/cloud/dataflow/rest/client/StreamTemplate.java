@@ -35,77 +35,77 @@ import org.springframework.web.client.RestTemplate;
  */
 public class StreamTemplate implements StreamOperations {
 
-	public static final String DEFINITIONS_REL = "streams/definitions";
+    public static final String DEFINITIONS_REL = "streams/definitions";
 
-	private static final String DEFINITION_REL = "streams/definitions/definition";
+    private static final String DEFINITION_REL = "streams/definitions/definition";
 
-	private static final String DEPLOYMENTS_REL = "streams/deployments";
+    private static final String DEPLOYMENTS_REL = "streams/deployments";
 
-	private static final String DEPLOYMENT_REL = "streams/deployments/deployment";
+    private static final String DEPLOYMENT_REL = "streams/deployments/deployment";
 
-	private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-	private final Link definitionsLink;
+    private final Link definitionsLink;
 
-	private final Link definitionLink;
+    private final Link definitionLink;
 
-	private final Link deploymentsLink;
+    private final Link deploymentsLink;
 
-	private final Link deploymentLink;
+    private final Link deploymentLink;
 
-	StreamTemplate(RestTemplate restTemplate, ResourceSupport resources) {
-		Assert.notNull(resources, "URI Resources can't be null");
-		Assert.notNull(resources.getLink(DEFINITIONS_REL), "Definitions relation is required");
-		Assert.notNull(resources.getLink(DEFINITION_REL), "Definition relation is required");
-		Assert.notNull(resources.getLink(DEPLOYMENTS_REL), "Deployments relation is required");
-		Assert.notNull(resources.getLink(DEPLOYMENT_REL), "Deployment relation is required");
-		this.restTemplate = restTemplate;
-		this.definitionsLink = resources.getLink(DEFINITIONS_REL);
-		this.deploymentsLink = resources.getLink(DEPLOYMENTS_REL);
-		this.definitionLink = resources.getLink(DEFINITION_REL);
-		this.deploymentLink = resources.getLink(DEPLOYMENT_REL);
-	}
+    StreamTemplate(RestTemplate restTemplate, ResourceSupport resources) {
+        Assert.notNull(resources, "URI Resources can't be null");
+        Assert.notNull(resources.getLink(DEFINITIONS_REL), "Definitions relation is required");
+        Assert.notNull(resources.getLink(DEFINITION_REL), "Definition relation is required");
+        Assert.notNull(resources.getLink(DEPLOYMENTS_REL), "Deployments relation is required");
+        Assert.notNull(resources.getLink(DEPLOYMENT_REL), "Deployment relation is required");
+        this.restTemplate = restTemplate;
+        this.definitionsLink = resources.getLink(DEFINITIONS_REL);
+        this.deploymentsLink = resources.getLink(DEPLOYMENTS_REL);
+        this.definitionLink = resources.getLink(DEFINITION_REL);
+        this.deploymentLink = resources.getLink(DEPLOYMENT_REL);
+    }
 
-	@Override
-	public StreamDefinitionResource.Page list() {
-		String uriTemplate = definitionsLink.expand().getHref();
-		uriTemplate = uriTemplate + "?size=2000";
-		return restTemplate.getForObject(uriTemplate, StreamDefinitionResource.Page.class);
-	}
+    @Override
+    public StreamDefinitionResource.Page list() {
+        String uriTemplate = definitionsLink.expand().getHref();
+        uriTemplate = uriTemplate + "?size=2000";
+        return restTemplate.getForObject(uriTemplate, StreamDefinitionResource.Page.class);
+    }
 
-	@Override
-	public StreamDefinitionResource createStream(String name, String definition, boolean deploy) {
-		MultiValueMap<String, Object> values = new LinkedMultiValueMap<>();
-		values.add("name", name);
-		values.add("definition", definition);
-		values.add("deploy", Boolean.toString(deploy));
-		StreamDefinitionResource stream = restTemplate.postForObject(
-				definitionsLink.expand().getHref(), values, StreamDefinitionResource.class);
-		return stream;
-	}
+    @Override
+    public StreamDefinitionResource createStream(String name, String definition, boolean deploy) {
+        MultiValueMap<String, Object> values = new LinkedMultiValueMap<>();
+        values.add("name", name);
+        values.add("definition", definition);
+        values.add("deploy", Boolean.toString(deploy));
+        StreamDefinitionResource stream = restTemplate.postForObject(
+                definitionsLink.expand().getHref(), values, StreamDefinitionResource.class);
+        return stream;
+    }
 
-	@Override
-	public void deploy(String name, Map<String, String> properties) {
-		restTemplate.postForObject(deploymentLink.expand(name).getHref(), properties, Object.class);
-	}
+    @Override
+    public void deploy(String name, Map<String, String> properties) {
+        restTemplate.postForObject(deploymentLink.expand(name).getHref(), properties, Object.class);
+    }
 
-	@Override
-	public void undeploy(String name) {
-		restTemplate.delete(deploymentLink.expand(name).getHref());
-	}
+    @Override
+    public void undeploy(String name) {
+        restTemplate.delete(deploymentLink.expand(name).getHref());
+    }
 
-	@Override
-	public void undeployAll() {
-		restTemplate.delete(deploymentsLink.getHref());
-	}
+    @Override
+    public void undeployAll() {
+        restTemplate.delete(deploymentsLink.getHref());
+    }
 
-	@Override
-	public void destroy(String name) {
-		restTemplate.delete(definitionLink.expand(name).getHref());
-	}
+    @Override
+    public void destroy(String name) {
+        restTemplate.delete(definitionLink.expand(name).getHref());
+    }
 
-	@Override
-	public void destroyAll() {
-		restTemplate.delete(definitionsLink.getHref());
-	}
+    @Override
+    public void destroyAll() {
+        restTemplate.delete(definitionsLink.getHref());
+    }
 }

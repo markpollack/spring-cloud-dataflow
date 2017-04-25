@@ -15,7 +15,7 @@
 
         <!-- Annotations -->
         <!--<module name="AnnotationUseStyle">-->
-            <!--<property name="elementStyle" value="compact"/>-->
+        <!--<property name="elementStyle" value="compact"/>-->
         <!--</module>-->
         <module name="MissingOverride"/>
         <module name="PackageAnnotation"/>
@@ -39,9 +39,9 @@
 
         <!-- tabs instead of spaces -->
         <!--<module name="RegexpSinglelineJava">-->
-            <!--<property name="format" value="^\t* "/>-->
-            <!--<property name="message" value="Indent must use tab characters"/>-->
-            <!--<property name="ignoreComments" value="true"/>-->
+        <!--<property name="format" value="^\t* "/>-->
+        <!--<property name="message" value="Indent must use tab characters"/>-->
+        <!--<property name="ignoreComments" value="true"/>-->
         <!--</module>-->
 
         <!-- Class Design -->
@@ -83,8 +83,8 @@
         <!-- Imports -->
         <!--<module name="AvoidStarImport"/>-->
         <!--<module name="AvoidStaticImport">-->
-            <!--<property name="excludes"-->
-                      <!--value="org.junit.Assert.*,org.mockito.Mockito.*,org.mockito.Matchers.*,org.hamcrest.Matchers.*,org.assertj.core.api.Assertions.*"/>-->
+        <!--<property name="excludes"-->
+        <!--value="org.junit.Assert.*,org.mockito.Mockito.*,org.mockito.Matchers.*,org.hamcrest.Matchers.*,org.assertj.core.api.Assertions.*"/>-->
         <!--</module>-->
         <!--<module name="FallThrough"/>-->
         <module name="ImportOrder">
@@ -95,16 +95,16 @@
             <property name="sortStaticImportsAlphabetically" value="true"/>
         </module>
         <!--<module name="IllegalImport">-->
-            <!--<property name="illegalPkgs" value="org.slf4j"/>-->
+        <!--<property name="illegalPkgs" value="org.slf4j"/>-->
         <!--</module>-->
         <module name="RedundantImport"/>
         <!--<module name="ReturnCount">-->
-            <!--<property name="max" value="0"/>-->
-            <!--<property name="tokens" value="CTOR_DEF"/>-->
+        <!--<property name="max" value="0"/>-->
+        <!--<property name="tokens" value="CTOR_DEF"/>-->
         <!--</module>-->
         <!--<module name="ReturnCount">-->
-            <!--<property name="max" value="1"/>-->
-            <!--<property name="tokens" value="LAMBDA"/>-->
+        <!--<property name="max" value="1"/>-->
+        <!--<property name="tokens" value="LAMBDA"/>-->
         <!--</module>-->
         <!--
         <module name="ReturnCount">
@@ -125,10 +125,10 @@
 
         <!-- Regexp -->
         <!--<module name="RegexpSinglelineJava">-->
-            <!--<property name="format" value="^\t* +\t*\S"/>-->
-            <!--<property name="message"-->
-                      <!--value="Line has leading space characters; indentation should be performed with tabs only."/>-->
-            <!--<property name="ignoreComments" value="true"/>-->
+        <!--<property name="format" value="^\t* +\t*\S"/>-->
+        <!--<property name="message"-->
+        <!--value="Line has leading space characters; indentation should be performed with tabs only."/>-->
+        <!--<property name="ignoreComments" value="true"/>-->
         <!--</module>-->
         <!--
         <module name="Regexp">

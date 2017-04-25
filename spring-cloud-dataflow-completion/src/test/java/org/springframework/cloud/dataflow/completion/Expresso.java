@@ -22,5 +22,5 @@ package org.springframework.cloud.dataflow.completion;
  * @author Eric Bottard
  */
 public enum Expresso {
-	SINGLE, DOUBLE;
+    SINGLE, DOUBLE;
 }

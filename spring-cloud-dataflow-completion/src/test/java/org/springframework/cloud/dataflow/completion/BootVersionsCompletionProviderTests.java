@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -52,103 +51,102 @@ import static org.springframework.cloud.dataflow.completion.Proposals.proposalTh
 @SpringBootTest(classes = {CompletionConfiguration.class, BootVersionsCompletionProviderTests.Mocks.class})
 public class BootVersionsCompletionProviderTests {
 
-	@Autowired
-	private StreamCompletionProvider completionProvider;
+    @Autowired
+    private StreamCompletionProvider completionProvider;
 
-	@Test
-	public void testBoot13Layout() {
-		List<CompletionProposal> result = completionProvider.complete("boot13 --", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot13 --level=")),
-				proposalThat(is("boot13 --number=")),
-				proposalThat(is("boot13 --some-string="))
-		));
+    @Test
+    public void testBoot13Layout() {
+        List<CompletionProposal> result = completionProvider.complete("boot13 --", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot13 --level=")),
+                proposalThat(is("boot13 --number=")),
+                proposalThat(is("boot13 --some-string="))
+        ));
 
-		// Test that custom classes can also be loaded correctly
-		result = completionProvider.complete("boot13 --level=", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot13 --level=low")),
-				proposalThat(is("boot13 --level=high"))
-		));
+        // Test that custom classes can also be loaded correctly
+        result = completionProvider.complete("boot13 --level=", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot13 --level=low")),
+                proposalThat(is("boot13 --level=high"))
+        ));
 
-		result = completionProvider.complete("boot13 --number=", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot13 --number=one")),
-				proposalThat(is("boot13 --number=two"))
-		));
-	}
+        result = completionProvider.complete("boot13 --number=", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot13 --number=one")),
+                proposalThat(is("boot13 --number=two"))
+        ));
+    }
 
-	@Test
-	public void testBoot14Layout() {
-		List<CompletionProposal> result = completionProvider.complete("boot14 --", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot14 --level=")),
-				proposalThat(is("boot14 --number=")),
-				proposalThat(is("boot14 --some-string="))
-		));
+    @Test
+    public void testBoot14Layout() {
+        List<CompletionProposal> result = completionProvider.complete("boot14 --", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot14 --level=")),
+                proposalThat(is("boot14 --number=")),
+                proposalThat(is("boot14 --some-string="))
+        ));
 
-		// Test that custom classes can also be loaded correctly
-		result = completionProvider.complete("boot14 --level=", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot14 --level=very_low")),
-				proposalThat(is("boot14 --level=very_high"))
-		));
+        // Test that custom classes can also be loaded correctly
+        result = completionProvider.complete("boot14 --level=", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot14 --level=very_low")),
+                proposalThat(is("boot14 --level=very_high"))
+        ));
 
-		result = completionProvider.complete("boot14 --number=", 0);
-		assertThat(result, hasItems(
-				proposalThat(is("boot14 --number=one")),
-				proposalThat(is("boot14 --number=two"))
-		));
+        result = completionProvider.complete("boot14 --number=", 0);
+        assertThat(result, hasItems(
+                proposalThat(is("boot14 --number=one")),
+                proposalThat(is("boot14 --number=two"))
+        ));
 
-	}
+    }
 
 
-	/**
-	 * A set of mocks that consider the contents of the {@literal boot_versions/} directory as app
-	 * archives.
-	 *
-	 * @author Eric Bottard
-	 * @author Mark Fisher
-	 */
-	@Configuration
-	public static class Mocks {
+    /**
+     * A set of mocks that consider the contents of the {@literal boot_versions/} directory as app
+     * archives.
+     *
+     * @author Eric Bottard
+     * @author Mark Fisher
+     */
+    @Configuration
+    public static class Mocks {
 
-		private static final File ROOT = new File("src/test/resources",
-				BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName().replace('.', '/') + "/boot_versions");
+        private static final File ROOT = new File("src/test/resources",
+                BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName().replace('.', '/') + "/boot_versions");
 
-		@Bean
-		public AppRegistry appRegistry() {
-			final ResourceLoader resourceLoader = new FileSystemResourceLoader();
-			return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
+        @Bean
+        public AppRegistry appRegistry() {
+            final ResourceLoader resourceLoader = new FileSystemResourceLoader();
+            return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
 
-				/*
-				 * Pretend there is a boot13 and boot14 source.
-				 */
-				@Override
-				public AppRegistration find(String name, ApplicationType type) {
-					String filename = name + "-1.0.0.BUILD-SNAPSHOT.jar";
-					File file = new File(ROOT, filename);
-					if (file.exists()) {
-						return new AppRegistration(name, type, file.toURI(), resourceLoader);
-					}
-					else {
-						return null;
-					}
-				}
+                /*
+                 * Pretend there is a boot13 and boot14 source.
+                 */
+                @Override
+                public AppRegistration find(String name, ApplicationType type) {
+                    String filename = name + "-1.0.0.BUILD-SNAPSHOT.jar";
+                    File file = new File(ROOT, filename);
+                    if (file.exists()) {
+                        return new AppRegistration(name, type, file.toURI(), resourceLoader);
+                    } else {
+                        return null;
+                    }
+                }
 
-				@Override
-				public List<AppRegistration> findAll() {
-					List<AppRegistration> result = new ArrayList<>();
-					result.add(find("boot13", ApplicationType.source));
-					result.add(find("boot14", ApplicationType.source));
-					return result;
-				}
-			};
-		}
+                @Override
+                public List<AppRegistration> findAll() {
+                    List<AppRegistration> result = new ArrayList<>();
+                    result.add(find("boot13", ApplicationType.source));
+                    result.add(find("boot14", ApplicationType.source));
+                    return result;
+                }
+            };
+        }
 
-		@Bean
-		public ApplicationConfigurationMetadataResolver metadataResolver() {
-			return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class.getClassLoader());
-		}
-	}
+        @Bean
+        public ApplicationConfigurationMetadataResolver metadataResolver() {
+            return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class.getClassLoader());
+        }
+    }
 }

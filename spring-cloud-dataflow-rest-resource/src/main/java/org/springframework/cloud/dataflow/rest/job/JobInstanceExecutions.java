@@ -25,36 +25,36 @@ import org.springframework.util.Assert;
 
 /**
  * Enumerates the relationship between a {@link JobInstance} and its {@link JobExecution}s.
+ *
  * @author Glenn Renfro
  */
 public class JobInstanceExecutions {
 
-	private final JobInstance jobInstance;
-	private final List<TaskJobExecution> taskJobExecutions;
+    private final JobInstance jobInstance;
+    private final List<TaskJobExecution> taskJobExecutions;
 
-	public JobInstanceExecutions(JobInstance jobInstance, List<TaskJobExecution> taskJobExecutions) {
-		Assert.notNull(jobInstance, "jobInstance must not be null");
-		this.jobInstance = jobInstance;
-		if (taskJobExecutions == null) {
-			this.taskJobExecutions = Collections.emptyList();
-		}
-		else {
-			this.taskJobExecutions = Collections.unmodifiableList(taskJobExecutions);
-		}
-	}
+    public JobInstanceExecutions(JobInstance jobInstance, List<TaskJobExecution> taskJobExecutions) {
+        Assert.notNull(jobInstance, "jobInstance must not be null");
+        this.jobInstance = jobInstance;
+        if (taskJobExecutions == null) {
+            this.taskJobExecutions = Collections.emptyList();
+        } else {
+            this.taskJobExecutions = Collections.unmodifiableList(taskJobExecutions);
+        }
+    }
 
-	/**
-	 * @return the job instance for this relationship.
-	 */
-	public JobInstance getJobInstance() {
-		return jobInstance;
-	}
+    /**
+     * @return the job instance for this relationship.
+     */
+    public JobInstance getJobInstance() {
+        return jobInstance;
+    }
 
-	/**
-	 * @return a list ot TaskJobExecutions that are associated with the Job Instance
-	 * for this relationship.
-	 */
-	public List<TaskJobExecution> getTaskJobExecutions() {
-		return taskJobExecutions;
-	}
+    /**
+     * @return a list ot TaskJobExecutions that are associated with the Job Instance
+     * for this relationship.
+     */
+    public List<TaskJobExecution> getTaskJobExecutions() {
+        return taskJobExecutions;
+    }
 }

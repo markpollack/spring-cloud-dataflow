@@ -32,52 +32,53 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
 
 /**
  * Adds missing application configuration properties at the end of a well formed task definition.
+ *
  * @author Eric Bottard
  * @author Mark Fisher
  * @author Andy Clement
  */
 class AddAppOptionsTaskExpansionStrategy implements TaskExpansionStrategy {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	private final ApplicationConfigurationMetadataResolver metadataResolver;
+    private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	public AddAppOptionsTaskExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
-		this.appRegistry = appRegistry;
-		this.metadataResolver = metadataResolver;
-	}
+    public AddAppOptionsTaskExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
+        this.appRegistry = appRegistry;
+        this.metadataResolver = metadataResolver;
+    }
 
-	@Override
-	public boolean addProposals(String text, TaskDefinition taskDefinition, int detailLevel,
-	                            List<CompletionProposal> collector) {
-		String appName = taskDefinition.getRegisteredAppName();
-		AppRegistration appRegistration = this.appRegistry.find(appName, ApplicationType.task);
-		if (appRegistration == null) {
-			// Not a valid app, do nothing
-			return false;
-		}
-		Set<String> alreadyPresentOptions = new HashSet<>(taskDefinition.getProperties().keySet());
-		Resource metadataResource = appRegistration.getMetadataResource();
-		CompletionProposal.Factory proposals = expanding(text);
+    @Override
+    public boolean addProposals(String text, TaskDefinition taskDefinition, int detailLevel,
+                                List<CompletionProposal> collector) {
+        String appName = taskDefinition.getRegisteredAppName();
+        AppRegistration appRegistration = this.appRegistry.find(appName, ApplicationType.task);
+        if (appRegistration == null) {
+            // Not a valid app, do nothing
+            return false;
+        }
+        Set<String> alreadyPresentOptions = new HashSet<>(taskDefinition.getProperties().keySet());
+        Resource metadataResource = appRegistration.getMetadataResource();
+        CompletionProposal.Factory proposals = expanding(text);
 
-		// For whitelisted properties, use their simple name
-		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
-			if (!alreadyPresentOptions.contains(property.getName())) {
-				collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property.getShortDescription()));
-			}
-		}
+        // For whitelisted properties, use their simple name
+        for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
+            if (!alreadyPresentOptions.contains(property.getName())) {
+                collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property.getShortDescription()));
+            }
+        }
 
-		// For other properties (including WL'ed in full form), use their id
-		if (detailLevel > 1) {
-			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-				if (!alreadyPresentOptions.contains(property.getId())) {
-					collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property.getShortDescription()));
-				}
-			}
+        // For other properties (including WL'ed in full form), use their id
+        if (detailLevel > 1) {
+            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+                if (!alreadyPresentOptions.contains(property.getId())) {
+                    collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property.getShortDescription()));
+                }
+            }
 
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 }

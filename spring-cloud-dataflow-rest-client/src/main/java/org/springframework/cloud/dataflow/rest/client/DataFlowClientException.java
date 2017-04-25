@@ -27,18 +27,18 @@ import org.springframework.hateoas.VndErrors;
 @SuppressWarnings("serial")
 public class DataFlowClientException extends RuntimeException {
 
-	private VndErrors vndErrors;
+    private VndErrors vndErrors;
 
-	public DataFlowClientException(VndErrors error) {
-		this.vndErrors = error;
-	}
+    public DataFlowClientException(VndErrors error) {
+        this.vndErrors = error;
+    }
 
-	@Override
-	public String getMessage() {
-		StringBuilder builder = new StringBuilder();
-		for (VndErrors.VndError e : vndErrors) {
-			builder.append(e.getMessage()).append('\n');
-		}
-		return builder.toString();
-	}
+    @Override
+    public String getMessage() {
+        StringBuilder builder = new StringBuilder();
+        for (VndErrors.VndError e : vndErrors) {
+            builder.append(e.getMessage()).append('\n');
+        }
+        return builder.toString();
+    }
 }

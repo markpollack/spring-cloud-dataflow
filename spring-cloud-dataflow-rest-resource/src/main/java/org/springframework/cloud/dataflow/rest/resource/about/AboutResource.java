@@ -25,47 +25,46 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class AboutResource extends ResourceSupport {
 
-	/**
-	 * Default constructor for serialization frameworks.
-	 */
-	public AboutResource() {
-	}
+    private FeatureInfo featureInfo = new FeatureInfo();
+    private VersionInfo versionInfo = new VersionInfo();
+    private SecurityInfo securityInfo = new SecurityInfo();
+    private RuntimeEnvironment runtimeEnvironment = new RuntimeEnvironment();
+    /**
+     * Default constructor for serialization frameworks.
+     */
+    public AboutResource() {
+    }
 
-	private FeatureInfo featureInfo = new FeatureInfo();
-	private VersionInfo versionInfo = new VersionInfo();
-	private SecurityInfo securityInfo = new SecurityInfo();
-	private RuntimeEnvironment runtimeEnvironment = new RuntimeEnvironment();
+    public FeatureInfo getFeatureInfo() {
+        return featureInfo;
+    }
 
-	public FeatureInfo getFeatureInfo() {
-		return featureInfo;
-	}
+    public void setFeatureInfo(FeatureInfo featureInfo) {
+        this.featureInfo = featureInfo;
+    }
 
-	public void setFeatureInfo(FeatureInfo featureInfo) {
-		this.featureInfo = featureInfo;
-	}
+    public VersionInfo getVersionInfo() {
+        return versionInfo;
+    }
 
-	public VersionInfo getVersionInfo() {
-		return versionInfo;
-	}
+    public void setVersionInfo(VersionInfo versionInfo) {
+        this.versionInfo = versionInfo;
+    }
 
-	public void setVersionInfo(VersionInfo versionInfo) {
-		this.versionInfo = versionInfo;
-	}
+    public SecurityInfo getSecurityInfo() {
+        return securityInfo;
+    }
 
-	public SecurityInfo getSecurityInfo() {
-		return securityInfo;
-	}
+    public void setSecurityInfo(SecurityInfo securityInfo) {
+        this.securityInfo = securityInfo;
+    }
 
-	public void setSecurityInfo(SecurityInfo securityInfo) {
-		this.securityInfo = securityInfo;
-	}
+    public RuntimeEnvironment getRuntimeEnvironment() {
+        return runtimeEnvironment;
+    }
 
-	public RuntimeEnvironment getRuntimeEnvironment() {
-		return runtimeEnvironment;
-	}
-
-	public void setRuntimeEnvironment(RuntimeEnvironment runtimeEnvironment) {
-		this.runtimeEnvironment = runtimeEnvironment;
-	}
+    public void setRuntimeEnvironment(RuntimeEnvironment runtimeEnvironment) {
+        this.runtimeEnvironment = runtimeEnvironment;
+    }
 
 }

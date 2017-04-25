@@ -32,59 +32,61 @@ import org.springframework.util.Assert;
 
 public class StepExecutionProgressInfoResource extends ResourceSupport {
 
-	private StepExecution stepExecution;
+    private StepExecution stepExecution;
 
-	private StepExecutionHistory stepExecutionHistory;
+    private StepExecutionHistory stepExecutionHistory;
 
-	private double percentageComplete;
+    private double percentageComplete;
 
-	private boolean finished;
+    private boolean finished;
 
-	private double duration;
+    private double duration;
 
-	public StepExecutionProgressInfoResource() {
-	}
+    public StepExecutionProgressInfoResource() {
+    }
 
-	/**
-	 * Create a new StepExecutionProgressInfoResource
-	 * @param stepExecution the step execution, must not be null
-	 * @param stepExecutionHistory the step execution history, must not be null
-	 * @param percentageComplete the percentage complete of the step
-	 * @param isFinished whether the step execution is finished
-	 * @param duration the duration of the step in milliseconds
-	 */
-	public StepExecutionProgressInfoResource(StepExecution stepExecution, StepExecutionHistory stepExecutionHistory,
-			double percentageComplete, boolean isFinished, double duration) {
+    /**
+     * Create a new StepExecutionProgressInfoResource
+     *
+     * @param stepExecution        the step execution, must not be null
+     * @param stepExecutionHistory the step execution history, must not be null
+     * @param percentageComplete   the percentage complete of the step
+     * @param isFinished           whether the step execution is finished
+     * @param duration             the duration of the step in milliseconds
+     */
+    public StepExecutionProgressInfoResource(StepExecution stepExecution, StepExecutionHistory stepExecutionHistory,
+                                             double percentageComplete, boolean isFinished, double duration) {
 
-		Assert.notNull(stepExecution, "stepExecution must not be null.");
-		Assert.notNull(stepExecutionHistory, "stepExecution must not be null.");
+        Assert.notNull(stepExecution, "stepExecution must not be null.");
+        Assert.notNull(stepExecutionHistory, "stepExecution must not be null.");
 
-		this.stepExecution = stepExecution;
-		this.stepExecutionHistory = stepExecutionHistory;
-		this.percentageComplete = percentageComplete;
-		this.finished = isFinished;
-		this.duration = duration;
-	}
+        this.stepExecution = stepExecution;
+        this.stepExecutionHistory = stepExecutionHistory;
+        this.percentageComplete = percentageComplete;
+        this.finished = isFinished;
+        this.duration = duration;
+    }
 
-	public double getPercentageComplete() {
-		return percentageComplete;
-	}
+    public double getPercentageComplete() {
+        return percentageComplete;
+    }
 
-	public boolean getFinished() {
-		return finished;
-	}
+    public boolean getFinished() {
+        return finished;
+    }
 
-	public double getDuration() {
-		return duration;
-	}
+    public double getDuration() {
+        return duration;
+    }
 
-	public StepExecution getStepExecution() {
-		return stepExecution;
-	}
+    public StepExecution getStepExecution() {
+        return stepExecution;
+    }
 
-	public StepExecutionHistory getStepExecutionHistory() {
-		return stepExecutionHistory;
-	}
+    public StepExecutionHistory getStepExecutionHistory() {
+        return stepExecutionHistory;
+    }
 
-	public static class Page extends PagedResources<StepExecutionProgressInfoResource> {}
+    public static class Page extends PagedResources<StepExecutionProgressInfoResource> {
+    }
 }

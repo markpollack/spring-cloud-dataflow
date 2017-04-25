@@ -33,85 +33,84 @@ import org.springframework.hateoas.PagedResources;
  */
 public class DetailedAppRegistrationResource extends AppRegistrationResource {
 
-	/**
-	 * Optional short description of the application.
-	 */
-	private String shortDescription;
+    /**
+     * List of application options.
+     */
+    private final List<ConfigurationMetadataProperty> options = new ArrayList<>();
+    /**
+     * Optional short description of the application.
+     */
+    private String shortDescription;
 
-	/**
-	 * List of application options.
-	 */
-	private final List<ConfigurationMetadataProperty> options = new ArrayList<>();
 
+    /**
+     * Default constructor for serialization frameworks.
+     */
+    protected DetailedAppRegistrationResource() {
+    }
 
-	/**
-	 * Default constructor for serialization frameworks.
-	 */
-	protected DetailedAppRegistrationResource() {
-	}
+    /**
+     * Construct a {@code DetailedAppRegistrationResource} object.
+     *
+     * @param name        application name
+     * @param type        application type
+     * @param coordinates Maven coordinates for the application artifact
+     */
+    public DetailedAppRegistrationResource(String name, String type, String coordinates) {
+        super(name, type, coordinates);
+    }
 
-	/**
-	 * Construct a {@code DetailedAppRegistrationResource} object.
-	 *
-	 * @param name application name
-	 * @param type application type
-	 * @param coordinates Maven coordinates for the application artifact
-	 */
-	public DetailedAppRegistrationResource(String name, String type, String coordinates) {
-		super(name, type, coordinates);
-	}
+    /**
+     * Construct a {@code DetailedAppRegistrationResource} object based
+     * on the provided {@link AppRegistrationResource}.
+     *
+     * @param resource {@code AppRegistrationResource} from which to obtain
+     *                 app registration data
+     */
+    public DetailedAppRegistrationResource(AppRegistrationResource resource) {
+        super(resource.getName(), resource.getType(), resource.getUri());
+    }
 
-	/**
-	 * Construct a {@code DetailedAppRegistrationResource} object based
-	 * on the provided {@link AppRegistrationResource}.
-	 *
-	 * @param resource {@code AppRegistrationResource} from which to obtain
-	 *                 app registration data
-	 */
-	public DetailedAppRegistrationResource(AppRegistrationResource resource) {
-		super(resource.getName(), resource.getType(), resource.getUri());
-	}
+    /**
+     * Add an application option.
+     *
+     * @param option application option to add
+     */
+    public void addOption(ConfigurationMetadataProperty option) {
+        options.add(option);
+    }
 
-	/**
-	 * Add an application option.
-	 *
-	 * @param option application option to add
-	 */
-	public void addOption(ConfigurationMetadataProperty option) {
-		options.add(option);
-	}
+    /**
+     * Return a list of application options.
+     *
+     * @return list of application options
+     */
+    public List<ConfigurationMetadataProperty> getOptions() {
+        return options;
+    }
 
-	/**
-	 * Return a list of application options.
-	 *
-	 * @return list of application options
-	 */
-	public List<ConfigurationMetadataProperty> getOptions() {
-		return options;
-	}
+    /**
+     * Return a description for this application.
+     *
+     * @return description for this application
+     */
+    public String getShortDescription() {
+        return shortDescription;
+    }
 
-	/**
-	 * Set a description for this application.
-	 *
-	 * @param shortDescription description for application
-	 */
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
+    /**
+     * Set a description for this application.
+     *
+     * @param shortDescription description for application
+     */
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
 
-	/**
-	 * Return a description for this application.
-	 *
-	 * @return description for this application
-	 */
-	public String getShortDescription() {
-		return shortDescription;
-	}
-
-	/**
-	 * Dedicated subclass to workaround type erasure.
-	 */
-	public static class Page extends PagedResources<DetailedAppRegistrationResource> {
-	}
+    /**
+     * Dedicated subclass to workaround type erasure.
+     */
+    public static class Page extends PagedResources<DetailedAppRegistrationResource> {
+    }
 
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
@@ -45,68 +44,65 @@ import org.springframework.web.client.ResourceAccessException;
  * (username and password) against an OAuth Server using a {@code password grant}.
  *
  * @author Gunnar Hillert
- *
  */
 public class ManualOAuthAuthenticationProvider implements AuthenticationProvider {
 
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ManualOAuthAuthenticationProvider.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ManualOAuthAuthenticationProvider.class);
 
-	@Autowired
-	private OAuth2ClientProperties oAuth2ClientProperties;
+    @Autowired
+    private OAuth2ClientProperties oAuth2ClientProperties;
 
-	@Value("${security.oauth2.client.access-token-uri}")
-	private String accessTokenUri;
+    @Value("${security.oauth2.client.access-token-uri}")
+    private String accessTokenUri;
 
-	public AccessTokenProvider userAccessTokenProvider() {
-		ResourceOwnerPasswordAccessTokenProvider accessTokenProvider = new ResourceOwnerPasswordAccessTokenProvider();
-		return accessTokenProvider;
-	}
+    public AccessTokenProvider userAccessTokenProvider() {
+        ResourceOwnerPasswordAccessTokenProvider accessTokenProvider = new ResourceOwnerPasswordAccessTokenProvider();
+        return accessTokenProvider;
+    }
 
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		final String username = authentication.getName();
-		final String password = authentication.getCredentials().toString();
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        final String username = authentication.getName();
+        final String password = authentication.getCredentials().toString();
 
-		final ResourceOwnerPasswordResourceDetails resource = new ResourceOwnerPasswordResourceDetails();
+        final ResourceOwnerPasswordResourceDetails resource = new ResourceOwnerPasswordResourceDetails();
 
-		resource.setUsername(username);
-		resource.setPassword(password);
+        resource.setUsername(username);
+        resource.setPassword(password);
 
-		resource.setAccessTokenUri(accessTokenUri);
-		resource.setClientId(oAuth2ClientProperties.getClientId());
-		resource.setClientSecret(oAuth2ClientProperties.getClientSecret());
-		resource.setGrantType("password");
+        resource.setAccessTokenUri(accessTokenUri);
+        resource.setClientId(oAuth2ClientProperties.getClientId());
+        resource.setClientSecret(oAuth2ClientProperties.getClientSecret());
+        resource.setGrantType("password");
 
-		final OAuth2RestTemplate template =
-				new OAuth2RestTemplate(resource,
-						new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
-				template.setAccessTokenProvider(userAccessTokenProvider());
+        final OAuth2RestTemplate template =
+                new OAuth2RestTemplate(resource,
+                        new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
+        template.setAccessTokenProvider(userAccessTokenProvider());
 
-		try {
-			logger.warn("Authenticating user '{}' using accessTokenUri '{}'.", username, accessTokenUri);
-			template.getAccessToken();
-		}
-		catch (OAuth2AccessDeniedException e) {
-			if (e.getCause() instanceof ResourceAccessException) {
-				final String errorMessage = String.format("While authenticating user '%s': "
-					+ "Unable to access accessTokenUri '%s'.", username, accessTokenUri);
-				logger.error(errorMessage +  " Error message: {}.", e.getCause().getMessage());
-				throw new AuthenticationServiceException(errorMessage, e);
-			}
-			throw new BadCredentialsException(String.format("Access denied for user '%s'.", username), e);
-		}
-		catch (OAuth2Exception e) {
-			throw new AuthenticationServiceException(String.format(
-				"Unable to perform OAuth authentication for user '%s'.", username), e);
-		}
+        try {
+            logger.warn("Authenticating user '{}' using accessTokenUri '{}'.", username, accessTokenUri);
+            template.getAccessToken();
+        } catch (OAuth2AccessDeniedException e) {
+            if (e.getCause() instanceof ResourceAccessException) {
+                final String errorMessage = String.format("While authenticating user '%s': "
+                        + "Unable to access accessTokenUri '%s'.", username, accessTokenUri);
+                logger.error(errorMessage + " Error message: {}.", e.getCause().getMessage());
+                throw new AuthenticationServiceException(errorMessage, e);
+            }
+            throw new BadCredentialsException(String.format("Access denied for user '%s'.", username), e);
+        } catch (OAuth2Exception e) {
+            throw new AuthenticationServiceException(String.format(
+                    "Unable to perform OAuth authentication for user '%s'.", username), e);
+        }
 
-		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, authorities);
-		return token;
-	}
+        final Collection<GrantedAuthority> authorities = new ArrayList<>();
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, authorities);
+        return token;
+    }
 
-	@Override
-	public boolean supports(Class<?> authentication) {
-		return authentication.equals(UsernamePasswordAuthenticationToken.class);
-	}
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+    }
 }

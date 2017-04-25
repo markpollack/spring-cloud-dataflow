@@ -30,47 +30,51 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface StreamOperations {
 
-	/**
-	 * @return the list streams known to the system.
-	 */
-	public PagedResources<StreamDefinitionResource> list();
+    /**
+     * @return the list streams known to the system.
+     */
+    public PagedResources<StreamDefinitionResource> list();
 
-	/**
-	 * Create a new stream, optionally deploying it.
-	 * @param name the name of the stream
-	 * @param definition the stream definition DSL
-	 * @param deploy whether to deploy the stream after creating its definition
-	 * @return the new stream definition
-	 */
-	public StreamDefinitionResource createStream(String name, String definition, boolean deploy);
+    /**
+     * Create a new stream, optionally deploying it.
+     *
+     * @param name       the name of the stream
+     * @param definition the stream definition DSL
+     * @param deploy     whether to deploy the stream after creating its definition
+     * @return the new stream definition
+     */
+    public StreamDefinitionResource createStream(String name, String definition, boolean deploy);
 
-	/**
-	 * Deploy an already created stream.
-	 * @param name the name of the stream
-	 * @param properties the deployment properties
-	 */
-	public void deploy(String name, Map<String, String> properties);
+    /**
+     * Deploy an already created stream.
+     *
+     * @param name       the name of the stream
+     * @param properties the deployment properties
+     */
+    public void deploy(String name, Map<String, String> properties);
 
-	/**
-	 * Undeploy a deployed stream, retaining its definition.
-	 * @param name the name of the stream
-	 */
-	public void undeploy(String name);
+    /**
+     * Undeploy a deployed stream, retaining its definition.
+     *
+     * @param name the name of the stream
+     */
+    public void undeploy(String name);
 
-	/**
-	 * Undeploy all currently deployed streams.
-	 */
-	public void undeployAll();
+    /**
+     * Undeploy all currently deployed streams.
+     */
+    public void undeployAll();
 
-	/**
-	 * Destroy an existing stream.
-	 * @param name the name of the stream
-	 */
-	public void destroy(String name);
+    /**
+     * Destroy an existing stream.
+     *
+     * @param name the name of the stream
+     */
+    public void destroy(String name);
 
-	/**
-	 * Destroy all streams known to the system.
-	 */
-	public void destroyAll();
+    /**
+     * Destroy all streams known to the system.
+     */
+    public void destroyAll();
 
 }

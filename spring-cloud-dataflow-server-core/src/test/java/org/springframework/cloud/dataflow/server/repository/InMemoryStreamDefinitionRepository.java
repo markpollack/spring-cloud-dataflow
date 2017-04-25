@@ -37,95 +37,95 @@ import org.springframework.data.domain.Sort;
  */
 public class InMemoryStreamDefinitionRepository implements StreamDefinitionRepository {
 
-	private final Map<String, StreamDefinition> definitions = new ConcurrentHashMap<>();
+    private final Map<String, StreamDefinition> definitions = new ConcurrentHashMap<>();
 
-	@Override
-	public Iterable<StreamDefinition> findAll(Sort sort) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Iterable<StreamDefinition> findAll(Sort sort) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Page<StreamDefinition> findAll(Pageable pageable) {
-		List<StreamDefinition> results = new ArrayList<>(definitions.values());
-		return new PageImpl<>(results, pageable, results.size());
-	}
+    @Override
+    public Page<StreamDefinition> findAll(Pageable pageable) {
+        List<StreamDefinition> results = new ArrayList<>(definitions.values());
+        return new PageImpl<>(results, pageable, results.size());
+    }
 
-	@Override
-	public <S extends StreamDefinition> Iterable<S> save(Iterable<S> iterableDefinitions) {
-		for (S definition : iterableDefinitions) {
-			save(definition);
-		}
-		return iterableDefinitions;
-	}
+    @Override
+    public <S extends StreamDefinition> Iterable<S> save(Iterable<S> iterableDefinitions) {
+        for (S definition : iterableDefinitions) {
+            save(definition);
+        }
+        return iterableDefinitions;
+    }
 
-	@Override
-	public <S extends StreamDefinition> S save(S definition) {
-		if(definitions.containsKey(definition.getName())) {
-			throw new DuplicateTaskException(
-					String.format("Cannot register stream definition %s because another one has already " +
-									"been registered with the same name",
-							definition.getName()));
-		}
-		definitions.put(definition.getName(), definition);
-		return definition;
-	}
+    @Override
+    public <S extends StreamDefinition> S save(S definition) {
+        if (definitions.containsKey(definition.getName())) {
+            throw new DuplicateTaskException(
+                    String.format("Cannot register stream definition %s because another one has already " +
+                                    "been registered with the same name",
+                            definition.getName()));
+        }
+        definitions.put(definition.getName(), definition);
+        return definition;
+    }
 
-	@Override
-	public StreamDefinition findOne(String name) {
-		return definitions.get(name);
-	}
+    @Override
+    public StreamDefinition findOne(String name) {
+        return definitions.get(name);
+    }
 
-	@Override
-	public boolean exists(String name) {
-		return definitions.containsKey(name);
-	}
+    @Override
+    public boolean exists(String name) {
+        return definitions.containsKey(name);
+    }
 
-	@Override
-	public Iterable<StreamDefinition> findAll() {
-		return Collections.unmodifiableCollection(definitions.values());
-	}
+    @Override
+    public Iterable<StreamDefinition> findAll() {
+        return Collections.unmodifiableCollection(definitions.values());
+    }
 
-	@Override
-	public Iterable<StreamDefinition> findAll(Iterable<String> names) {
-		List<StreamDefinition> results = new ArrayList<>();
-		for (String s : names) {
-			if (definitions.containsKey(s)){
-				results.add(definitions.get(s));
-			}
-		}
-		return results;
-	}
+    @Override
+    public Iterable<StreamDefinition> findAll(Iterable<String> names) {
+        List<StreamDefinition> results = new ArrayList<>();
+        for (String s : names) {
+            if (definitions.containsKey(s)) {
+                results.add(definitions.get(s));
+            }
+        }
+        return results;
+    }
 
-	@Override
-	public long count() {
-		return definitions.size();
-	}
+    @Override
+    public long count() {
+        return definitions.size();
+    }
 
-	@Override
-	public void delete(String name) {
-		definitions.remove(name);
-	}
+    @Override
+    public void delete(String name) {
+        definitions.remove(name);
+    }
 
-	@Override
-	public void delete(StreamDefinition definition) {
-		delete(definition.getName());
-	}
+    @Override
+    public void delete(StreamDefinition definition) {
+        delete(definition.getName());
+    }
 
-	@Override
-	public void delete(Iterable<? extends StreamDefinition> definitions) {
-		for (StreamDefinition definition : definitions){
-			delete(definition);
-		}
-	}
+    @Override
+    public void delete(Iterable<? extends StreamDefinition> definitions) {
+        for (StreamDefinition definition : definitions) {
+            delete(definition);
+        }
+    }
 
-	@Override
-	public void deleteAll() {
-		definitions.clear();
-	}
+    @Override
+    public void deleteAll() {
+        definitions.clear();
+    }
 
-	@Override
-	public Page<StreamDefinition> search(SearchPageable searchPageable) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Page<StreamDefinition> search(SearchPageable searchPageable) {
+        throw new UnsupportedOperationException();
+    }
 
 }

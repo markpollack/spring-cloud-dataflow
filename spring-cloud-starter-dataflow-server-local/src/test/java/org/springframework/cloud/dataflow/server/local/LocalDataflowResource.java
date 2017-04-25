@@ -20,7 +20,6 @@ import java.util.Collection;
 import javax.servlet.Filter;
 
 import org.junit.rules.ExternalResource;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.dataflow.server.config.features.FeaturesProperties;
 import org.springframework.cloud.dataflow.server.local.dataflowapp.LocalTestDataFlowServer;
@@ -35,76 +34,69 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class LocalDataflowResource extends ExternalResource {
 
-	private String originalConfigLocation = null;
+    final boolean streamsEnabled;
+    final boolean tasksEnabled;
+    private String originalConfigLocation = null;
+    private SpringApplication app;
+    private MockMvc mockMvc;
+    private String dataflowPort;
+    private String configurationLocation;
+    private WebApplicationContext configurableApplicationContext;
 
-	private SpringApplication app;
+    public LocalDataflowResource(String configurationLocation) {
+        this.configurationLocation = configurationLocation;
+        this.streamsEnabled = true;
+        this.tasksEnabled = true;
+    }
 
-	private MockMvc mockMvc;
+    public LocalDataflowResource(String configurationLocation, boolean streamsEnabled, boolean tasksEnabled) {
+        this.configurationLocation = configurationLocation;
+        this.streamsEnabled = streamsEnabled;
+        this.tasksEnabled = tasksEnabled;
+    }
 
-	private String dataflowPort;
+    @Override
+    protected void before() throws Throwable {
+        originalConfigLocation = System.getProperty("spring.config.location");
+        if (!StringUtils.isEmpty(configurationLocation)) {
+            System.setProperty("spring.config.location", configurationLocation);
+        }
 
-	private String configurationLocation;
+        app = new SpringApplication(LocalTestDataFlowServer.class);
 
-	private WebApplicationContext configurableApplicationContext;
+        configurableApplicationContext = (WebApplicationContext) app.run(new String[]{"--server.port=0",
+                "--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.STREAMS_ENABLED + "=" + this.streamsEnabled,
+                "--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.TASKS_ENABLED + "=" + this.tasksEnabled,
+                "--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.ANALYTICS_ENABLED + "=true"});
 
-	final boolean streamsEnabled;
-	final boolean tasksEnabled;
+        Collection<Filter> filters = configurableApplicationContext.getBeansOfType(Filter.class).values();
+        mockMvc = MockMvcBuilders.webAppContextSetup(configurableApplicationContext)
+                .addFilters(filters.toArray(new Filter[filters.size()]))
+                .build();
+        dataflowPort = configurableApplicationContext.getEnvironment().resolvePlaceholders("${server.port}");
+    }
 
-	public LocalDataflowResource(String configurationLocation) {
-		this.configurationLocation = configurationLocation;
-		this.streamsEnabled = true;
-		this.tasksEnabled = true;
-	}
+    @Override
+    protected void after() {
+        SpringApplication.exit(configurableApplicationContext);
+        if (originalConfigLocation != null) {
+            System.setProperty("spring.config.location", originalConfigLocation);
+        } else {
+            System.clearProperty("spring.config.location");
+        }
+    }
 
-	public LocalDataflowResource(String configurationLocation, boolean streamsEnabled, boolean tasksEnabled) {
-		this.configurationLocation = configurationLocation;
-		this.streamsEnabled = streamsEnabled;
-		this.tasksEnabled = tasksEnabled;
-	}
+    public MockMvc getMockMvc() {
+        return mockMvc;
+    }
 
-	@Override
-	protected void before() throws Throwable {
-		originalConfigLocation = System.getProperty("spring.config.location");
-		if (!StringUtils.isEmpty(configurationLocation)) {
-			System.setProperty("spring.config.location", configurationLocation);
-		}
+    public String getDataflowPort() {
+        return dataflowPort;
+    }
 
-		app = new SpringApplication(LocalTestDataFlowServer.class);
-
-		configurableApplicationContext = (WebApplicationContext) app.run(new String[]{"--server.port=0",
-				"--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.STREAMS_ENABLED + "=" + this.streamsEnabled,
-				"--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.TASKS_ENABLED + "=" + this.tasksEnabled,
-				"--" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.ANALYTICS_ENABLED + "=true"});
-
-		Collection<Filter> filters = configurableApplicationContext.getBeansOfType(Filter.class).values();
-		mockMvc = MockMvcBuilders.webAppContextSetup(configurableApplicationContext)
-				.addFilters(filters.toArray(new Filter[filters.size()]))
-				.build();
-		dataflowPort = configurableApplicationContext.getEnvironment().resolvePlaceholders("${server.port}");
-	}
-
-	@Override
-	protected void after() {
-		SpringApplication.exit(configurableApplicationContext);
-		if (originalConfigLocation != null) {
-			System.setProperty("spring.config.location", originalConfigLocation);
-		}
-		else {
-			System.clearProperty("spring.config.location");
-		}
-	}
-
-	public MockMvc getMockMvc() {
-		return mockMvc;
-	}
-
-	public String getDataflowPort() {
-		return dataflowPort;
-	}
-
-	public WebApplicationContext getWebApplicationContext() {
-		return configurableApplicationContext;
-	}
+    public WebApplicationContext getWebApplicationContext() {
+        return configurableApplicationContext;
+    }
 
 }
 

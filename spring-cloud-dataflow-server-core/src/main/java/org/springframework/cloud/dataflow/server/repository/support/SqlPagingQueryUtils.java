@@ -26,103 +26,102 @@ import java.util.Map;
  */
 public class SqlPagingQueryUtils {
 
-	private SqlPagingQueryUtils(){}
+    private SqlPagingQueryUtils() {
+    }
 
-	/**
-	 * Generate SQL query string using a LIMIT clause
-	 *
-	 * @param provider {@link AbstractSqlPagingQueryProvider} providing the
-	 * implementation specifics
-	 * @param limitClause the implementation specific top clause to be used
-	 * @return the generated query
-	 */
-	public static String generateLimitJumpToQuery(AbstractSqlPagingQueryProvider provider, String limitClause) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT ").append(provider.getSelectClause());
-		sql.append(" FROM ").append(provider.getFromClause());
-		sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
-		sql.append(" ORDER BY ").append(buildSortClause(provider));
-		sql.append(" ").append(limitClause);
+    /**
+     * Generate SQL query string using a LIMIT clause
+     *
+     * @param provider    {@link AbstractSqlPagingQueryProvider} providing the
+     *                    implementation specifics
+     * @param limitClause the implementation specific top clause to be used
+     * @return the generated query
+     */
+    public static String generateLimitJumpToQuery(AbstractSqlPagingQueryProvider provider, String limitClause) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ").append(provider.getSelectClause());
+        sql.append(" FROM ").append(provider.getFromClause());
+        sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
+        sql.append(" ORDER BY ").append(buildSortClause(provider));
+        sql.append(" ").append(limitClause);
 
-		return sql.toString();
-	}
+        return sql.toString();
+    }
 
-	/**
-	 * Generate SQL query string using a TOP clause
-	 *
-	 * @param provider {@link AbstractSqlPagingQueryProvider} providing the
-	 * implementation specifics
-	 * @param topClause the implementation specific top clause to be used
-	 * @return the generated query
-	 */
-	public static String generateTopJumpToQuery(AbstractSqlPagingQueryProvider provider, String topClause) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT ").append(topClause).append(" ").append(provider.getSelectClause());
-		sql.append(" FROM ").append(provider.getFromClause());
-		sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
-		sql.append(" ORDER BY ").append(buildSortClause(provider));
+    /**
+     * Generate SQL query string using a TOP clause
+     *
+     * @param provider  {@link AbstractSqlPagingQueryProvider} providing the
+     *                  implementation specifics
+     * @param topClause the implementation specific top clause to be used
+     * @return the generated query
+     */
+    public static String generateTopJumpToQuery(AbstractSqlPagingQueryProvider provider, String topClause) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ").append(topClause).append(" ").append(provider.getSelectClause());
+        sql.append(" FROM ").append(provider.getFromClause());
+        sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
+        sql.append(" ORDER BY ").append(buildSortClause(provider));
 
-		return sql.toString();
-	}
+        return sql.toString();
+    }
 
-	/**
-	 * Generates WHERE clause for queries that require sub selects.
-	 *
-	 * @param provider the paging query provider that will provide the base where clause
-	 * @param remainingPageQuery whether there is a page query
-	 * @param sql the sql to append the WHERE clause
-	 */
-	public static void buildWhereClause( AbstractSqlPagingQueryProvider provider,
-										 boolean remainingPageQuery, StringBuilder sql) {
-		if (remainingPageQuery) {
-			sql.append(" WHERE ");
-			if (provider.getWhereClause() != null) {
-				sql.append("(");
-				sql.append(provider.getWhereClause());
-				sql.append(") AND ");
-			}
-		}
-		else {
-			sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
-		}
-	}
+    /**
+     * Generates WHERE clause for queries that require sub selects.
+     *
+     * @param provider           the paging query provider that will provide the base where clause
+     * @param remainingPageQuery whether there is a page query
+     * @param sql                the sql to append the WHERE clause
+     */
+    public static void buildWhereClause(AbstractSqlPagingQueryProvider provider,
+                                        boolean remainingPageQuery, StringBuilder sql) {
+        if (remainingPageQuery) {
+            sql.append(" WHERE ");
+            if (provider.getWhereClause() != null) {
+                sql.append("(");
+                sql.append(provider.getWhereClause());
+                sql.append(") AND ");
+            }
+        } else {
+            sql.append(provider.getWhereClause() == null ? "" : " WHERE " + provider.getWhereClause());
+        }
+    }
 
-	/**
-	 * Generates ORDER BY attributes based on the sort keys.
-	 *
-	 * @param provider {@link AbstractSqlPagingQueryProvider} providing the
-	 * implementation specifics
-	 * @return a String that can be appended to an ORDER BY clause.
-	 */
-	public static String buildSortClause(AbstractSqlPagingQueryProvider provider) {
-		return buildSortClause(provider.getSortKeys());
-	}
+    /**
+     * Generates ORDER BY attributes based on the sort keys.
+     *
+     * @param provider {@link AbstractSqlPagingQueryProvider} providing the
+     *                 implementation specifics
+     * @return a String that can be appended to an ORDER BY clause.
+     */
+    public static String buildSortClause(AbstractSqlPagingQueryProvider provider) {
+        return buildSortClause(provider.getSortKeys());
+    }
 
-	/**
-	 * Generates ORDER BY attributes based on the sort keys.
-	 *
-	 * @param sortKeys generates order by clause from map
-	 * @return a String that can be appended to an ORDER BY clause.
-	 */
-	public static String buildSortClause(Map<String, Order> sortKeys) {
-		StringBuilder builder = new StringBuilder();
-		String prefix = "";
+    /**
+     * Generates ORDER BY attributes based on the sort keys.
+     *
+     * @param sortKeys generates order by clause from map
+     * @return a String that can be appended to an ORDER BY clause.
+     */
+    public static String buildSortClause(Map<String, Order> sortKeys) {
+        StringBuilder builder = new StringBuilder();
+        String prefix = "";
 
-		for (Map.Entry<String, Order> sortKey : sortKeys.entrySet()) {
-			builder.append(prefix);
+        for (Map.Entry<String, Order> sortKey : sortKeys.entrySet()) {
+            builder.append(prefix);
 
-			prefix = ", ";
+            prefix = ", ";
 
-			builder.append(sortKey.getKey());
+            builder.append(sortKey.getKey());
 
-			if(sortKey.getValue() != null && sortKey.getValue() == Order.DESCENDING) {
-				builder.append(" DESC");
-			}
-			else {
-				builder.append(" ASC");
-			}
-		}
+            if (sortKey.getValue() != null && sortKey.getValue() == Order.DESCENDING) {
+                builder.append(" DESC");
+            } else {
+                builder.append(" ASC");
+            }
+        }
 
-		return builder.toString();
-	}
+        return builder.toString();
+    }
 }

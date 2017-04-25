@@ -44,91 +44,87 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
  */
 public class ConfigurationPropertyValueHintTaskRecoveryStrategy extends StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
 
-	private final AppRegistry appRegistry;
+    private final AppRegistry appRegistry;
 
-	private final ApplicationConfigurationMetadataResolver metadataResolver;
+    private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	@Autowired
-	private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
+    @Autowired
+    private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
 
-	ConfigurationPropertyValueHintTaskRecoveryStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
-		super(CheckPointedParseException.class, "foo --bar=");
-		this.appRegistry = appRegistry;
-		this.metadataResolver = metadataResolver;
-	}
+    ConfigurationPropertyValueHintTaskRecoveryStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
+        super(CheckPointedParseException.class, "foo --bar=");
+        this.appRegistry = appRegistry;
+        this.metadataResolver = metadataResolver;
+    }
 
-	@Override
-	public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel, List<CompletionProposal> collector) {
+    @Override
+    public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel, List<CompletionProposal> collector) {
 
-		String propertyName = recoverPropertyName(exception);
+        String propertyName = recoverPropertyName(exception);
 
-		AppRegistration appRegistration = lookupLastApp(exception);
+        AppRegistration appRegistration = lookupLastApp(exception);
 
-		if (appRegistration == null) {
-			// Not a valid app name, do nothing
-			return;
-		}
-		Resource metadataResource = appRegistration.getMetadataResource();
+        if (appRegistration == null) {
+            // Not a valid app name, do nothing
+            return;
+        }
+        Resource metadataResource = appRegistration.getMetadataResource();
 
-		CompletionProposal.Factory proposals = expanding(dsl);
+        CompletionProposal.Factory proposals = expanding(dsl);
 
-		List<ConfigurationMetadataProperty> whiteList = metadataResolver.listProperties(metadataResource);
+        List<ConfigurationMetadataProperty> whiteList = metadataResolver.listProperties(metadataResource);
 
-		URLClassLoader classLoader = null;
-		try {
-			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-				if (CompletionUtils.isMatchingProperty(propertyName, property, whiteList)) {
-					if (classLoader == null) {
-						classLoader = metadataResolver.createAppClassLoader(metadataResource);
-					}
-					for (ValueHintProvider valueHintProvider : valueHintProviders) {
-						for (ValueHint valueHint : valueHintProvider.generateValueHints(property, classLoader)) {
-							collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()), valueHint.getShortDescription()));
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		finally {
-			if (classLoader != null) {
-				try {
-					classLoader.close();
-				}
-				catch (IOException e) {
-					// ignore
-				}
-			}
-		}
-	}
+        URLClassLoader classLoader = null;
+        try {
+            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+                if (CompletionUtils.isMatchingProperty(propertyName, property, whiteList)) {
+                    if (classLoader == null) {
+                        classLoader = metadataResolver.createAppClassLoader(metadataResource);
+                    }
+                    for (ValueHintProvider valueHintProvider : valueHintProviders) {
+                        for (ValueHint valueHint : valueHintProvider.generateValueHints(property, classLoader)) {
+                            collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()), valueHint.getShortDescription()));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (classLoader != null) {
+                try {
+                    classLoader.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
+    }
 
-	private AppRegistration lookupLastApp(CheckPointedParseException exception) {
-		String safe = exception.getExpressionStringUntilCheckpoint();
-		TaskDefinition taskDefinition = new TaskDefinition("__dummy", safe);
-		String appName = taskDefinition.getRegisteredAppName();
-		AppRegistration appRegistration = this.appRegistry.find(appName, ApplicationType.task);
-		return appRegistration;
-	}
+    private AppRegistration lookupLastApp(CheckPointedParseException exception) {
+        String safe = exception.getExpressionStringUntilCheckpoint();
+        TaskDefinition taskDefinition = new TaskDefinition("__dummy", safe);
+        String appName = taskDefinition.getRegisteredAppName();
+        AppRegistration appRegistration = this.appRegistry.find(appName, ApplicationType.task);
+        return appRegistration;
+    }
 
-	private String recoverPropertyName(CheckPointedParseException exception) {
-		List<Token> tokens = exception.getTokens();
-		int tokenPointer = tokens.size() - 1;
-		while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
-			tokenPointer--;
-		}
-		StringBuilder builder;
-		final int equalSignPointer = tokens.size() - 1;
-		for (builder = new StringBuilder(); tokenPointer < equalSignPointer; tokenPointer++) {
-			Token t = tokens.get(tokenPointer);
-			if (t.isIdentifier()) {
-				builder.append(t.stringValue());
-			}
-			else {
-				builder.append(t.getKind().getTokenChars());
-			}
-		}
-		return builder.toString();
-	}
+    private String recoverPropertyName(CheckPointedParseException exception) {
+        List<Token> tokens = exception.getTokens();
+        int tokenPointer = tokens.size() - 1;
+        while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
+            tokenPointer--;
+        }
+        StringBuilder builder;
+        final int equalSignPointer = tokens.size() - 1;
+        for (builder = new StringBuilder(); tokenPointer < equalSignPointer; tokenPointer++) {
+            Token t = tokens.get(tokenPointer);
+            if (t.isIdentifier()) {
+                builder.append(t.stringValue());
+            } else {
+                builder.append(t.getKind().getTokenChars());
+            }
+        }
+        return builder.toString();
+    }
 }

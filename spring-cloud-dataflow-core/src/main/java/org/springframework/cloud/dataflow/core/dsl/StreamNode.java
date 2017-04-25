@@ -23,121 +23,123 @@ import java.util.List;
  */
 public class StreamNode extends AstNode {
 
-	private final String streamText;
+    private final String streamText;
 
-	private final String streamName;
+    private final String streamName;
 
-	private final List<AppNode> appNodes;
+    private final List<AppNode> appNodes;
 
-	private SourceDestinationNode sourceDestinationNode;
+    private SourceDestinationNode sourceDestinationNode;
 
-	private SinkDestinationNode sinkDestinationNode;
+    private SinkDestinationNode sinkDestinationNode;
 
-	public StreamNode(String streamText, String streamName, List<AppNode> appNodes,
-			SourceDestinationNode sourceDestinationNode, SinkDestinationNode sinkDestinationNode) {
-		super(appNodes.get(0).getStartPos(), appNodes.get(appNodes.size() - 1).getEndPos());
-		this.streamText = streamText;
-		this.streamName = streamName;
-		this.appNodes = appNodes;
-		this.sourceDestinationNode = sourceDestinationNode;
-		this.sinkDestinationNode = sinkDestinationNode;
-	}
+    public StreamNode(String streamText, String streamName, List<AppNode> appNodes,
+                      SourceDestinationNode sourceDestinationNode, SinkDestinationNode sinkDestinationNode) {
+        super(appNodes.get(0).getStartPos(), appNodes.get(appNodes.size() - 1).getEndPos());
+        this.streamText = streamText;
+        this.streamName = streamName;
+        this.appNodes = appNodes;
+        this.sourceDestinationNode = sourceDestinationNode;
+        this.sinkDestinationNode = sinkDestinationNode;
+    }
 
-	/** @inheritDoc */
-	@Override
-	public String stringify(boolean includePositionalInfo) {
-		StringBuilder s = new StringBuilder();
-		// s.append("Stream[").append(streamText).append("]");
-		s.append("[");
-		if (getStreamName() != null) {
-			s.append(getStreamName()).append(" = ");
-		}
-		if (sourceDestinationNode != null) {
-			s.append(sourceDestinationNode.stringify(includePositionalInfo));
-		}
-		for (AppNode appNode : appNodes) {
-			s.append(appNode.stringify(includePositionalInfo));
-		}
-		if (sinkDestinationNode != null) {
-			s.append(sinkDestinationNode.stringify(includePositionalInfo));
-		}
-		s.append("]");
-		return s.toString();
-	}
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public String stringify(boolean includePositionalInfo) {
+        StringBuilder s = new StringBuilder();
+        // s.append("Stream[").append(streamText).append("]");
+        s.append("[");
+        if (getStreamName() != null) {
+            s.append(getStreamName()).append(" = ");
+        }
+        if (sourceDestinationNode != null) {
+            s.append(sourceDestinationNode.stringify(includePositionalInfo));
+        }
+        for (AppNode appNode : appNodes) {
+            s.append(appNode.stringify(includePositionalInfo));
+        }
+        if (sinkDestinationNode != null) {
+            s.append(sinkDestinationNode.stringify(includePositionalInfo));
+        }
+        s.append("]");
+        return s.toString();
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		if (getStreamName() != null) {
-			s.append(getStreamName()).append(" = ");
-		}
-		if (sourceDestinationNode != null) {
-			s.append(sourceDestinationNode.toString());
-		}
-		for (int m = 0; m < appNodes.size(); m++) {
-			AppNode appNode = appNodes.get(m);
-			s.append(appNode.toString());
-			if (m + 1 < appNodes.size()) {
-				s.append(" | ");
-			}
-		}
-		if (sinkDestinationNode != null) {
-			s.append(sinkDestinationNode.toString());
-		}
-		return s.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        if (getStreamName() != null) {
+            s.append(getStreamName()).append(" = ");
+        }
+        if (sourceDestinationNode != null) {
+            s.append(sourceDestinationNode.toString());
+        }
+        for (int m = 0; m < appNodes.size(); m++) {
+            AppNode appNode = appNodes.get(m);
+            s.append(appNode.toString());
+            if (m + 1 < appNodes.size()) {
+                s.append(" | ");
+            }
+        }
+        if (sinkDestinationNode != null) {
+            s.append(sinkDestinationNode.toString());
+        }
+        return s.toString();
+    }
 
-	public List<AppNode> getAppNodes() {
-		return appNodes;
-	}
+    public List<AppNode> getAppNodes() {
+        return appNodes;
+    }
 
-	public SourceDestinationNode getSourceDestinationNode() {
-		return sourceDestinationNode;
-	}
+    public SourceDestinationNode getSourceDestinationNode() {
+        return sourceDestinationNode;
+    }
 
-	public SinkDestinationNode getSinkDestinationNode() {
-		return sinkDestinationNode;
-	}
+    public SinkDestinationNode getSinkDestinationNode() {
+        return sinkDestinationNode;
+    }
 
-	public String getStreamName() {
-		return streamName;
-	}
+    public String getStreamName() {
+        return streamName;
+    }
 
-	/**
-	 * Find the first reference to the named app in the stream. If the same app is referred to multiple times the
-	 * secondary references cannot be accessed via this method.
-	 *
-	 * @return the first occurrence of the named app in the stream
-	 */
-	public AppNode getApp(String appName) {
-		for (AppNode appNode : appNodes) {
-			if (appNode.getName().equals(appName)) {
-				return appNode;
-			}
-		}
-		return null;
-	}
+    /**
+     * Find the first reference to the named app in the stream. If the same app is referred to multiple times the
+     * secondary references cannot be accessed via this method.
+     *
+     * @return the first occurrence of the named app in the stream
+     */
+    public AppNode getApp(String appName) {
+        for (AppNode appNode : appNodes) {
+            if (appNode.getName().equals(appName)) {
+                return appNode;
+            }
+        }
+        return null;
+    }
 
-	public int getIndexOfLabel(String labelOrAppName) {
-		for (int m = 0; m < appNodes.size(); m++) {
-			AppNode appNode = appNodes.get(m);
-			if (appNode.getLabelName().equals(labelOrAppName)) {
-				return m;
-			}
-		}
-		return -1;
-	}
+    public int getIndexOfLabel(String labelOrAppName) {
+        for (int m = 0; m < appNodes.size(); m++) {
+            AppNode appNode = appNodes.get(m);
+            if (appNode.getLabelName().equals(labelOrAppName)) {
+                return m;
+            }
+        }
+        return -1;
+    }
 
-	public String getStreamData() {
-		return toString();
-	}
+    public String getStreamData() {
+        return toString();
+    }
 
-	public String getStreamText() {
-		return this.streamText;
-	}
+    public String getStreamText() {
+        return this.streamText;
+    }
 
-	public String getName() {
-		return this.streamName;
-	}
+    public String getName() {
+        return this.streamName;
+    }
 
 }

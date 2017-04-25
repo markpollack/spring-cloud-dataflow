@@ -28,9 +28,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfigurationMetadataResolverAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(ApplicationConfigurationMetadataResolver.class)
-	public ApplicationConfigurationMetadataResolver metadataResolver() {
-		return new BootApplicationConfigurationMetadataResolver();
-	}
+    @Bean
+    @ConditionalOnMissingBean(ApplicationConfigurationMetadataResolver.class)
+    public ApplicationConfigurationMetadataResolver metadataResolver() {
+        return new BootApplicationConfigurationMetadataResolver();
+    }
 }

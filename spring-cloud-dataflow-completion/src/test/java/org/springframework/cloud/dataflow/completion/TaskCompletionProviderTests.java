@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -51,7 +50,7 @@ import static org.springframework.cloud.dataflow.completion.Proposals.proposalTh
 
 /**
  * Integration tests for TaskCompletionProvider.
- *
+ * <p>
  * <p>These tests work hand in hand with a custom {@link AppRegistry} and
  * {@link ApplicationConfigurationMetadataResolver} to provide completions for a fictional
  * set of well known apps.</p>
@@ -65,179 +64,178 @@ import static org.springframework.cloud.dataflow.completion.Proposals.proposalTh
 @SpringBootTest(classes = {CompletionConfiguration.class, TaskCompletionProviderTests.Mocks.class})
 public class TaskCompletionProviderTests {
 
-	@Autowired
-	private TaskCompletionProvider completionProvider;
+    @Autowired
+    private TaskCompletionProvider completionProvider;
 
-	@Test
-	// <TAB> => basic,plum,etc
-	public void testEmptyStartShouldProposeSourceApps() {
-		assertThat(completionProvider.complete("", 1), hasItems(
-				proposalThat(is("basic")),
-				proposalThat(is("plum"))
-		));
-		assertThat(completionProvider.complete("", 1), not(hasItems(
-				proposalThat(is("log"))
-		)));
-	}
+    @Test
+    // <TAB> => basic,plum,etc
+    public void testEmptyStartShouldProposeSourceApps() {
+        assertThat(completionProvider.complete("", 1), hasItems(
+                proposalThat(is("basic")),
+                proposalThat(is("plum"))
+        ));
+        assertThat(completionProvider.complete("", 1), not(hasItems(
+                proposalThat(is("log"))
+        )));
+    }
 
-	@Test
-	// b<TAB> => basic
-	public void testUnfinishedAppNameShouldReturnCompletions() {
-		assertThat(completionProvider.complete("b", 1), hasItems(
-				proposalThat(is("basic"))
-		));
-		assertThat(completionProvider.complete("ba", 1), hasItems(
-				proposalThat(is("basic"))
-		));
-		assertThat(completionProvider.complete("pl", 1), not(hasItems(
-				proposalThat(is("basic"))
-		)));
-	}
+    @Test
+    // b<TAB> => basic
+    public void testUnfinishedAppNameShouldReturnCompletions() {
+        assertThat(completionProvider.complete("b", 1), hasItems(
+                proposalThat(is("basic"))
+        ));
+        assertThat(completionProvider.complete("ba", 1), hasItems(
+                proposalThat(is("basic"))
+        ));
+        assertThat(completionProvider.complete("pl", 1), not(hasItems(
+                proposalThat(is("basic"))
+        )));
+    }
 
-	@Test
-	// basic<TAB> => basic --foo=, etc
-	public void testValidTaskDefinitionShouldReturnAppOptions() {
-		assertThat(completionProvider.complete("basic ", 1), hasItems(
-				proposalThat(is("basic --expression=")),
-				proposalThat(is("basic --expresso="))
-		));
-		// Same as above, no final space
-		assertThat(completionProvider.complete("basic", 1), hasItems(
-				proposalThat(is("basic --expression=")),
-				proposalThat(is("basic --expresso="))
-		));
-	}
+    @Test
+    // basic<TAB> => basic --foo=, etc
+    public void testValidTaskDefinitionShouldReturnAppOptions() {
+        assertThat(completionProvider.complete("basic ", 1), hasItems(
+                proposalThat(is("basic --expression=")),
+                proposalThat(is("basic --expresso="))
+        ));
+        // Same as above, no final space
+        assertThat(completionProvider.complete("basic", 1), hasItems(
+                proposalThat(is("basic --expression=")),
+                proposalThat(is("basic --expresso="))
+        ));
+    }
 
-	@Test
-	// file | filter -<TAB> => file | filter --foo,etc
-	public void testOneDashShouldReturnTwoDashes() {
-		assertThat(completionProvider.complete("basic -", 1), hasItems(
-				proposalThat(is("basic --expression=")),
-				proposalThat(is("basic --expresso="))
-		));
-	}
+    @Test
+    // file | filter -<TAB> => file | filter --foo,etc
+    public void testOneDashShouldReturnTwoDashes() {
+        assertThat(completionProvider.complete("basic -", 1), hasItems(
+                proposalThat(is("basic --expression=")),
+                proposalThat(is("basic --expresso="))
+        ));
+    }
 
-	@Test
-	// basic --<TAB> => basic --foo,etc
-	public void testTwoDashesShouldReturnOptions() {
-		assertThat(completionProvider.complete("basic --", 1), hasItems(
-				proposalThat(is("basic --expression=")),
-				proposalThat(is("basic --expresso="))
-		));
-	}
+    @Test
+    // basic --<TAB> => basic --foo,etc
+    public void testTwoDashesShouldReturnOptions() {
+        assertThat(completionProvider.complete("basic --", 1), hasItems(
+                proposalThat(is("basic --expression=")),
+                proposalThat(is("basic --expresso="))
+        ));
+    }
 
-	@Test
-	// file --p<TAB> => file --preventDuplicates=, file --pattern=
-	public void testUnfinishedOptionNameShouldComplete() {
-		assertThat(completionProvider.complete("basic --foo", 1), hasItems(
-				proposalThat(is("basic --fooble="))
-		));
-	}
+    @Test
+    // file --p<TAB> => file --preventDuplicates=, file --pattern=
+    public void testUnfinishedOptionNameShouldComplete() {
+        assertThat(completionProvider.complete("basic --foo", 1), hasItems(
+                proposalThat(is("basic --fooble="))
+        ));
+    }
 
-	@Test
-	// file | counter --name=<TAB> => nothing
-	public void testInGenericOptionValueCantProposeAnything() {
-		assertThat(completionProvider.complete("basic --expression=", 1), empty());
-	}
+    @Test
+    // file | counter --name=<TAB> => nothing
+    public void testInGenericOptionValueCantProposeAnything() {
+        assertThat(completionProvider.complete("basic --expression=", 1), empty());
+    }
 
-	@Test
-	// plum --use-ssl=<TAB> => propose true|false
-	public void testValueHintForBooleans() {
-		assertThat(completionProvider.complete("plum --use-ssl=", 1), hasItems(
-				proposalThat(is("plum --use-ssl=true")),
-				proposalThat(is("plum --use-ssl=false"))
-		));
-	}
+    @Test
+    // plum --use-ssl=<TAB> => propose true|false
+    public void testValueHintForBooleans() {
+        assertThat(completionProvider.complete("plum --use-ssl=", 1), hasItems(
+                proposalThat(is("plum --use-ssl=true")),
+                proposalThat(is("plum --use-ssl=false"))
+        ));
+    }
 
-	@Test
-	// basic --enum-value=<TAB> => propose enum values
-	public void testValueHintForEnums() {
-		assertThat(completionProvider.complete("basic --expresso=", 1), hasItems(
-				proposalThat(is("basic --expresso=SINGLE")),
-				proposalThat(is("basic --expresso=DOUBLE"))
-		));
-	}
+    @Test
+    // basic --enum-value=<TAB> => propose enum values
+    public void testValueHintForEnums() {
+        assertThat(completionProvider.complete("basic --expresso=", 1), hasItems(
+                proposalThat(is("basic --expresso=SINGLE")),
+                proposalThat(is("basic --expresso=DOUBLE"))
+        ));
+    }
 
-	@Test
-	public void testUnrecognizedPrefixesDontBlowUp() {
-		assertThat(completionProvider.complete("foo", 1), empty());
-		assertThat(completionProvider.complete("foo --", 1), empty());
-		assertThat(completionProvider.complete("http --notavalidoption", 1), empty());
-		assertThat(completionProvider.complete("http --notavalidoption=", 1), empty());
-		assertThat(completionProvider.complete("foo --some-option", 1), empty());
-		assertThat(completionProvider.complete("foo --some-option=", 1), empty());
-		assertThat(completionProvider.complete("foo --some-option=prefix", 1), empty());
-	}
+    @Test
+    public void testUnrecognizedPrefixesDontBlowUp() {
+        assertThat(completionProvider.complete("foo", 1), empty());
+        assertThat(completionProvider.complete("foo --", 1), empty());
+        assertThat(completionProvider.complete("http --notavalidoption", 1), empty());
+        assertThat(completionProvider.complete("http --notavalidoption=", 1), empty());
+        assertThat(completionProvider.complete("foo --some-option", 1), empty());
+        assertThat(completionProvider.complete("foo --some-option=", 1), empty());
+        assertThat(completionProvider.complete("foo --some-option=prefix", 1), empty());
+    }
 
-	/*
-	 * basic --expresso=s<TAB> => must be single or double, no need to present "--expresso=s --other.prop"
-	 */
-	@Test
-	public void testClosedSetValuesShouldBeExclusive() {
-		assertThat(completionProvider.complete("basic --expresso=s", 1), not(hasItems(
-				proposalThat(startsWith("basic --expresso=s --fooble"))
-		)));
-	}
+    /*
+     * basic --expresso=s<TAB> => must be single or double, no need to present "--expresso=s --other.prop"
+     */
+    @Test
+    public void testClosedSetValuesShouldBeExclusive() {
+        assertThat(completionProvider.complete("basic --expresso=s", 1), not(hasItems(
+                proposalThat(startsWith("basic --expresso=s --fooble"))
+        )));
+    }
 
-	/**
-	 * A set of mocks that consider the contents of the {@literal apps/} directory as app
-	 * archives.
-	 *
-	 * @author Eric Bottard
-	 * @author Mark Fisher
-	 */
-	@Configuration
-	public static class Mocks {
+    /**
+     * A set of mocks that consider the contents of the {@literal apps/} directory as app
+     * archives.
+     *
+     * @author Eric Bottard
+     * @author Mark Fisher
+     */
+    @Configuration
+    public static class Mocks {
 
-		private static final File ROOT = new File("src/test/resources", Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
+        private static final File ROOT = new File("src/test/resources", Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
 
-		private static final FileFilter FILTER = new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory() && pathname.getName().matches(".+-.+");
-			}
-		};
+        private static final FileFilter FILTER = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory() && pathname.getName().matches(".+-.+");
+            }
+        };
 
-		@Bean
-		public AppRegistry appRegistry() {
-			final ResourceLoader resourceLoader = new FileSystemResourceLoader();
-			return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
-				@Override
-				public AppRegistration find(String name, ApplicationType type) {
-					String filename = name + "-" + type;
-					File file = new File(ROOT, filename);
-					if (file.exists()) {
-						return new AppRegistration(name, type, file.toURI(), resourceLoader);
-					}
-					else {
-						return null;
-					}
-				}
+        @Bean
+        public AppRegistry appRegistry() {
+            final ResourceLoader resourceLoader = new FileSystemResourceLoader();
+            return new AppRegistry(new InMemoryUriRegistry(), resourceLoader) {
+                @Override
+                public AppRegistration find(String name, ApplicationType type) {
+                    String filename = name + "-" + type;
+                    File file = new File(ROOT, filename);
+                    if (file.exists()) {
+                        return new AppRegistration(name, type, file.toURI(), resourceLoader);
+                    } else {
+                        return null;
+                    }
+                }
 
-				@Override
-				public List<AppRegistration> findAll() {
-					List<AppRegistration> result = new ArrayList<>();
-					for (File file : ROOT.listFiles(FILTER)) {
-						result.add(makeAppRegistration(file));
-					}
-					return result;
-				}
+                @Override
+                public List<AppRegistration> findAll() {
+                    List<AppRegistration> result = new ArrayList<>();
+                    for (File file : ROOT.listFiles(FILTER)) {
+                        result.add(makeAppRegistration(file));
+                    }
+                    return result;
+                }
 
-				private AppRegistration makeAppRegistration(File file) {
-					String fileName = file.getName();
-					Matcher matcher = Pattern.compile("(?<name>.+)-(?<type>.+)").matcher(fileName);
-					Assert.isTrue(matcher.matches());
-					String name = matcher.group("name");
-					ApplicationType type = ApplicationType.valueOf(matcher.group("type"));
-					return new AppRegistration(name, type, file.toURI(), resourceLoader);
-				}
-			};
-		}
+                private AppRegistration makeAppRegistration(File file) {
+                    String fileName = file.getName();
+                    Matcher matcher = Pattern.compile("(?<name>.+)-(?<type>.+)").matcher(fileName);
+                    Assert.isTrue(matcher.matches());
+                    String name = matcher.group("name");
+                    ApplicationType type = ApplicationType.valueOf(matcher.group("type"));
+                    return new AppRegistration(name, type, file.toURI(), resourceLoader);
+                }
+            };
+        }
 
-		@Bean
-		public ApplicationConfigurationMetadataResolver metadataResolver() {
-			return new BootApplicationConfigurationMetadataResolver(TaskCompletionProviderTests.class.getClassLoader());
-		}
-	}
+        @Bean
+        public ApplicationConfigurationMetadataResolver metadataResolver() {
+            return new BootApplicationConfigurationMetadataResolver(TaskCompletionProviderTests.class.getClassLoader());
+        }
+    }
 
 }

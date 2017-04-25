@@ -19,7 +19,6 @@ package org.springframework.cloud.dataflow.rest.client.support;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.batch.core.StepExecution;
 
 /**
@@ -28,11 +27,11 @@ import org.springframework.batch.core.StepExecution;
  * @author Gunnar Hillert
  * @since 1.0
  */
-@JsonIgnoreProperties({ "jobParameters", "jobExecutionId", "skipCount", "summary" })
+@JsonIgnoreProperties({"jobParameters", "jobExecutionId", "skipCount", "summary"})
 public abstract class StepExecutionJacksonMixIn {
 
-	@JsonCreator()
-	StepExecutionJacksonMixIn(@JsonProperty("stepName") String stepName) {
-	}
+    @JsonCreator()
+    StepExecutionJacksonMixIn(@JsonProperty("stepName") String stepName) {
+    }
 
 }

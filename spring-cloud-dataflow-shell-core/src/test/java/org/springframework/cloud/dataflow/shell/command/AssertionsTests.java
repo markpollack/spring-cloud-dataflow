@@ -25,53 +25,53 @@ import static org.junit.Assert.assertEquals;
  */
 public class AssertionsTests {
 
-	@Test
-	public void atMostOneWithNone() {
-		Assertions.atMostOneOf("foo", null, "bar", null);
-	}
+    @Test
+    public void atMostOneWithNone() {
+        Assertions.atMostOneOf("foo", null, "bar", null);
+    }
 
-	@Test
-	public void atMostOneWithOne() {
-		Assertions.atMostOneOf("foo", "x", "bar", null);
-	}
+    @Test
+    public void atMostOneWithOne() {
+        Assertions.atMostOneOf("foo", "x", "bar", null);
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void atMostOneWithTwo() {
-		Assertions.atMostOneOf("foo", "x", "bar", "y");
-	}
+    @Test(expected = IllegalStateException.class)
+    public void atMostOneWithTwo() {
+        Assertions.atMostOneOf("foo", "x", "bar", "y");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void atMostOneWithOddArgs() {
-		Assertions.atMostOneOf("foo", "x", "bar", null, "oops");
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void atMostOneWithOddArgs() {
+        Assertions.atMostOneOf("foo", "x", "bar", null, "oops");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void atMostOneWithNonStringKey() {
-		assertEquals(1, Assertions.atMostOneOf("foo", null, 99, "y"));
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void atMostOneWithNonStringKey() {
+        assertEquals(1, Assertions.atMostOneOf("foo", null, 99, "y"));
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void exactlyOneWithNone() {
-		assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", null, "baz", null));
-	}
+    @Test(expected = IllegalStateException.class)
+    public void exactlyOneWithNone() {
+        assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", null, "baz", null));
+    }
 
-	@Test
-	public void exactlyOneWithOne() {
-		assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", "y", "baz", null));
-	}
+    @Test
+    public void exactlyOneWithOne() {
+        assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", "y", "baz", null));
+    }
 
-	@Test(expected = IllegalStateException.class)
-	public void exactlyOneWithTwo() {
-		assertEquals(1, Assertions.exactlyOneOf("foo", "x", "bar", "y", "baz", null));
-	}
+    @Test(expected = IllegalStateException.class)
+    public void exactlyOneWithTwo() {
+        assertEquals(1, Assertions.exactlyOneOf("foo", "x", "bar", "y", "baz", null));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void exactlyOneWithOddArgs() {
-		assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", "y", "oops"));
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void exactlyOneWithOddArgs() {
+        assertEquals(1, Assertions.exactlyOneOf("foo", null, "bar", "y", "oops"));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void exactlyOneWithNonStringKey() {
-		assertEquals(1, Assertions.exactlyOneOf("foo", null, 99, "y"));
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void exactlyOneWithNonStringKey() {
+        assertEquals(1, Assertions.exactlyOneOf("foo", null, 99, "y"));
+    }
 }
