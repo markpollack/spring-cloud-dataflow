@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -138,7 +139,8 @@ public class StreamControllerTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorMissingDeploymentController() {
-        new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(), null, appDeployer, appRegistry);
+        new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository()
+                , null, appDeployer, appRegistry);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -241,7 +243,8 @@ public class StreamControllerTests {
                         .accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isCreated());
         mockMvc.perform(
-                post("/streams/definitions/").param("name", "MultipleNestedTaps").param("definition", ":TapOnMyStream3 > log")
+                post("/streams/definitions/").param("name", "MultipleNestedTaps").param("definition",
+                        ":TapOnMyStream3 > log")
                         .accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isCreated());
         mockMvc.perform(
@@ -281,8 +284,10 @@ public class StreamControllerTests {
                         jsonPath("$[0].logref", is("InvalidStreamDefinitionException"))
                 )
                 .andExpect(
-                        jsonPath("$[0].message", is("Application name 'foo' with type 'source' does not exist in the app "
-                                + "registry.\nApplication name 'bar' with type 'sink' does not exist in the app registry."))
+                        jsonPath("$[0].message", is("Application name 'foo' with type 'source' does not exist in the " +
+                                "app "
+                                + "registry.\nApplication name 'bar' with type 'sink' does not exist in the app " +
+                                "registry."))
                 );
     }
 
@@ -768,7 +773,8 @@ public class StreamControllerTests {
         assertThat(timeRequest.getDefinition().getName(), is("time"));
         Map<String, String> timeAppProps = timeRequest.getDefinition().getProperties();
         assertEquals("2", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionCount"));
-        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionKeyExpression"));
+        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer" +
+                ".partitionKeyExpression"));
         Map<String, String> timeDeploymentProps = timeRequest.getDeploymentProperties();
         assertNull(timeDeploymentProps.get(AppDeployer.COUNT_PROPERTY_KEY));
         assertEquals("myStream", timeDeploymentProps.get(AppDeployer.GROUP_PROPERTY_KEY));
@@ -805,7 +811,8 @@ public class StreamControllerTests {
         assertThat(timeRequest.getDefinition().getName(), is("time"));
         Map<String, String> timeAppProps = timeRequest.getDefinition().getProperties();
         assertEquals("2", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionCount"));
-        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionKeyExpression"));
+        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer" +
+                ".partitionKeyExpression"));
         Map<String, String> timeDeploymentProps = timeRequest.getDeploymentProperties();
         assertEquals("2", timeDeploymentProps.get(AppDeployer.COUNT_PROPERTY_KEY));
         assertEquals("myStream", timeDeploymentProps.get(AppDeployer.GROUP_PROPERTY_KEY));
@@ -849,7 +856,8 @@ public class StreamControllerTests {
         assertThat(timeRequest.getDefinition().getName(), is("time"));
         Map<String, String> timeAppProps = timeRequest.getDefinition().getProperties();
         assertEquals("2", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionCount"));
-        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer.partitionKeyExpression"));
+        assertEquals("payload", timeAppProps.get("spring.cloud.stream.bindings.output.producer" +
+                ".partitionKeyExpression"));
         Map<String, String> timeDeploymentProps = timeRequest.getDeploymentProperties();
         assertEquals("2", timeDeploymentProps.get(AppDeployer.COUNT_PROPERTY_KEY));
         assertEquals("myStream", timeDeploymentProps.get(AppDeployer.GROUP_PROPERTY_KEY));

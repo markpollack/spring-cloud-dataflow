@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.server.rest.documentation;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+
 import org.springframework.cloud.dataflow.server.local.LocalDataflowResource;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;

@@ -43,7 +43,8 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
 
     private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-    public AddAppOptionsExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
+    public AddAppOptionsExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver
+            metadataResolver) {
         this.appRegistry = appRegistry;
         this.metadataResolver = metadataResolver;
     }
@@ -74,7 +75,8 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
         // For whitelisted properties, use their simple name
         for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
             if (!alreadyPresentOptions.contains(property.getName())) {
-                collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property.getShortDescription()));
+                collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property
+                        .getShortDescription()));
             }
         }
 
@@ -82,7 +84,8 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
         if (detailLevel > 1) {
             for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
                 if (!alreadyPresentOptions.contains(property.getId())) {
-                    collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property.getShortDescription()));
+                    collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property
+                            .getShortDescription()));
                 }
             }
 

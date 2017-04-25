@@ -112,7 +112,8 @@ public class TaskExecutionResource extends ResourceSupport {
         if (taskJobExecutionRel.getJobExecutionIds() == null) {
             this.jobExecutionIds = Collections.emptyList();
         } else {
-            this.jobExecutionIds = Collections.unmodifiableList(new ArrayList<>(taskJobExecutionRel.getJobExecutionIds()));
+            this.jobExecutionIds = Collections.unmodifiableList(new ArrayList<>(taskJobExecutionRel
+                    .getJobExecutionIds()));
         }
     }
 

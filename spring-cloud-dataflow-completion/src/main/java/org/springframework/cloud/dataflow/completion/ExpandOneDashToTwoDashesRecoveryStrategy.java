@@ -39,7 +39,8 @@ class ExpandOneDashToTwoDashesRecoveryStrategy extends StacktraceFingerprintingR
     }
 
     @Override
-    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal> proposals) {
+    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal>
+            proposals) {
         // Pretend there was an additional dash and invoke the dedicated strategy for that case
         String withDashDash = dsl + "-";
         try {

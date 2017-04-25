@@ -28,6 +28,7 @@ import java.util.HashMap;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.cloud.dataflow.rest.util.HttpUtils;
 import org.springframework.cloud.dataflow.shell.Target;
 import org.springframework.http.HttpEntity;
@@ -67,16 +68,23 @@ public class HttpCommands implements CommandMarker {
 
     @CliCommand(value = {POST_HTTPSOURCE}, help = "POST data to http endpoint")
     public String postHttp(
-            @CliOption(mandatory = false, key = {"", "target"}, help = "the location to post to", unspecifiedDefaultValue = "http://localhost:9393") String target,
-            @CliOption(mandatory = false, key = "data", help = "the text payload to post. exclusive with file. embedded double quotes are not supported if next to a space character") String data,
-            @CliOption(mandatory = false, key = "file", help = "filename to read data from. exclusive with data") File file,
-            @CliOption(mandatory = false, key = "contentType", help = "the content-type to use. file is also read using the specified charset", unspecifiedDefaultValue = DEFAULT_MEDIA_TYPE) MediaType mediaType,
-            @CliOption(mandatory = false, key = {"username"}, help = "the username for calls that require basic authentication",
+            @CliOption(mandatory = false, key = {"", "target"}, help = "the location to post to",
+                    unspecifiedDefaultValue = "http://localhost:9393") String target,
+            @CliOption(mandatory = false, key = "data", help = "the text payload to post. exclusive with file. " +
+                    "embedded double quotes are not supported if next to a space character") String data,
+            @CliOption(mandatory = false, key = "file", help = "filename to read data from. exclusive with data")
+                    File file,
+            @CliOption(mandatory = false, key = "contentType", help = "the content-type to use. file is also read " +
+                    "using the specified charset", unspecifiedDefaultValue = DEFAULT_MEDIA_TYPE) MediaType mediaType,
+            @CliOption(mandatory = false, key = {"username"}, help = "the username for calls that require basic " +
+                    "authentication",
                     unspecifiedDefaultValue = Target.DEFAULT_USERNAME) String targetUsername,
-            @CliOption(mandatory = false, key = {"password"}, help = "the password for calls that require basic authentication",
+            @CliOption(mandatory = false, key = {"password"}, help = "the password for calls that require basic " +
+                    "authentication",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_PASSWORD,
                     unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_PASSWORD) String targetPassword,
-            @CliOption(mandatory = false, key = "skip-ssl-validation", help = "accept any SSL certificate (even self-signed)",
+            @CliOption(mandatory = false, key = "skip-ssl-validation", help = "accept any SSL certificate (even " +
+                    "self-signed)",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION,
                     unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean skipSslValidation)
             throws IOException {
@@ -121,13 +129,17 @@ public class HttpCommands implements CommandMarker {
 
     @CliCommand(value = {GET_HTTPSOURCE}, help = "Make GET request to http endpoint")
     public String getHttp(
-            @CliOption(mandatory = false, key = {"", "target"}, help = "the URL to make the request to", unspecifiedDefaultValue = "http://localhost:9393") String target,
-            @CliOption(mandatory = false, key = {"username"}, help = "the username for calls that require basic authentication",
+            @CliOption(mandatory = false, key = {"", "target"}, help = "the URL to make the request to",
+                    unspecifiedDefaultValue = "http://localhost:9393") String target,
+            @CliOption(mandatory = false, key = {"username"}, help = "the username for calls that require basic " +
+                    "authentication",
                     unspecifiedDefaultValue = Target.DEFAULT_USERNAME) String targetUsername,
-            @CliOption(mandatory = false, key = {"password"}, help = "the password for calls that require basic authentication",
+            @CliOption(mandatory = false, key = {"password"}, help = "the password for calls that require basic " +
+                    "authentication",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_PASSWORD,
                     unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_PASSWORD) String targetPassword,
-            @CliOption(mandatory = false, key = "skip-ssl-validation", help = "accept any SSL certificate (even self-signed)",
+            @CliOption(mandatory = false, key = "skip-ssl-validation", help = "accept any SSL certificate (even " +
+                    "self-signed)",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION,
                     unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean skipSslValidation)
             throws IOException {
@@ -187,7 +199,8 @@ public class HttpCommands implements CommandMarker {
     }
 
     private void outputResponse(ResponseEntity<String> response, StringBuilder buffer) {
-        buffer.append("> ").append(response.getStatusCode().value()).append(" ").append(response.getStatusCode().name()).append(
+        buffer.append("> ").append(response.getStatusCode().value()).append(" ").append(response.getStatusCode().name
+                ()).append(
                 OsUtils.LINE_SEPARATOR);
         String maybeJson = response.getBody();
         if (maybeJson != null) {

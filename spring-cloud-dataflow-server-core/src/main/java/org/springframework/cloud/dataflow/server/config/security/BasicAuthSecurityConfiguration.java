@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -146,7 +147,8 @@ public class BasicAuthSecurityConfiguration extends WebSecurityConfigurerAdapter
             security.anyRequest().authenticated();
         }
 
-        final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter = new SessionRepositoryFilter<ExpiringSession>(
+        final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter = new
+                SessionRepositoryFilter<ExpiringSession>(
                 sessionRepository());
         sessionRepositoryFilter
                 .setHttpSessionStrategy(new HeaderHttpSessionStrategy());
@@ -168,7 +170,8 @@ public class BasicAuthSecurityConfiguration extends WebSecurityConfigurerAdapter
             Matcher matcher = AUTHORIZATION_RULE.matcher(rule);
             Assert.isTrue(matcher.matches(),
                     String.format(
-                            "Unable to parse security rule [%s], expected format is 'HTTP_METHOD ANT_PATTERN => SECURITY_ATTRIBUTE(S)'",
+                            "Unable to parse security rule [%s], expected format is 'HTTP_METHOD ANT_PATTERN => " +
+                                    "SECURITY_ATTRIBUTE(S)'",
                             rule));
 
             HttpMethod method = HttpMethod.valueOf(matcher.group(1).trim());

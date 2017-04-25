@@ -27,7 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
+import org.springframework.security.config.annotation.authentication.configurers.ldap
+        .LdapAuthenticationProviderConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -75,7 +76,8 @@ public class LdapAuthenticationConfiguration extends GlobalAuthenticationConfigu
         } else {
             ldapConfigurer.ldapAuthoritiesPopulator(new LdapAuthoritiesPopulator() {
                 @Override
-                public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData, String username) {
+                public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData,
+                                                                                    String username) {
                     return Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGE"));
                 }
             });

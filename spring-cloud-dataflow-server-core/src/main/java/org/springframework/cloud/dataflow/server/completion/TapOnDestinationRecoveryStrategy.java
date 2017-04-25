@@ -53,7 +53,8 @@ public class TapOnDestinationRecoveryStrategy implements RecoveryStrategy<ParseE
     }
 
     @Override
-    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal> collector) {
+    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal>
+            collector) {
         String streamName = dsl.substring(":".length());
         String appName = "";
         if (streamName.contains(".")) {
@@ -73,7 +74,8 @@ public class TapOnDestinationRecoveryStrategy implements RecoveryStrategy<ParseE
             CompletionProposal.Factory proposals = CompletionProposal.expanding(":" + streamName + ".");
             for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
                 ApplicationType applicationType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-                if (streamAppDefinition.getName().startsWith(appName) && !applicationType.equals(ApplicationType.sink)) {
+                if (streamAppDefinition.getName().startsWith(appName) && !applicationType.equals(ApplicationType
+                        .sink)) {
                     collector.add(proposals.withSuffix(streamAppDefinition.getName()));
                 }
             }

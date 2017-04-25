@@ -40,7 +40,8 @@ public class TaskAppNode extends LabelledTaskNode {
     TaskAppNode(Token taskName, ArgumentNode[] arguments, List<TransitionNode> transitions) {
         super(taskName.startPos,
                 (transitions == null || transitions.isEmpty()) ?
-                        arguments == null || arguments.length == 0 ? taskName.endPos : arguments[arguments.length - 1].endPos :
+                        arguments == null || arguments.length == 0 ? taskName.endPos : arguments[arguments.length -
+                                1].endPos :
                         transitions.get(transitions.size() - 1).endPos);
         this.taskName = taskName;
         this.arguments = arguments;

@@ -132,7 +132,8 @@ public class DataFlowControllerAutoConfiguration {
     @Bean
     @ConditionalOnBean(StreamDefinitionRepository.class)
     public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
+                                                                 DeploymentIdRepository deploymentIdRepository,
+                                                                 StreamDeploymentController deploymentController,
                                                                  AppDeployer deployer, AppRegistry appRegistry) {
         return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, deployer,
                 appRegistry);
@@ -141,15 +142,20 @@ public class DataFlowControllerAutoConfiguration {
     @Bean
     @ConditionalOnBean(StreamDefinitionRepository.class)
     public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
-                                                                 ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties) {
-        return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer, metadataResolver, appsProperties);
+                                                                 DeploymentIdRepository deploymentIdRepository,
+                                                                 AppRegistry registry, AppDeployer deployer,
+                                                                 ApplicationConfigurationMetadataResolver
+                                                                             metadataResolver,
+                                                                 CommonApplicationProperties appsProperties) {
+        return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer,
+                metadataResolver, appsProperties);
     }
 
     @Bean
     @ConditionalOnBean(StreamDefinitionRepository.class)
     public RuntimeAppsController runtimeAppsController(StreamDefinitionRepository repository,
-                                                       DeploymentIdRepository deploymentIdRepository, AppDeployer appDeployer, MetricStore metricStore) {
+                                                       DeploymentIdRepository deploymentIdRepository, AppDeployer
+                                                                   appDeployer, MetricStore metricStore) {
         return new RuntimeAppsController(repository, deploymentIdRepository, appDeployer, metricStore,
                 runtimeAppsStatusFJPFB().getObject());
     }
@@ -241,7 +247,8 @@ public class DataFlowControllerAutoConfiguration {
     }
 
     @Bean
-    public CompletionController completionController(StreamCompletionProvider completionProvider, TaskCompletionProvider taskCompletionProvider) {
+    public CompletionController completionController(StreamCompletionProvider completionProvider,
+                                                     TaskCompletionProvider taskCompletionProvider) {
         return new CompletionController(completionProvider, taskCompletionProvider);
     }
 
@@ -259,7 +266,8 @@ public class DataFlowControllerAutoConfiguration {
     }
 
     @Bean
-    public AppRegistryController appRegistryController(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
+    public AppRegistryController appRegistryController(AppRegistry appRegistry,
+                                                       ApplicationConfigurationMetadataResolver metadataResolver) {
         return new AppRegistryController(appRegistry, metadataResolver, appRegistryFJPFB().getObject());
     }
 

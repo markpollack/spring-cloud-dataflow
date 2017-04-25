@@ -46,7 +46,8 @@ public class CheckPointedParseException extends ParseException {
      * @param inserts           variables that may be inserted in the error message
      */
     public CheckPointedParseException(String expressionString, int textPosition, int tokenPointer,
-                                      int checkpointPointer, List<Token> tokens, DSLMessage message, Object... inserts) {
+                                      int checkpointPointer, List<Token> tokens, DSLMessage message, Object...
+                                              inserts) {
         super(expressionString, textPosition, message, inserts);
         this.tokenPointer = tokenPointer;
         this.checkpointPointer = checkpointPointer;

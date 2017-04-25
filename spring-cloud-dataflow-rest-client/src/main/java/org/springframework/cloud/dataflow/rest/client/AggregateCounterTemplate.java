@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.rest.client;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+
 import org.springframework.analytics.rest.domain.AggregateCounterResource;
 import org.springframework.analytics.rest.domain.MetricResource;
 import org.springframework.hateoas.PagedResources;
@@ -63,7 +64,8 @@ public class AggregateCounterTemplate implements AggregateCounterOperations {
 
     @Override
     public PagedResources<MetricResource> list() {
-        return restTemplate.getForObject(links.getLink(AGGREGATE_COUNTER_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
+        return restTemplate.getForObject(links.getLink(AGGREGATE_COUNTER_COLLECTION_RELATION).getHref(),
+                MetricResource.Page.class);
     }
 
     @Override

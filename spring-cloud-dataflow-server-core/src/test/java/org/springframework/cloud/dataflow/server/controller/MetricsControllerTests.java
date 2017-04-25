@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.server.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.server.configuration.TestDependencies;
@@ -54,7 +55,8 @@ public class MetricsControllerTests {
 
     @Before
     public void setupMocks() throws Exception {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(get("/").accept(MediaType.APPLICATION_JSON)).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(get("/").accept(MediaType
+                .APPLICATION_JSON)).build();
     }
 
     @Test

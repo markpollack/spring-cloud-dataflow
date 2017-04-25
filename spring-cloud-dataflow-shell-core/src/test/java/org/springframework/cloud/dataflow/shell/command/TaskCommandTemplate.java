@@ -59,7 +59,8 @@ public class TaskCommandTemplate {
      *
      * @param taskName       the name of the task
      * @param taskDefinition the task definition DSL
-     * @param values         will be injected into taskdefinition according to {@link String#format(String, Object...)} syntax
+     * @param values         will be injected into taskdefinition according to
+     * {@link String#format(String, Object...)} syntax
      */
     public void create(String taskName, String taskDefinition, Object... values) {
         doCreate(taskName, taskDefinition, true, values);

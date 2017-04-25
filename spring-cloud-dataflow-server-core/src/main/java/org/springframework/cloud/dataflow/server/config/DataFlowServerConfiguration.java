@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.h2.tools.Server;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -75,7 +76,8 @@ import static org.springframework.hateoas.config.EnableHypermediaSupport.Hyperme
 public class DataFlowServerConfiguration {
 
     @Configuration
-    @ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing =
+            true)
     @ConditionalOnExpression("#{'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:')}")
     public static class H2ServerConfiguration {
 
@@ -111,7 +113,8 @@ public class DataFlowServerConfiguration {
 
         @Bean
         @DependsOn("initH2TCPServer")
-        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
+        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties
+                featuresProperties) {
             DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
             dataflowRdbmsInitializer.setDataSource(dataSource);
             return dataflowRdbmsInitializer;
@@ -130,7 +133,8 @@ public class DataFlowServerConfiguration {
         }
 
         @Bean
-        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties featuresProperties) {
+        public DataflowRdbmsInitializer dataflowRdbmsInitializer(DataSource dataSource, FeaturesProperties
+                featuresProperties) {
             DataflowRdbmsInitializer dataflowRdbmsInitializer = new DataflowRdbmsInitializer(featuresProperties);
             dataflowRdbmsInitializer.setDataSource(dataSource);
             return dataflowRdbmsInitializer;

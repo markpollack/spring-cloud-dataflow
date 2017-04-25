@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.core.StreamAppDefinition;
 import org.springframework.cloud.dataflow.core.StreamDefinition;
@@ -127,8 +128,10 @@ public class StreamDefinitionController {
      * @param deployer               the deployer this controller will use to compute deployment status
      * @param appRegistry            the app registry to look up registered apps
      */
-    public StreamDefinitionController(StreamDefinitionRepository repository, DeploymentIdRepository deploymentIdRepository,
-                                      StreamDeploymentController deploymentController, AppDeployer deployer, AppRegistry appRegistry) {
+    public StreamDefinitionController(StreamDefinitionRepository repository, DeploymentIdRepository
+            deploymentIdRepository,
+                                      StreamDeploymentController deploymentController, AppDeployer deployer,
+                                      AppRegistry appRegistry) {
         Assert.notNull(repository, "StreamDefinitionRepository must not be null");
         Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
         Assert.notNull(deploymentController, "StreamDeploymentController must not be null");
@@ -188,7 +191,8 @@ public class StreamDefinitionController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public PagedResources<StreamDefinitionResource> list(Pageable pageable, @RequestParam(required = false) String search,
+    public PagedResources<StreamDefinitionResource> list(Pageable pageable, @RequestParam(required = false) String
+            search,
                                                          PagedResourcesAssembler<StreamDefinition> assembler) {
         Page<StreamDefinition> streamDefinitions;
         if (search != null) {
@@ -236,12 +240,14 @@ public class StreamDefinitionController {
                 continue;
             }
             if (appRegistry.find(appName, appType) == null) {
-                errorMessages.add(String.format("Application name '%s' with type '%s' does not exist in the app registry.",
+                errorMessages.add(String.format("Application name '%s' with type '%s' does not exist in the app " +
+                                "registry.",
                         appName, appType));
             }
         }
         if (!errorMessages.isEmpty()) {
-            throw new InvalidStreamDefinitionException(StringUtils.collectionToDelimitedString(errorMessages, System.lineSeparator()));
+            throw new InvalidStreamDefinitionException(StringUtils.collectionToDelimitedString(errorMessages, System
+                    .lineSeparator()));
         }
         this.repository.save(stream);
         if (deploy) {
@@ -278,7 +284,8 @@ public class StreamDefinitionController {
     @ResponseStatus(HttpStatus.OK)
     public PagedResources<StreamDefinitionResource> listRelated(Pageable pageable,
                                                                 @PathVariable("name") String name,
-                                                                @RequestParam(value = "nested", required = false, defaultValue = "false") boolean nested,
+                                                                @RequestParam(value = "nested", required = false,
+                                                                        defaultValue = "false") boolean nested,
                                                                 PagedResourcesAssembler<StreamDefinition> assembler) {
         Set<StreamDefinition> relatedDefinitions = new LinkedHashSet<>();
         StreamDefinition currentStreamDefinition = repository.findOne(name);
@@ -293,7 +300,8 @@ public class StreamDefinitionController {
         return assembler.toResource(page, new Assembler(page));
     }
 
-    private Set<StreamDefinition> findRelatedDefinitions(StreamDefinition currentStreamDefinition, Iterable<StreamDefinition> definitions,
+    private Set<StreamDefinition> findRelatedDefinitions(StreamDefinition currentStreamDefinition,
+                                                         Iterable<StreamDefinition> definitions,
                                                          Set<StreamDefinition> relatedDefinitions, boolean nested) {
         relatedDefinitions.add(currentStreamDefinition);
         String currentStreamName = currentStreamDefinition.getName();
@@ -366,7 +374,8 @@ public class StreamDefinitionController {
                             Collectors.toMap(
                                     Function.identity(),
                                     sd -> sd.getAppDefinitions().stream()
-                                            .map(sad -> deploymentIdRepository.findOne(DeploymentKey.forStreamAppDefinition(sad)))
+                                            .map(sad -> deploymentIdRepository.findOne(DeploymentKey
+                                                    .forStreamAppDefinition(sad)))
                                             .collect(Collectors.toList())
                             )
                     );
@@ -382,7 +391,8 @@ public class StreamDefinitionController {
             streamDeploymentStates = deploymentIdsPerStream.entrySet().stream()
                     .map(kv -> new AbstractMap.SimpleImmutableEntry<>(kv.getKey(),
                             aggregateState(kv.getValue().stream()
-                                    .map(deploymentId -> statePerApp.getOrDefault(deploymentId, DeploymentState.unknown))
+                                    .map(deploymentId -> statePerApp.getOrDefault(deploymentId, DeploymentState
+                                            .unknown))
                                     .collect(Collectors.toSet())
                             ))
                     ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -396,8 +406,10 @@ public class StreamDefinitionController {
 
         @Override
         public StreamDefinitionResource instantiateResource(StreamDefinition stream) {
-            final StreamDefinitionResource resource = new StreamDefinitionResource(stream.getName(), stream.getDslText());
-            final DeploymentStateResource deploymentStateResource = ControllerUtils.mapState(streamDeploymentStates.get(stream));
+            final StreamDefinitionResource resource = new StreamDefinitionResource(stream.getName(), stream
+                    .getDslText());
+            final DeploymentStateResource deploymentStateResource = ControllerUtils.mapState(streamDeploymentStates
+                    .get(stream));
             resource.setStatus(deploymentStateResource.getKey());
             resource.setStatusDescription(deploymentStateResource.getDescription());
             return resource;

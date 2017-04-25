@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.server.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.core.ApplicationType;
@@ -78,7 +79,8 @@ public class AppRegistryControllerTests {
     @Test
     public void testRegisterApplication() throws Exception {
         mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
+                (print())
                 .andExpect(status().isCreated());
         assertThat(appRegistry.find("blubba", ApplicationType.processor).getUri().toString(), is("file:///foo"));
     }
@@ -86,20 +88,24 @@ public class AppRegistryControllerTests {
     @Test
     public void testRegisterApplicationTwice() throws Exception {
         mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
+                (print())
                 .andExpect(status().isCreated());
         mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
+                (print())
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void testRegisterFromPropertiesFile() throws Exception {
         mockMvc.perform(
-                post("/apps").param("uri", "classpath:app-registry.properties").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps").param("uri", "classpath:app-registry.properties").accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isCreated());
         assertThat(appRegistry.find("foo", ApplicationType.sink).getUri().toString(), is("file:///bar"));
-        assertThat(appRegistry.find("foo", ApplicationType.sink).getMetadataUri().toString(), is("file:///bar-metadata"));
+        assertThat(appRegistry.find("foo", ApplicationType.sink).getMetadataUri().toString(), is
+                ("file:///bar-metadata"));
         assertThat(appRegistry.find("bar", ApplicationType.source).getUri().toString(), is("file:///foo"));
     }
 
@@ -114,19 +120,27 @@ public class AppRegistryControllerTests {
     @Test
     public void testRegisterAllWithoutForce() throws Exception {
         appRegistry.importAll(false, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
-        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org.springframework.cloud.stream.app:time-source-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org.springframework.cloud.stream.app:filter-processor-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework.cloud.stream.app:log-sink-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org.springframework.cloud.task.app:timestamp-task:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.stream.app:time-source-rabbit:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.stream.app:filter-processor-rabbit:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework" +
+                ".cloud.stream.app:log-sink-rabbit:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.task.app:timestamp-task:1.0.0.BUILD-SNAPSHOT"));
     }
 
     @Test
     public void testRegisterAllWithForce() throws Exception {
         appRegistry.importAll(true, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
-        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org.springframework.cloud.stream.app:time-source-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org.springframework.cloud.stream.app:filter-processor-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework.cloud.stream.app:log-sink-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org.springframework.cloud.task.app:timestamp-overwrite-task:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.stream.app:time-source-kafka:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.stream.app:filter-processor-kafka:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework" +
+                ".cloud.stream.app:log-sink-kafka:1.0.0.BUILD-SNAPSHOT"));
+        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org" +
+                ".springframework.cloud.task.app:timestamp-overwrite-task:1.0.0.BUILD-SNAPSHOT"));
     }
 
     @Test
@@ -147,7 +161,8 @@ public class AppRegistryControllerTests {
     public void testFindNonExistentApp() throws Exception {
         mockMvc.perform(
                 get("/apps/source/foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().is4xxClientError()).andReturn().getResponse().getContentAsString().contains("NoSuchAppRegistrationException");
+                .andExpect(status().is4xxClientError()).andReturn().getResponse().getContentAsString().contains
+                ("NoSuchAppRegistrationException");
     }
 
     @Test
@@ -156,7 +171,8 @@ public class AppRegistryControllerTests {
                 get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk()).andExpect(jsonPath("content", hasSize(4)));
         mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
+                (print())
                 .andExpect(status().isCreated());
         mockMvc.perform(
                 get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
@@ -175,7 +191,8 @@ public class AppRegistryControllerTests {
     @Test
     public void testUnregisterApplication() throws Exception {
         mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
+                (print())
                 .andExpect(status().isCreated());
         mockMvc.perform(
                 delete("/apps/processor/blubba").accept(MediaType.APPLICATION_JSON)).andDo(print())

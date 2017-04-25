@@ -38,6 +38,7 @@ import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 import org.apache.directory.shared.ldap.exception.LdapNameNotFoundException;
 import org.apache.directory.shared.ldap.name.LdapDN;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -174,7 +175,8 @@ public class ApacheDSContainerWithSecurity implements InitializingBean, Disposab
             throw new IllegalArgumentException(
                     "The specified working directory '"
                             + workingDir.getAbsolutePath()
-                            + "' already exists. Another directory service instance may be using it or it may be from a "
+                            + "' already exists. Another directory service instance may be using it or it may be from" +
+                            " a "
                             + " previous unclean shutdown. Please confirm and delete it or configure a different "
                             + "working directory");
         }

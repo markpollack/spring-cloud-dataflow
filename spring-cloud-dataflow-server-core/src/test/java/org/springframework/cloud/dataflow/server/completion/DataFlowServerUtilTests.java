@@ -16,6 +16,7 @@
 package org.springframework.cloud.dataflow.server.completion;
 
 import org.junit.Test;
+
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.core.StreamAppDefinition;
 import org.springframework.cloud.dataflow.core.StreamDefinition;
@@ -41,7 +42,8 @@ public class DataFlowServerUtilTests {
         final StreamAppDefinition streamAppDefinitionSink = streamDefinition.getAppDefinitions().get(2);
 
         assertEquals(ApplicationType.source, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSource));
-        assertEquals(ApplicationType.processor, DataFlowServerUtil.determineApplicationType(streamAppDefinitionProcessor));
+        assertEquals(ApplicationType.processor, DataFlowServerUtil.determineApplicationType
+                (streamAppDefinitionProcessor));
         assertEquals(ApplicationType.sink, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSink));
 
         assertEquals("foo", streamAppDefinitionSource.getName());

@@ -129,11 +129,13 @@ public class GraphGeneratorVisitor extends TaskVisitor {
                 while (iter.hasNext()) {
                     TransitionTarget transitionTarget = iter.next();
                     FlowNode flowInWhichTransitionOccurring = transitionTarget.flow;
-                    Map<String, Node> candidates = mainSequence.labeledNodesInEachFlow.get(flowInWhichTransitionOccurring);
+                    Map<String, Node> candidates = mainSequence.labeledNodesInEachFlow.get
+                            (flowInWhichTransitionOccurring);
                     for (Map.Entry<String, Node> candidate : candidates.entrySet()) {
                         if (candidate.getKey().equals(transitionTarget.label)) {
                             // This is the right one!
-                            mainSequence.links.add(new Link(transitionTarget.nodeId, candidate.getValue().id, transitionTarget.onState));
+                            mainSequence.links.add(new Link(transitionTarget.nodeId, candidate.getValue().id,
+                                    transitionTarget.onState));
                             iter.remove();
                         }
                     }
@@ -341,7 +343,8 @@ public class GraphGeneratorVisitor extends TaskVisitor {
                 boolean isCreated = false;
                 if (n == null) {
                     String nextId = nextId();
-                    n = new Node(nextId, transition.getTargetApp().getName(), toMap(transition.getTargetApp().getArguments()));
+                    n = new Node(nextId, transition.getTargetApp().getName(), toMap(transition.getTargetApp()
+                            .getArguments()));
                     if (transition.getTargetApp().hasLabel()) {
                         n.setLabel(transition.getTargetApp().getLabelString());
                     }
@@ -456,17 +459,8 @@ public class GraphGeneratorVisitor extends TaskVisitor {
             // split, when it needs to
             // link to all of them. Or we create a sync node and link to that.
             if (currentContext().containingNode.hasLabel() && (parentContext() != null && parentContext().isFlow)) {
-                // A surrounding flow can target a split with a transition
-                // target
-//				for (Iterator<Context.TransitionTarget> iterator = parentContext().getTransitionTargets()
-//						.iterator(); iterator.hasNext();) {
-//					Context.TransitionTarget tt = iterator.next();
-//					if (tt.label.equals(currentContext().containingNode.getLabelString())) {
-//						// Target found!
-//						addLink(new Link(tt.nodeId, nextId, tt.onState));
-//						iterator.remove();
-//					}
-//				}
+//                 A surrounding flow can target a split with a transition
+//                 target
             }
 
             // If visiting a taskapp in a split, it means there is no

@@ -31,7 +31,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Knows how to build and query {@link org.springframework.cloud.dataflow.shell.command.AppRegistryCommands.QualifiedApplicationName}s.
+ * Knows how to build and query
+ * {@link org.springframework.cloud.dataflow.shell.command.AppRegistryCommands.QualifiedApplicationName}s.
  *
  * @author Eric Bottard
  * @author Ilayaperumal Gopinathan
@@ -50,7 +51,8 @@ public class QualifiedApplicationNameConverter implements Converter<AppRegistryC
     }
 
     @Override
-    public AppRegistryCommands.QualifiedApplicationName convertFromText(String value, Class<?> targetType, String optionContext) {
+    public AppRegistryCommands.QualifiedApplicationName convertFromText(String value, Class<?> targetType, String
+            optionContext) {
         int colonIndex = value.indexOf(':');
         if (colonIndex == -1) {
             throw new ShellException("Incorrect syntax. Valid syntax is '<ApplicationType>:<ApplicationName>'.");

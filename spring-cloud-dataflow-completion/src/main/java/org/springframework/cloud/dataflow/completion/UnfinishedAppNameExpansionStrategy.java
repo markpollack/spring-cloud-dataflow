@@ -58,7 +58,8 @@ public class UnfinishedAppNameExpansionStrategy implements ExpansionStrategy {
         String alreadyTyped = lastApp.getName();
         CompletionProposal.Factory proposals = CompletionProposal.expanding(text);
 
-        List<ApplicationType> validTypesAtThisPosition = Arrays.asList(CompletionUtils.determinePotentialTypes(lastApp));
+        List<ApplicationType> validTypesAtThisPosition = Arrays.asList(CompletionUtils.determinePotentialTypes
+                (lastApp));
 
         for (AppRegistration appRegistration : appRegistry.findAll()) {
             String candidateName = appRegistration.getName();

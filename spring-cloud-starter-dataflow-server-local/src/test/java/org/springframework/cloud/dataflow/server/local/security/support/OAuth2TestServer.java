@@ -58,7 +58,8 @@ public class OAuth2TestServer {
         new SpringApplicationBuilder(OAuth2TestServer.class)
                 .properties("server.port:" + SocketUtils.findAvailableTcpPort())
                 .build()
-                .run("--debug --spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security/support/oauth2TestServerConfig.yml");
+                .run("--debug --spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local" +
+                        "/security/support/oauth2TestServerConfig.yml");
     }
 
     @RequestMapping({"/user", "/me"})
@@ -70,8 +71,10 @@ public class OAuth2TestServer {
     @EnableAuthorizationServer
     protected static class MyOAuth2AuthorizationServerConfiguration extends OAuth2AuthorizationServerConfiguration {
         public MyOAuth2AuthorizationServerConfiguration(BaseClientDetails details,
-                                                        AuthenticationManager authenticationManager, ObjectProvider<TokenStore> tokenStore,
-                                                        ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties) {
+                                                        AuthenticationManager authenticationManager,
+                                                        ObjectProvider<TokenStore> tokenStore,
+                                                        ObjectProvider<AccessTokenConverter> tokenConverter,
+                                                        AuthorizationServerProperties properties) {
             super(details, authenticationManager, tokenStore, tokenConverter, properties);
         }
 

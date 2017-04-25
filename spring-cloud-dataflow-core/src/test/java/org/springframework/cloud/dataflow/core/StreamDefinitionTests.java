@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
 import org.springframework.cloud.dataflow.core.dsl.ParseException;
 
 import static org.hamcrest.Matchers.containsString;
@@ -79,7 +80,8 @@ public class StreamDefinitionTests {
 
     @Test
     public void quotesInParams() {
-        StreamDefinition streamDefinition = new StreamDefinition("test", "foo --bar='payload.matches(''hello'')' | file");
+        StreamDefinition streamDefinition = new StreamDefinition("test", "foo --bar='payload.matches(''hello'')' | " +
+                "file");
         List<StreamAppDefinition> requests = streamDefinition.getAppDefinitions();
         assertEquals(2, requests.size());
         StreamAppDefinition source = requests.get(0);

@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -227,7 +228,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
         assertNotNull(repository.findOne("stream1"));
         assertNotNull(repository.findOne("stream2"));
 
-        repository.delete(Arrays.asList(new StreamDefinition("stream1", "time | log"), new StreamDefinition("stream2", "time | log")));
+        repository.delete(Arrays.asList(new StreamDefinition("stream1", "time | log"), new StreamDefinition
+                ("stream2", "time | log")));
 
         assertNull(repository.findOne("stream1"));
         assertNull(repository.findOne("stream2"));
@@ -261,14 +263,16 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllSortTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         String[] names = new String[]{"stream1", "stream2", "stream3"};
         findAllSort(sort, names);
     }
 
     @Test
     public void findAllPageableTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
         String[] names = new String[]{"stream1", "stream2", "stream3"};
         findAllPageable(pageable, names);
@@ -276,14 +280,16 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllSortTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         String[] names = new String[]{"stream3", "stream2", "stream1"};
         findAllSort(sort, names);
     }
 
     @Test
     public void findAllPageableTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         String[] names = new String[]{"stream3", "stream2", "stream1"};
@@ -324,7 +330,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllPageablePage2TestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(1, 2, sort);
         String[] names = new String[]{"stream3"};
         findAllPageable(pageable, names);
@@ -332,7 +339,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllPageablePage2TestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         Pageable pageable = new PageRequest(1, 2, sort);
         String[] names = new String[]{"stream1"};
         findAllPageable(pageable, names);
@@ -348,7 +356,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageablePage2TestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         Pageable pageable = new PageRequest(1, 2, sort);
         final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
         searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
@@ -394,7 +403,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC1() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "stream");
@@ -406,7 +416,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC2() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "stream1");
@@ -418,7 +429,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC3() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "str");
@@ -430,7 +442,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC4() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "m1");
@@ -442,7 +455,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC5() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "m3");
@@ -454,7 +468,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC6() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "does not exist");
@@ -467,7 +482,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC7() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "logB");
@@ -480,7 +496,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
     @Test
     public void findAllUsingSearchPageableTestASC8() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         final SearchPageable searchPageable = new SearchPageable(pageable, "LOGB");
@@ -547,13 +564,15 @@ public class RdbmsStreamDefinitionRepositoryTests {
 
         @Bean
         public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer
+                    (featuresProperties());
             definitionRepositoryInitializer.setDataSource(dataSource);
             return definitionRepositoryInitializer;
         }
 
         @Bean
-        @ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
+        @ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties
+                .STREAMS_ENABLED, matchIfMissing = true)
         public StreamDefinitionRepository rdbmsStreamDefinitionRepository(DataSource dataSource) {
             return new RdbmsStreamDefinitionRepository(dataSource);
         }

@@ -19,6 +19,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
+
 import org.springframework.cloud.dataflow.server.local.LocalDataflowResource;
 
 import static org.springframework.cloud.dataflow.server.local.security.SecurityTestUtils.basicAuthorizationHeader;
@@ -37,7 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LocalServerSecurityWithLdapSimpleBindAndDefaultManagementTests {
 
     private final static LocalDataflowResource localDataflowResource =
-            new LocalDataflowResource("classpath:org/springframework/cloud/dataflow/server/local/security/ldapSimpleBindWithDefaultManagementSecurity.yml");
+            new LocalDataflowResource("classpath:org/springframework/cloud/dataflow/server/local/security" +
+                    "/ldapSimpleBindWithDefaultManagementSecurity.yml");
 
     @ClassRule
     public static TestRule springDataflowAndLdapServer = RuleChain
@@ -93,7 +95,8 @@ public class LocalServerSecurityWithLdapSimpleBindAndDefaultManagementTests {
     @Test
     public void testAuthenticatedAccessToManagementEndpointSucceeds() throws Exception {
         localDataflowResource.getMockMvc()
-                .perform(get("/management/metrics").header("Authorization", basicAuthorizationHeader("joe", "joespassword")))
+                .perform(get("/management/metrics").header("Authorization", basicAuthorizationHeader("joe",
+                        "joespassword")))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

@@ -120,7 +120,8 @@ public class TaskTemplate implements TaskOperations {
 
     @Override
     public TaskExecutionResource.Page executionListByTaskName(String taskName) {
-        return restTemplate.getForObject(executionByNameLink.expand(taskName).getHref(), TaskExecutionResource.Page.class);
+        return restTemplate.getForObject(executionByNameLink.expand(taskName).getHref(), TaskExecutionResource.Page
+                .class);
     }
 
     @Override

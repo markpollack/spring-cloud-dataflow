@@ -30,7 +30,8 @@ import org.springframework.util.Assert;
  * @author Eric Bottard
  * @author Andy Clement
  */
-class ExpandOneDashToTwoDashesTaskRecoveryStrategy extends StacktraceFingerprintingTaskRecoveryStrategy<ParseException> {
+class ExpandOneDashToTwoDashesTaskRecoveryStrategy extends
+        StacktraceFingerprintingTaskRecoveryStrategy<ParseException> {
 
     @Autowired
     private ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy recoveryAfterDashDash;
@@ -40,7 +41,8 @@ class ExpandOneDashToTwoDashesTaskRecoveryStrategy extends StacktraceFingerprint
     }
 
     @Override
-    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal> proposals) {
+    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal>
+            proposals) {
         // Pretend there was an additional dash and invoke the dedicated strategy for that case
         String withDashDash = dsl + "-";
         try {

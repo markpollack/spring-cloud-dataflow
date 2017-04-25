@@ -53,7 +53,8 @@ public class DataFlowShell {
     }
 
     /**
-     * This method performs various access checks and only if {@code true} is returned, the shell should show the associated
+     * This method performs various access checks and only if {@code true} is returned, the shell should show the
+     * associated
      * commands. 2 checks are performed:
      * <p>
      * <ul>

@@ -29,6 +29,7 @@ public class AboutResource extends ResourceSupport {
     private VersionInfo versionInfo = new VersionInfo();
     private SecurityInfo securityInfo = new SecurityInfo();
     private RuntimeEnvironment runtimeEnvironment = new RuntimeEnvironment();
+
     /**
      * Default constructor for serialization frameworks.
      */

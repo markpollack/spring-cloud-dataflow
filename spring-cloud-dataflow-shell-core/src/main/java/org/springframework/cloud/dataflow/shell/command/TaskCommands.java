@@ -106,7 +106,9 @@ public class TaskCommands implements CommandMarker {
     @CliCommand(value = CREATE, help = "Create a new task definition")
     public String create(
             @CliOption(mandatory = true, key = {"", "name"}, help = "the name to give to the task") String name,
-            @CliOption(mandatory = true, key = {"definition"}, help = "a task definition, using the DSL (e.g. \"timestamp --format=YYYY\")", optionContext = "disable-string-converter completion-task") String dsl) {
+            @CliOption(mandatory = true, key = {"definition"}, help = "a task definition, using the DSL (e.g. " +
+                    "\"timestamp --format=YYYY\")", optionContext = "disable-string-converter completion-task")
+                    String dsl) {
         this.taskOperations().create(name, dsl);
         return String.format("Created new task '%s'", name);
     }
@@ -114,9 +116,12 @@ public class TaskCommands implements CommandMarker {
     @CliCommand(value = LAUNCH, help = "Launch a previously created task")
     public String launch(
             @CliOption(key = {"", "name"}, help = "the name of the task to launch", mandatory = true) String name,
-            @CliOption(key = {PROPERTIES_OPTION}, help = "the properties for this launch", mandatory = false) String properties,
-            @CliOption(key = {PROPERTIES_FILE_OPTION}, help = "the properties for this launch (as a File)", mandatory = false) File propertiesFile,
-            @CliOption(key = {ARGUMENTS_OPTION}, help = "the commandline arguments for this launch", mandatory = false) String arguments
+            @CliOption(key = {PROPERTIES_OPTION}, help = "the properties for this launch", mandatory = false) String
+                    properties,
+            @CliOption(key = {PROPERTIES_FILE_OPTION}, help = "the properties for this launch (as a File)", mandatory
+                    = false) File propertiesFile,
+            @CliOption(key = {ARGUMENTS_OPTION}, help = "the commandline arguments for this launch", mandatory =
+                    false) String arguments
     ) throws IOException {
         int which = Assertions.atMostOneOf(PROPERTIES_OPTION, properties, PROPERTIES_FILE_OPTION, propertiesFile);
         Map<String, String> propertiesToUse;
@@ -196,7 +201,8 @@ public class TaskCommands implements CommandMarker {
         modelBuilder.addRow().addValue("Exit Code ").addValue(taskExecutionResource.getExitCode());
         modelBuilder.addRow().addValue("Exit Message ").addValue(taskExecutionResource.getExitMessage());
         modelBuilder.addRow().addValue("Error Message ").addValue(taskExecutionResource.getErrorMessage());
-        modelBuilder.addRow().addValue("External Execution Id ").addValue(taskExecutionResource.getExternalExecutionId());
+        modelBuilder.addRow().addValue("External Execution Id ").addValue(taskExecutionResource
+                .getExternalExecutionId());
 
         TableBuilder builder = new TableBuilder(modelBuilder.build());
 
@@ -205,7 +211,8 @@ public class TaskCommands implements CommandMarker {
         return builder.build();
     }
 
-    @CliCommand(value = TASK_EXECUTION_CLEANUP, help = "Clean up any platform specific resources linked to a task execution")
+    @CliCommand(value = TASK_EXECUTION_CLEANUP, help = "Clean up any platform specific resources linked to a task " +
+            "execution")
     public String cleanup(
             @CliOption(key = {"", "id"},
                     help = "the task execution id",

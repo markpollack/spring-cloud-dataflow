@@ -133,7 +133,8 @@ public class TaskValidatorVisitor extends TaskVisitor {
                 }
                 labelsDefined.add(labelString);
                 if (taskAppNamesWithoutLabels.contains(labelString)) {
-                    pushProblem(taskApp.getLabel().startPos, DSLMessage.TASK_VALIDATION_LABEL_CLASHES_WITH_TASKAPP_NAME);
+                    pushProblem(taskApp.getLabel().startPos, DSLMessage
+                            .TASK_VALIDATION_LABEL_CLASHES_WITH_TASKAPP_NAME);
                 }
             } else {
                 String name = taskApp.getName();
@@ -153,7 +154,8 @@ public class TaskValidatorVisitor extends TaskVisitor {
         // Verify all targeted labels exist
         for (TransitionNode transitionTargetingLabel : transitionsTargetingLabels) {
             if (!labelsDefined.contains(transitionTargetingLabel.getTargetLabel())) {
-                pushProblem(transitionTargetingLabel.startPos, DSLMessage.TASK_VALIDATION_TRANSITION_TARGET_LABEL_UNDEFINED);
+                pushProblem(transitionTargetingLabel.startPos, DSLMessage
+                        .TASK_VALIDATION_TRANSITION_TARGET_LABEL_UNDEFINED);
             }
         }
         // TODO Verify all secondary sequences are visited

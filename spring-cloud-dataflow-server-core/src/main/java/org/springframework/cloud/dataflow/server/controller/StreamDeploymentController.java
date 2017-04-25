@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.core.BindingPropertyKeys;
@@ -121,8 +122,10 @@ public class StreamDeploymentController {
      * @param commonProperties       common set of application properties
      */
     public StreamDeploymentController(StreamDefinitionRepository repository,
-                                      DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
-                                      ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties commonProperties) {
+                                      DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
+                                      AppDeployer deployer,
+                                      ApplicationConfigurationMetadataResolver metadataResolver,
+                                      CommonApplicationProperties commonProperties) {
         Assert.notNull(repository, "StreamDefinitionRepository must not be null");
         Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
         Assert.notNull(registry, "AppRegistry must not be null");
@@ -226,13 +229,16 @@ public class StreamDeploymentController {
 
 
             Map<String, String> appDeployTimeProperties = extractAppProperties(currentApp, streamDeploymentProperties);
-            Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils.extractAndQualifyDeployerProperties(streamDeploymentProperties, currentApp.getName());
+            Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils
+                    .extractAndQualifyDeployerProperties(streamDeploymentProperties, currentApp.getName());
             deployerDeploymentProperties.put(AppDeployer.GROUP_PROPERTY_KEY, currentApp.getStreamName());
 
-            boolean upstreamAppSupportsPartition = upstreamAppHasPartitionInfo(stream, currentApp, streamDeploymentProperties);
+            boolean upstreamAppSupportsPartition = upstreamAppHasPartitionInfo(stream, currentApp,
+                    streamDeploymentProperties);
             // Set instance count property
             if (deployerDeploymentProperties.containsKey(AppDeployer.COUNT_PROPERTY_KEY)) {
-                appDeployTimeProperties.put(StreamPropertyKeys.INSTANCE_COUNT, deployerDeploymentProperties.get(AppDeployer.COUNT_PROPERTY_KEY));
+                appDeployTimeProperties.put(StreamPropertyKeys.INSTANCE_COUNT, deployerDeploymentProperties.get
+                        (AppDeployer.COUNT_PROPERTY_KEY));
             }
             if (!type.equals(ApplicationType.source)) {
                 deployerDeploymentProperties.put(AppDeployer.INDEXED_PROPERTY_KEY, "true");
@@ -268,10 +274,12 @@ public class StreamDeploymentController {
 
             // Merge *definition time* app properties with *deployment time* properties
             // and expand them to their long form if applicable
-            AppDefinition revisedDefinition = mergeAndExpandAppProperties(currentApp, metadataResource, appDeployTimeProperties);
+            AppDefinition revisedDefinition = mergeAndExpandAppProperties(currentApp, metadataResource,
+                    appDeployTimeProperties);
 
 
-            AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource, deployerDeploymentProperties);
+            AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource,
+                    deployerDeploymentProperties);
             try {
                 logger.info(String.format(deployLoggingString, request.getDefinition().getName(),
                         currentApp.getStreamName(), registration.getUri()));
@@ -291,7 +299,8 @@ public class StreamDeploymentController {
      * short form parameters have been expanded to their long form
      * (amongst the whitelisted supported properties of the app) if applicable.
      */
-    /*default*/ AppDefinition mergeAndExpandAppProperties(StreamAppDefinition original, Resource metadataResource, Map<String, String> appDeployTimeProperties) {
+    /*default*/ AppDefinition mergeAndExpandAppProperties(StreamAppDefinition original, Resource metadataResource,
+                                                          Map<String, String> appDeployTimeProperties) {
         Map<String, String> merged = new HashMap<>(original.getProperties());
         merged.putAll(appDeployTimeProperties);
         merged = whitelistProperties.qualifyProperties(merged, metadataResource);
@@ -333,7 +342,8 @@ public class StreamDeploymentController {
     }
 
     private void parseAndPopulateProperties(Map<String, String> streamDeploymentProperties,
-                                            Map<String, String> appDeploymentProperties, String producerPropertyPrefix, String consumerPropertyPrefix,
+                                            Map<String, String> appDeploymentProperties, String
+                                                    producerPropertyPrefix, String consumerPropertyPrefix,
                                             String appPrefix) {
         for (Map.Entry<String, String> entry : streamDeploymentProperties.entrySet()) {
             if (entry.getKey().startsWith(appPrefix)) {

@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.shell.command;
 import org.hamcrest.Description;
 import org.hamcrest.DiagnosingMatcher;
 import org.hamcrest.Matcher;
+
 import org.springframework.shell.table.Table;
 import org.springframework.shell.table.TableModel;
 

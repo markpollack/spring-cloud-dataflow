@@ -32,7 +32,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Exposes the DSL completion features of {@link StreamCompletionProvider} and {@link TaskCompletionProvider} as a REST API.
+ * Exposes the DSL completion features of {@link StreamCompletionProvider} and {@link TaskCompletionProvider} as a
+ * REST API.
  *
  * @author Eric Bottard
  * @author Andy Clement
@@ -55,7 +56,8 @@ public class CompletionController {
      * @param completionProvider     the stream completion provider
      * @param taskCompletionProvider the task completion provider
      */
-    public CompletionController(StreamCompletionProvider completionProvider, TaskCompletionProvider taskCompletionProvider) {
+    public CompletionController(StreamCompletionProvider completionProvider, TaskCompletionProvider
+            taskCompletionProvider) {
         this.completionProvider = completionProvider;
         this.taskCompletionProvider = taskCompletionProvider;
     }

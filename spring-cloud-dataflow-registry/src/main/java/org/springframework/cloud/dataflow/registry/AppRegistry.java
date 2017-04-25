@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.registry.support.NoSuchAppRegistrationException;
 import org.springframework.cloud.deployer.resource.registry.UriRegistry;
@@ -140,7 +141,8 @@ public class AppRegistry {
      *
      * @param metadataUriExtractor a Function able to compute the (possibly null) metadataUri from a given app key
      */
-    private Function<Map.Entry<String, URI>, Stream<AppRegistration>> toValidAppRegistration(Function<String, URI> metadataUriExtractor) {
+    private Function<Map.Entry<String, URI>, Stream<AppRegistration>> toValidAppRegistration(Function<String, URI>
+                                                                                                metadataUriExtractor) {
         return (Map.Entry<String, URI> kv) -> {
             String key = kv.getKey();
             String[] tokens = key.split("\\.");
@@ -154,7 +156,8 @@ public class AppRegistry {
             } else {
                 Assert.isTrue(tokens.length == 3
                                 && METADATA_KEY_SUFFIX.equals(tokens[2]),
-                        "Invalid format for app key '" + key + "'in file. Must be <type>.<name> or <type>.<name>.metadata");
+                        "Invalid format for app key '" + key + "'in file. Must be <type>.<name> or <type>.<name>" +
+                                ".metadata");
                 return Stream.empty();
             }
         };
@@ -213,9 +216,11 @@ public class AppRegistry {
         if (StringUtils.isEmpty(uri)) {
             logger.warn(String.format("Error when registering '%s': URI is required", key));
         } else if (!StringUtils.hasText(uri.getScheme())) {
-            logger.warn(String.format("Error when registering '%s' with URI %s: URI scheme must be specified", key, uri));
+            logger.warn(String.format("Error when registering '%s' with URI %s: URI scheme must be specified", key,
+                    uri));
         } else if (!StringUtils.hasText(uri.getSchemeSpecificPart())) {
-            logger.warn(String.format("Error when registering '%s' with URI %s: URI scheme-specific part must be specified", key, uri));
+            logger.warn(String.format("Error when registering '%s' with URI %s: URI scheme-specific part must be " +
+                    "specified", key, uri));
         }
         return uri;
     }

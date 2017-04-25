@@ -31,7 +31,8 @@ import org.springframework.util.Assert;
  *
  * @author Ilayaperumal Gopinathan
  */
-public class RdbmsStreamDefinitionRepository extends AbstractRdbmsKeyValueRepository<StreamDefinition> implements StreamDefinitionRepository {
+public class RdbmsStreamDefinitionRepository extends AbstractRdbmsKeyValueRepository<StreamDefinition> implements
+        StreamDefinitionRepository {
 
     public RdbmsStreamDefinitionRepository(DataSource dataSource) {
         super(dataSource, "STREAM_", "DEFINITIONS", new RowMapper<StreamDefinition>() {

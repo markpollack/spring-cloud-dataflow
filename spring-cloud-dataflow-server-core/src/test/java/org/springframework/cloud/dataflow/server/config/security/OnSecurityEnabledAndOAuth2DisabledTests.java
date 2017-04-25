@@ -16,6 +16,7 @@
 package org.springframework.cloud.dataflow.server.config.security;
 
 import org.junit.Test;
+
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.cloud.dataflow.server.config.security.support.OnSecurityEnabledAndOAuth2Disabled;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -54,7 +55,8 @@ public class OnSecurityEnabledAndOAuth2DisabledTests {
 
     @Test
     public void basicSecurityEnabledAndOauth2Enabled() throws Exception {
-        AnnotationConfigApplicationContext context = load(Config.class, "security.basic.enabled:true", "security.oauth2.client.client-id:12345");
+        AnnotationConfigApplicationContext context = load(Config.class, "security.basic.enabled:true", "security" +
+                ".oauth2.client.client-id:12345");
         assertThat(context.containsBean("myBean"), equalTo(false));
         context.close();
     }

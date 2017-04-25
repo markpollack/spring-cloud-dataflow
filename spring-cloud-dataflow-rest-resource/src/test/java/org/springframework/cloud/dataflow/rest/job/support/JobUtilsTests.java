@@ -16,6 +16,7 @@
 package org.springframework.cloud.dataflow.rest.job.support;
 
 import org.junit.Test;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 
@@ -31,7 +32,8 @@ import static org.junit.Assert.fail;
 public class JobUtilsTests {
 
     /**
-     * Test method for {@link org.springframework.cloud.dataflow.rest.job.support.JobUtils#isJobExecutionRestartable(org.springframework.batch.core.JobExecution)}.
+     * Test method for
+     * {@link JobUtils#isJobExecutionRestartable(org.springframework.batch.core.JobExecution)}.
      */
     @Test
     public void testIsJobExecutionRestartable() {
@@ -40,7 +42,8 @@ public class JobUtilsTests {
     }
 
     /**
-     * Test method for {@link org.springframework.cloud.dataflow.rest.job.support.JobUtils#isJobExecutionAbandonable(org.springframework.batch.core.JobExecution)}.
+     * Test method for
+     * {@link JobUtils#isJobExecutionAbandonable(org.springframework.batch.core.JobExecution)}.
      */
     @Test
     public void testIsJobExecutionAbandonable() {
@@ -49,7 +52,8 @@ public class JobUtilsTests {
     }
 
     /**
-     * Test method for {@link org.springframework.cloud.dataflow.rest.job.support.JobUtils#isJobExecutionStoppable(org.springframework.batch.core.JobExecution)}.
+     * Test method for
+     * {@link JobUtils#isJobExecutionStoppable(org.springframework.batch.core.JobExecution)}.
      */
     @Test
     public void testIsJobExecutionStoppable() {

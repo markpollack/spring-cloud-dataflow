@@ -72,7 +72,8 @@ public class JobStepExecutionProgressController {
     @RequestMapping(value = "/{stepExecutionId}/progress", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public StepExecutionProgressInfoResource progress(@PathVariable long jobExecutionId,
-                                                      @PathVariable long stepExecutionId) throws NoSuchStepExecutionException,
+                                                      @PathVariable long stepExecutionId) throws
+            NoSuchStepExecutionException,
             NoSuchJobExecutionException {
         try {
             StepExecution stepExecution = jobService.getStepExecution(jobExecutionId, stepExecutionId);
@@ -115,7 +116,8 @@ public class JobStepExecutionProgressController {
      * that converts {@link StepExecutionProgressInfo}s to a
      * {@link StepExecutionProgressInfoResource}.
      */
-    private static class Assembler extends ResourceAssemblerSupport<StepExecutionProgressInfo, StepExecutionProgressInfoResource> {
+    private static class Assembler extends ResourceAssemblerSupport<StepExecutionProgressInfo,
+            StepExecutionProgressInfoResource> {
 
         public Assembler() {
             super(JobStepExecutionProgressController.class, StepExecutionProgressInfoResource.class);
@@ -123,7 +125,8 @@ public class JobStepExecutionProgressController {
 
         @Override
         public StepExecutionProgressInfoResource toResource(StepExecutionProgressInfo entity) {
-            return createResourceWithId(entity.getStepExecutionId(), entity, entity.getStepExecution().getJobExecutionId());
+            return createResourceWithId(entity.getStepExecutionId(), entity, entity.getStepExecution()
+                    .getJobExecutionId());
         }
 
         @Override

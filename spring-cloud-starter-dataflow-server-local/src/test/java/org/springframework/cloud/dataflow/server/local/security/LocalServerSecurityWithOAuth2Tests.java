@@ -20,6 +20,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
+
 import org.springframework.cloud.dataflow.server.local.LocalDataflowResource;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -41,7 +42,8 @@ public class LocalServerSecurityWithOAuth2Tests {
             new OAuth2ServerResource();
 
     private final static LocalDataflowResource localDataflowResource =
-            new LocalDataflowResource("classpath:org/springframework/cloud/dataflow/server/local/security/oauthConfig.yml");
+            new LocalDataflowResource("classpath:org/springframework/cloud/dataflow/server/local/security/oauthConfig" +
+                    ".yml");
 
     @ClassRule
     public static TestRule springDataflowAndLdapServer = RuleChain
@@ -83,7 +85,8 @@ public class LocalServerSecurityWithOAuth2Tests {
     @Test
     public void testAccessToActuatorEndpointWithBasicAuthCredentialsWrongPassword() throws Exception {
         localDataflowResource.getMockMvc()
-                .perform(get("/management/env").header("Authorization", basicAuthorizationHeader("user", "wrong-password")))
+                .perform(get("/management/env").header("Authorization", basicAuthorizationHeader("user",
+                        "wrong-password")))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -103,7 +106,8 @@ public class LocalServerSecurityWithOAuth2Tests {
         resourceDetails.setClientId("myclient");
         resourceDetails.setClientSecret("mysecret");
         resourceDetails.setGrantType("client_credentials");
-        resourceDetails.setAccessTokenUri("http://localhost:" + oAuth2ServerResource.getOauth2ServerPort() + "/oauth/token");
+        resourceDetails.setAccessTokenUri("http://localhost:" + oAuth2ServerResource.getOauth2ServerPort() +
+                "/oauth/token");
 
         final OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resourceDetails);
         final OAuth2AccessToken accessToken = oAuth2RestTemplate.getAccessToken();
@@ -123,7 +127,8 @@ public class LocalServerSecurityWithOAuth2Tests {
         resourceDetails.setClientId("myclient");
         resourceDetails.setClientSecret("mysecret");
         resourceDetails.setGrantType("client_credentials");
-        resourceDetails.setAccessTokenUri("http://localhost:" + oAuth2ServerResource.getOauth2ServerPort() + "/oauth/token");
+        resourceDetails.setAccessTokenUri("http://localhost:" + oAuth2ServerResource.getOauth2ServerPort() +
+                "/oauth/token");
 
         final OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resourceDetails);
         final OAuth2AccessToken accessToken = oAuth2RestTemplate.getAccessToken();

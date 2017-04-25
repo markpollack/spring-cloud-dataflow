@@ -79,7 +79,8 @@ public class JobStepExecutionController {
     @RequestMapping(value = {""}, method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public PagedResources<StepExecutionResource> stepExecutions(
-            @PathVariable("jobExecutionId") long id, Pageable pageable, PagedResourcesAssembler<StepExecution> assembler) throws NoSuchJobExecutionException {
+            @PathVariable("jobExecutionId") long id, Pageable pageable, PagedResourcesAssembler<StepExecution>
+            assembler) throws NoSuchJobExecutionException {
         List<StepExecution> result;
         result = new ArrayList<>(jobService.getStepExecutions(id));
         Page<StepExecution> page = new PageImpl<>(result, pageable, result.size());

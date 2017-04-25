@@ -17,6 +17,7 @@
 package org.springframework.cloud.dataflow.server.rest.documentation;
 
 import org.junit.Test;
+
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
@@ -42,7 +43,8 @@ public class AboutDocumentation extends BaseDocumentation {
                                         .description("Details which features are enabled."),
 
                                 fieldWithPath("versionInfo").type(JsonFieldType.OBJECT)
-                                        .description("Provides details of the Spring Cloud Data Flow Server dependencies."),
+                                        .description("Provides details of the Spring Cloud Data Flow Server " +
+                                                "dependencies."),
 
                                 fieldWithPath("securityInfo").type(JsonFieldType.OBJECT)
                                         .description("Provides security configuration information."),

@@ -18,6 +18,7 @@ package org.springframework.cloud.dataflow.server.config.features;
 import javax.sql.DataSource;
 
 import org.h2.tools.Server;
+
 import org.springframework.batch.admin.service.JobService;
 import org.springframework.batch.admin.service.SimpleJobServiceFactoryBean;
 import org.springframework.batch.core.configuration.support.MapJobRegistry;
@@ -65,7 +66,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
  * @author Ilayaperumal Gopinathan
  */
 @Configuration
-@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.TASKS_ENABLED, matchIfMissing = true)
+@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.TASKS_ENABLED,
+        matchIfMissing = true)
 @EnableConfigurationProperties({TaskConfigurationProperties.class})
 public class TaskConfiguration {
 
@@ -87,8 +89,10 @@ public class TaskConfiguration {
 
     @Bean
     @ConditionalOnBean(TaskDefinitionRepository.class)
-    public TaskService taskService(TaskDefinitionRepository repository, TaskExplorer taskExplorer, TaskRepository taskExecutionRepository,
-                                   AppRegistry registry, DelegatingResourceLoader resourceLoader, TaskLauncher taskLauncher,
+    public TaskService taskService(TaskDefinitionRepository repository, TaskExplorer taskExplorer, TaskRepository
+            taskExecutionRepository,
+                                   AppRegistry registry, DelegatingResourceLoader resourceLoader, TaskLauncher
+                                               taskLauncher,
                                    ApplicationConfigurationMetadataResolver metadataResolver,
                                    TaskConfigurationProperties taskConfigurationProperties,
                                    DeploymentIdRepository deploymentIdRepository) {
@@ -100,13 +104,15 @@ public class TaskConfiguration {
     @Bean
     @ConditionalOnBean(TaskDefinitionRepository.class)
     public TaskJobService taskJobExecutionRepository(JobService service, TaskExplorer taskExplorer,
-                                                     TaskDefinitionRepository taskDefinitionRepository, TaskService taskService) {
+                                                     TaskDefinitionRepository taskDefinitionRepository, TaskService
+                                                                 taskService) {
         return new DefaultTaskJobService(service, taskExplorer, taskDefinitionRepository, taskService);
     }
 
     @Bean
     public SimpleJobServiceFactoryBean simpleJobServiceFactoryBean(DataSource dataSource,
-                                                                   JobRepositoryFactoryBean repositoryFactoryBean) throws Exception {
+                                                                   JobRepositoryFactoryBean repositoryFactoryBean)
+            throws Exception {
         SimpleJobServiceFactoryBean factoryBean = new SimpleJobServiceFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setJobRepository(repositoryFactoryBean.getObject());
@@ -124,13 +130,15 @@ public class TaskConfiguration {
     }
 
     @Configuration
-    @ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "spring.dataflow.embedded.database.enabled", havingValue = "true", matchIfMissing =
+            true)
     @ConditionalOnExpression("#{'${spring.datasource.url:}'.startsWith('jdbc:h2:tcp://localhost:')}")
     public static class H2ServerConfiguration {
 
         @Bean
         public JobRepositoryFactoryBean jobRepositoryFactoryBeanForServer(DataSource dataSource, Server server,
-                                                                          DataSourceTransactionManager dataSourceTransactionManager) {
+                                                                          DataSourceTransactionManager
+                                                                                  dataSourceTransactionManager) {
             JobRepositoryFactoryBean repositoryFactoryBean = new JobRepositoryFactoryBean();
             repositoryFactoryBean.setDataSource(dataSource);
             repositoryFactoryBean.setTransactionManager(dataSourceTransactionManager);
@@ -139,7 +147,9 @@ public class TaskConfiguration {
 
         @Bean
         public BatchDatabaseInitializer batchRepositoryInitializerForDefaultDBForServer(DataSource dataSource,
-                                                                                        ResourceLoader resourceLoader, BatchProperties properties) {
+                                                                                        ResourceLoader
+                                                                                                resourceLoader,
+                                                                                        BatchProperties properties) {
             return new BatchDatabaseInitializer(dataSource, resourceLoader, properties);
         }
 
@@ -152,7 +162,8 @@ public class TaskConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public TaskDefinitionRepository taskDefinitionRepository(DataSource dataSource, Server server) throws Exception {
+        public TaskDefinitionRepository taskDefinitionRepository(DataSource dataSource, Server server) throws
+                Exception {
             return new RdbmsTaskDefinitionRepository(dataSource);
         }
     }
@@ -165,7 +176,8 @@ public class TaskConfiguration {
 
         @Bean
         public JobRepositoryFactoryBean jobRepositoryFactoryBean(DataSource dataSource,
-                                                                 DataSourceTransactionManager dataSourceTransactionManager) {
+                                                                 DataSourceTransactionManager
+                                                                         dataSourceTransactionManager) {
             JobRepositoryFactoryBean repositoryFactoryBean = new JobRepositoryFactoryBean();
             repositoryFactoryBean.setDataSource(dataSource);
             repositoryFactoryBean.setTransactionManager(dataSourceTransactionManager);
@@ -174,7 +186,8 @@ public class TaskConfiguration {
 
         @Bean
         public BatchDatabaseInitializer batchRepositoryInitializerForDefaultDB(DataSource dataSource,
-                                                                               ResourceLoader resourceLoader, BatchProperties properties) {
+                                                                               ResourceLoader resourceLoader,
+                                                                               BatchProperties properties) {
             return new BatchDatabaseInitializer(dataSource, resourceLoader, properties);
         }
 

@@ -100,8 +100,10 @@ public class AboutController {
         final VersionInfo versionInfo = new VersionInfo();
 
         versionInfo.setImplementation(new Dependency(this.implementationName, this.implementationVersion));
-        versionInfo.setCore(new Dependency("Spring Cloud Data Flow Core", versionInfoProperties.getDataflowCoreVersion()));
-        versionInfo.setDashboard(new Dependency("Spring Cloud Dataflow UI", versionInfoProperties.getDataflowDashboardVersion()));
+        versionInfo.setCore(new Dependency("Spring Cloud Data Flow Core", versionInfoProperties
+                .getDataflowCoreVersion()));
+        versionInfo.setDashboard(new Dependency("Spring Cloud Dataflow UI", versionInfoProperties
+                .getDataflowDashboardVersion()));
 
         aboutResource.setFeatureInfo(featureInfo);
         aboutResource.setVersionInfo(versionInfo);

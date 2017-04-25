@@ -117,8 +117,10 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
     @Bean
     public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
-                                                                 ApplicationConfigurationMetadataResolver metadataResolver,
+                                                                 DeploymentIdRepository deploymentIdRepository,
+                                                                 AppRegistry registry,
+                                                                 ApplicationConfigurationMetadataResolver
+                                                                             metadataResolver,
                                                                  CommonApplicationProperties applicationProperties) {
         return new StreamDeploymentController(repository, deploymentIdRepository, registry, appDeployer(),
                 metadataResolver, applicationProperties);
@@ -126,7 +128,8 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
     @Bean
     public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController) {
+                                                                 DeploymentIdRepository deploymentIdRepository,
+                                                                 StreamDeploymentController deploymentController) {
         return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, appDeployer(),
                 appRegistry());
     }
@@ -137,7 +140,8 @@ public class TestDependencies extends WebMvcConfigurationSupport {
     }
 
     @Bean
-    public CompletionController completionController(StreamCompletionProvider streamCompletionProvider, TaskCompletionProvider taskCompletionProvider) {
+    public CompletionController completionController(StreamCompletionProvider streamCompletionProvider,
+                                                     TaskCompletionProvider taskCompletionProvider) {
         return new CompletionController(streamCompletionProvider, taskCompletionProvider);
     }
 
@@ -147,7 +151,8 @@ public class TestDependencies extends WebMvcConfigurationSupport {
     }
 
     @Bean
-    public AppRegistryController appRegistryController(AppRegistry registry, ApplicationConfigurationMetadataResolver metadataResolver) {
+    public AppRegistryController appRegistryController(AppRegistry registry, ApplicationConfigurationMetadataResolver
+            metadataResolver) {
         return new AppRegistryController(registry, metadataResolver, new ForkJoinPool(2));
     }
 
@@ -158,7 +163,8 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
     @Bean
     public RuntimeAppsController runtimeAppsController(MetricStore metricStore) {
-        return new RuntimeAppsController(streamDefinitionRepository(), deploymentIdRepository(), appDeployer(), metricStore, new ForkJoinPool(2));
+        return new RuntimeAppsController(streamDefinitionRepository(), deploymentIdRepository(), appDeployer(),
+                metricStore, new ForkJoinPool(2));
     }
 
     @Bean
@@ -207,7 +213,8 @@ public class TestDependencies extends WebMvcConfigurationSupport {
     @Bean
     public TaskDefinitionController taskDefinitionController(TaskDefinitionRepository repository,
                                                              DeploymentIdRepository deploymentIdRepository,
-                                                             ApplicationConfigurationMetadataResolver metadataResolver) {
+                                                             ApplicationConfigurationMetadataResolver
+                                                                         metadataResolver) {
         return new TaskDefinitionController(repository, deploymentIdRepository,
                 taskLauncher(), appRegistry(),
                 taskService(metadataResolver, taskRepository(),

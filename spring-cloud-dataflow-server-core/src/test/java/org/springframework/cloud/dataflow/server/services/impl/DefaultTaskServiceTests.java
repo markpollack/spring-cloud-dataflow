@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -295,27 +296,32 @@ public class DefaultTaskServiceTests {
                         this.metadataResolver, new TaskConfigurationProperties(),
                         new InMemoryDeploymentIdRepository(), "http://myserver:9191");
         List<String> cmdLineArgs = new ArrayList<>();
-        Method method = ReflectionUtils.findMethod(DefaultTaskService.class, "updateDataFlowUriIfNeeded", Map.class, List.class);
+        Method method = ReflectionUtils.findMethod(DefaultTaskService.class, "updateDataFlowUriIfNeeded", Map.class,
+                List.class);
         ReflectionUtils.makeAccessible(method);
         Map<String, String> appDeploymentProperties = new HashMap<>();
         method.invoke(taskService, appDeploymentProperties, cmdLineArgs);
         assertTrue(appDeploymentProperties.containsKey("dataflowServerUri"));
-        assertTrue("dataflowServerUri is expected to be in the app deployment properties", appDeploymentProperties.get("dataflowServerUri").equals("http://myserver:9191"));
+        assertTrue("dataflowServerUri is expected to be in the app deployment properties", appDeploymentProperties
+                .get("dataflowServerUri").equals("http://myserver:9191"));
         appDeploymentProperties.clear();
         appDeploymentProperties.put("dataflow-server-uri", "http://localhost:8080");
         method.invoke(taskService, appDeploymentProperties, cmdLineArgs);
         assertTrue(!appDeploymentProperties.containsKey("dataflowServerUri"));
-        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("dataflow-server-uri").equals("http://localhost:8080"));
+        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("dataflow-server-uri").equals
+                ("http://localhost:8080"));
         appDeploymentProperties.clear();
         appDeploymentProperties.put("dataflowServerUri", "http://localhost:8191");
         method.invoke(taskService, appDeploymentProperties, cmdLineArgs);
         assertTrue(appDeploymentProperties.containsKey("dataflowServerUri"));
-        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("dataflowServerUri").equals("http://localhost:8191"));
+        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("dataflowServerUri").equals
+                ("http://localhost:8191"));
         appDeploymentProperties.clear();
         appDeploymentProperties.put("DATAFLOW_SERVER_URI", "http://localhost:9000");
         method.invoke(taskService, appDeploymentProperties, cmdLineArgs);
         assertTrue(!appDeploymentProperties.containsKey("dataflowServerUri"));
-        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("DATAFLOW_SERVER_URI").equals("http://localhost:9000"));
+        assertTrue("dataflowServerUri is incorrect", appDeploymentProperties.get("DATAFLOW_SERVER_URI").equals
+                ("http://localhost:9000"));
         appDeploymentProperties.clear();
         cmdLineArgs.add("--dataflowServerUri=http://localhost:8383");
         method.invoke(taskService, appDeploymentProperties, cmdLineArgs);

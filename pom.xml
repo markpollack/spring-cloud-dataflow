@@ -61,7 +61,6 @@
         <module>spring-cloud-dataflow-docs</module>
         <module>spring-cloud-dataflow-completion</module>
         <module>spring-cloud-dataflow-dependencies</module>
-        <module>spring-cloud-dataflow-tools</module>
         <module>spring-cloud-starter-dataflow-server-local</module>
     </modules>
     <dependencyManagement>
@@ -79,11 +78,6 @@
                 <version>${spring-cloud-task.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dataflow-tools</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -160,20 +154,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework.cloud</groupId>
-                        <artifactId>spring-cloud-dataflow-tools</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>checkstyle-validation</id>
                         <phase>validate</phase>
                         <configuration>
-                            <configLocation>checkstyle.xml</configLocation>
-                            <headerLocation>checkstyle-header.txt</headerLocation>
+                            <configLocation>src/checkstyle/checkstyle.xml</configLocation>
+                            <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
+                            <suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
@@ -237,7 +225,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>7.1</version>
+                            <version>7.6.1</version>
                         </dependency>
                     </dependencies>
                 </plugin>

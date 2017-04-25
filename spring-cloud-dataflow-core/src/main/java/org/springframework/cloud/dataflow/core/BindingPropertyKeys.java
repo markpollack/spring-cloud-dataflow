@@ -25,18 +25,46 @@ package org.springframework.cloud.dataflow.core;
  */
 public class BindingPropertyKeys {
 
+    // @formatter:off (not working...)
+    private static final String ROOT_PREFIX = StreamPropertyKeys.PREFIX;
+
+    private static final String BINDING_KEY_PREFIX = ROOT_PREFIX + "bindings.";
+
+    /**
+     * Prefix used in property keys for output binding.
+     */
+    public static final String OUTPUT_BINDING_KEY_PREFIX = BINDING_KEY_PREFIX + "output.";
+    /**
+     * Prefix used in property keys for input binding.
+     */
+    public static final String INPUT_BINDING_KEY_PREFIX = BINDING_KEY_PREFIX + "input.";
+
+    // @formatter:on
+    /**
+     * Partition Count property key for output binding.
+     */
+    public static final String OUTPUT_PARTITION_COUNT = OUTPUT_BINDING_KEY_PREFIX + "producer.partitionCount";
+    /**
+     * Required groups for output binding. Ensures that if the producer is created first, consumers will still
+     * receive data.
+     */
+    public static final String OUTPUT_REQUIRED_GROUPS = OUTPUT_BINDING_KEY_PREFIX + "producer.requiredGroups";
     /**
      * Destination property key for input binding.
      */
     public static final String INPUT_DESTINATION = INPUT_BINDING_KEY_PREFIX + "destination";
     /**
-     * Destination property key for output binding.
-     */
-    public static final String OUTPUT_DESTINATION = OUTPUT_BINDING_KEY_PREFIX + "destination";
-    /**
      * Group property key for input binding.
      */
     public static final String INPUT_GROUP = INPUT_BINDING_KEY_PREFIX + "group";
+    /**
+     * Partitioned property key for input binding.
+     */
+    public static final String INPUT_PARTITIONED = INPUT_BINDING_KEY_PREFIX + "consumer.partitioned";
+    /**
+     * Destination property key for output binding.
+     */
+    public static final String OUTPUT_DESTINATION = OUTPUT_BINDING_KEY_PREFIX + "destination";
     /**
      * Partition Key Expression property key for output binding.
      */
@@ -47,29 +75,7 @@ public class BindingPropertyKeys {
      */
     public static final String OUTPUT_PARTITION_KEY_EXTRACTOR_CLASS = OUTPUT_BINDING_KEY_PREFIX +
             "producer.partitionKeyExtractorClass";
-    /**
-     * Partitioned property key for input binding.
-     */
-    public static final String INPUT_PARTITIONED = INPUT_BINDING_KEY_PREFIX + "consumer.partitioned";
-    /**
-     * Partition Count property key for output binding.
-     */
-    public static final String OUTPUT_PARTITION_COUNT = OUTPUT_BINDING_KEY_PREFIX + "producer.partitionCount";
-    /**
-     * Required groups for output binding. Ensures that if the producer is created first, consumers will still
-     * receive data.
-     */
-    public static final String OUTPUT_REQUIRED_GROUPS = OUTPUT_BINDING_KEY_PREFIX + "producer.requiredGroups";
-    private static final String ROOT_PREFIX = StreamPropertyKeys.PREFIX;
-    private static final String BINDING_KEY_PREFIX = ROOT_PREFIX + "bindings.";
-    /**
-     * Prefix used in property keys for input binding.
-     */
-    public static final String INPUT_BINDING_KEY_PREFIX = BINDING_KEY_PREFIX + "input.";
-    /**
-     * Prefix used in property keys for output binding.
-     */
-    public static final String OUTPUT_BINDING_KEY_PREFIX = BINDING_KEY_PREFIX + "output.";
+
     private static final String CONTENT_TYPE = "contentType";
     /**
      * Content Type property key for input binding.
@@ -79,4 +85,6 @@ public class BindingPropertyKeys {
      * Content Type property key for output binding.
      */
     public static final String OUTPUT_CONTENT_TYPE = OUTPUT_BINDING_KEY_PREFIX + CONTENT_TYPE;
+
 }
+

@@ -45,7 +45,8 @@ public class StreamAppDefinition extends DataFlowAppDefinition {
      * @param streamName        name of the stream this app belongs to
      * @param properties        app properties; may be {@code null}
      */
-    private StreamAppDefinition(String registeredAppName, String label, String streamName, Map<String, String> properties) {
+    private StreamAppDefinition(String registeredAppName, String label, String streamName, Map<String, String>
+            properties) {
         super(registeredAppName, label, properties);
         Assert.notNull(streamName, "stream name must not be null");
         this.streamName = streamName;

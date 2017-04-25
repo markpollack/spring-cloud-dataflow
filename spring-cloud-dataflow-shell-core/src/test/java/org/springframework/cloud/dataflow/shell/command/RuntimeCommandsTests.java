@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.client.RuntimeOperations;
 import org.springframework.cloud.dataflow.rest.resource.AppInstanceStatusResource;
@@ -76,7 +77,8 @@ public class RuntimeCommandsTests {
         List<AppInstanceStatusResource> instanceStatusResources1 = new ArrayList<>();
         instanceStatusResources1.add(instanceStatusResource1);
         instanceStatusResources1.add(instanceStatusResource2);
-        PagedResources.PageMetadata metadata1 = new PagedResources.PageMetadata(instanceStatusResources1.size(), 1, instanceStatusResources1.size(), 1);
+        PagedResources.PageMetadata metadata1 = new PagedResources.PageMetadata(instanceStatusResources1.size(), 1,
+                instanceStatusResources1.size(), 1);
         PagedResources<AppInstanceStatusResource> resources = new PagedResources<>(instanceStatusResources1, metadata1);
         appStatusResource1.setInstances(resources);
         appStatusResource2 = new AppStatusResource("2", "undeployed");
@@ -85,8 +87,10 @@ public class RuntimeCommandsTests {
         List<AppInstanceStatusResource> instanceStatusResources2 = new ArrayList<>();
         instanceStatusResources1.add(instanceStatusResource3);
         instanceStatusResources1.add(instanceStatusResource4);
-        PagedResources.PageMetadata metadata3 = new PagedResources.PageMetadata(instanceStatusResources2.size(), 1, instanceStatusResources2.size(), 1);
-        PagedResources<AppInstanceStatusResource> resources2 = new PagedResources<>(instanceStatusResources2, metadata3);
+        PagedResources.PageMetadata metadata3 = new PagedResources.PageMetadata(instanceStatusResources2.size(), 1,
+                instanceStatusResources2.size(), 1);
+        PagedResources<AppInstanceStatusResource> resources2 = new PagedResources<>(instanceStatusResources2,
+                metadata3);
         appStatusResource2.setInstances(resources2);
         appStatusResource3 = new AppStatusResource("3", "failed");
         AppInstanceStatusResource instanceStatusResource5 = new AppInstanceStatusResource("50", "failed", null);
@@ -94,8 +98,10 @@ public class RuntimeCommandsTests {
         List<AppInstanceStatusResource> instanceStatusResources3 = new ArrayList<>();
         instanceStatusResources1.add(instanceStatusResource5);
         instanceStatusResources1.add(instanceStatusResource6);
-        PagedResources.PageMetadata metadata4 = new PagedResources.PageMetadata(instanceStatusResources3.size(), 1, instanceStatusResources3.size(), 1);
-        PagedResources<AppInstanceStatusResource> resources3 = new PagedResources<>(instanceStatusResources3, metadata4);
+        PagedResources.PageMetadata metadata4 = new PagedResources.PageMetadata(instanceStatusResources3.size(), 1,
+                instanceStatusResources3.size(), 1);
+        PagedResources<AppInstanceStatusResource> resources3 = new PagedResources<>(instanceStatusResources3,
+                metadata4);
         appStatusResource3.setInstances(resources3);
     }
 

@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.core.StreamDefinition;
@@ -91,10 +92,14 @@ public class RuntimeAppsControllerTests {
         deploymentIdRepository.save("ticktock2.time", "ticktock2.time");
         deploymentIdRepository.save("ticktock2.log", "ticktock2.log");
 
-        when(appDeployer.status("ticktock1.time")).thenReturn(AppStatus.of("ticktock1.time").generalState(DeploymentState.deployed).build());
-        when(appDeployer.status("ticktock1.log")).thenReturn(AppStatus.of("ticktock1.log").generalState(DeploymentState.deployed).build());
-        when(appDeployer.status("ticktock2.time")).thenReturn(AppStatus.of("ticktock2.time").generalState(DeploymentState.deployed).build());
-        when(appDeployer.status("ticktock2.log")).thenReturn(AppStatus.of("ticktock2.log").generalState(DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock1.time")).thenReturn(AppStatus.of("ticktock1.time").generalState
+                (DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock1.log")).thenReturn(AppStatus.of("ticktock1.log").generalState
+                (DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock2.time")).thenReturn(AppStatus.of("ticktock2.time").generalState
+                (DeploymentState.deployed).build());
+        when(appDeployer.status("ticktock2.log")).thenReturn(AppStatus.of("ticktock2.log").generalState
+                (DeploymentState.deployed).build());
 
         when(appDeployer.status("foo")).thenReturn(AppStatus.of("foo").generalState(DeploymentState.unknown).build());
         AppStatus validAppStatus = AppStatus.of("a1.valid").generalState(DeploymentState.failed).build();

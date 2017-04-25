@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.rest.client.AppRegistryOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
@@ -115,7 +116,8 @@ public class AppRegistryCommandsTests {
 
     @Test
     public void testUnknownModule() {
-        List<Object> result = appRegistryCommands.info(new AppRegistryCommands.QualifiedApplicationName("unknown", ApplicationType.processor));
+        List<Object> result = appRegistryCommands.info(new AppRegistryCommands.QualifiedApplicationName("unknown",
+                ApplicationType.processor));
         assertEquals((String) result.get(0), "Application info is not available for processor:unknown");
     }
 

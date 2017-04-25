@@ -95,7 +95,8 @@ public class DataFlowTables {
                 BeanWrapper beanWrapper = new BeanWrapperImpl(value);
                 return Arrays.stream(beanWrapper.getPropertyDescriptors())
                         .map(PropertyDescriptor::getName)
-                        .filter(n -> (includes == null || includes.contains(n)) && (excludes == null || !excludes.contains(n)))
+                        .filter(n -> (includes == null || includes.contains(n)) && (excludes == null || !excludes
+                                .contains(n)))
                         .map(n -> title(n) + delimiter + beanWrapper.getPropertyValue(n))
                         .toArray(String[]::new);
             }

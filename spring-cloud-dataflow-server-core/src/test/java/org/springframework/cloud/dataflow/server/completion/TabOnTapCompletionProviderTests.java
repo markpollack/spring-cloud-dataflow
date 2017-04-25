@@ -26,6 +26,7 @@ import org.hamcrest.FeatureMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.completion.CompletionConfiguration;
@@ -75,7 +76,8 @@ public class TabOnTapCompletionProviderTests {
         StreamDefinitionRepository streamDefinitionRepository = new InMemoryStreamDefinitionRepository();
         streamDefinitionRepository.save(new StreamDefinition("foo", "time | transform | log"));
         streamDefinitionRepository.save(new StreamDefinition("bar", "time | log"));
-        completionProvider.addCompletionRecoveryStrategy(new TapOnDestinationRecoveryStrategy(streamDefinitionRepository));
+        completionProvider.addCompletionRecoveryStrategy(new TapOnDestinationRecoveryStrategy
+                (streamDefinitionRepository));
     }
 
     @Test

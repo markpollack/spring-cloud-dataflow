@@ -51,7 +51,8 @@ public class UnfinishedConfigurationPropertyNameRecoveryStrategy
 
     UnfinishedConfigurationPropertyNameRecoveryStrategy(AppRegistry appRegistry,
                                                         ApplicationConfigurationMetadataResolver metadataResolver) {
-        super(CheckPointedParseException.class, "file --foo", "file | bar --quick", "file --foo.", "file | bar --quick.");
+        super(CheckPointedParseException.class, "file --foo", "file | bar --quick", "file --foo.", "file | bar " +
+                "--quick.");
         this.appRegistry = appRegistry;
         this.metadataResolver = metadataResolver;
     }

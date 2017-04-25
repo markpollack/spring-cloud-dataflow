@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -92,7 +93,8 @@ public class DataflowTemplateTests {
             if (converter instanceof MappingJackson2HttpMessageConverter) {
                 containsMappingJackson2HttpMessageConverter = true;
 
-                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter)
+                        converter;
                 final ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
 
                 assertNotNull(objectMapper.findMixInClassFor(JobExecution.class));
@@ -107,7 +109,8 @@ public class DataflowTemplateTests {
         }
 
         if (!containsMappingJackson2HttpMessageConverter) {
-            fail("Expected that the restTemplate's list of Message Converters contained a MappingJackson2HttpMessageConverter");
+            fail("Expected that the restTemplate's list of Message Converters contained a " +
+                    "MappingJackson2HttpMessageConverter");
         }
     }
 
@@ -163,7 +166,8 @@ public class DataflowTemplateTests {
         try {
             DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
         } catch (IllegalArgumentException e) {
-            assertEquals("The RestTemplate does not contain a required MappingJackson2HttpMessageConverter.", e.getMessage());
+            assertEquals("The RestTemplate does not contain a required MappingJackson2HttpMessageConverter.", e
+                    .getMessage());
             return;
         }
 

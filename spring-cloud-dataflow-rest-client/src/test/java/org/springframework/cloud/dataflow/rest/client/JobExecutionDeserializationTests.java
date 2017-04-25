@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
+
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -89,7 +90,8 @@ public class JobExecutionDeserializationTests {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Jackson2HalModule());
 
-        final InputStream inputStream = JobExecutionDeserializationTests.class.getResourceAsStream("/SingleJobExecutionJson.txt");
+        final InputStream inputStream = JobExecutionDeserializationTests.class.getResourceAsStream
+                ("/SingleJobExecutionJson.txt");
 
         final String json = new String(StreamUtils.copyToByteArray(inputStream));
 

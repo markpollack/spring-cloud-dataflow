@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -66,14 +67,16 @@ public class RdbmsTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTe
 
     @Test
     public void findAllSortTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         String[] names = new String[]{"task1", "task2", "task3"};
         findAllSort(sort, names);
     }
 
     @Test
     public void findAllPageableTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
         String[] names = new String[]{"task1", "task2", "task3"};
         findAllPageable(pageable, names);
@@ -81,14 +84,16 @@ public class RdbmsTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTe
 
     @Test
     public void findAllSortTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         String[] names = new String[]{"task3", "task2", "task1"};
         findAllSort(sort, names);
     }
 
     @Test
     public void findAllPageableTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         Pageable pageable = new PageRequest(0, 10, sort);
 
         String[] names = new String[]{"task3", "task2", "task1"};
@@ -129,7 +134,8 @@ public class RdbmsTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTe
 
     @Test
     public void findAllPageablePage2TestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .ASC, "DEFINITION"));
         Pageable pageable = new PageRequest(1, 2, sort);
         String[] names = new String[]{"task3"};
         findAllPageable(pageable, names);
@@ -137,7 +143,8 @@ public class RdbmsTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTe
 
     @Test
     public void findAllPageablePage2TestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
+                .DESC, "DEFINITION"));
         Pageable pageable = new PageRequest(1, 2, sort);
         String[] names = new String[]{"task1"};
         findAllPageable(pageable, names);

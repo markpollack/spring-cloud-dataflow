@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -223,7 +224,8 @@ public class StreamCompletionProviderTests {
         assertThat(completionProvider.complete("foo --some-option", 1), empty());
         assertThat(completionProvider.complete("foo --some-option=", 1), empty());
         assertThat(completionProvider.complete("foo --some-option=prefix", 1), empty());
-        assertThat(completionProvider.complete("http | filter --port=12 --expression=something --expresso=not-a-valid-prefix", 1), empty());
+        assertThat(completionProvider.complete("http | filter --port=12 --expression=something " +
+                "--expresso=not-a-valid-prefix", 1), empty());
     }
 
     /*
@@ -246,7 +248,9 @@ public class StreamCompletionProviderTests {
     @Configuration
     public static class Mocks {
 
-        private static final File ROOT = new File("src/test/resources", Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
+        private static final File ROOT =
+                new File("src/test/resources",
+                        Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
 
         private static final FileFilter FILTER = new FileFilter() {
             @Override
@@ -292,7 +296,8 @@ public class StreamCompletionProviderTests {
 
         @Bean
         public ApplicationConfigurationMetadataResolver metadataResolver() {
-            return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class.getClassLoader());
+            return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class
+                    .getClassLoader());
         }
     }
 

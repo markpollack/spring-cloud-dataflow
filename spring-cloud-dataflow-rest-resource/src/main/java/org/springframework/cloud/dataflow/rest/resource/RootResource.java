@@ -17,6 +17,7 @@
 package org.springframework.cloud.dataflow.rest.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.cloud.dataflow.rest.Version;
 import org.springframework.hateoas.ResourceSupport;
 

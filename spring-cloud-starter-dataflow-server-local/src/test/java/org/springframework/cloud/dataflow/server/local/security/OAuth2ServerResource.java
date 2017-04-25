@@ -19,6 +19,7 @@ package org.springframework.cloud.dataflow.server.local.security;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.rules.ExternalResource;
+
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.dataflow.server.local.security.support.OAuth2TestServer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -54,7 +55,8 @@ public class OAuth2ServerResource extends ExternalResource {
 
         this.application = new SpringApplicationBuilder(OAuth2TestServer.class)
                 .build()
-                .run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security/support/oauth2TestServerConfig.yml");
+                .run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security" +
+                        "/support/oauth2TestServerConfig.yml");
 
     }
 

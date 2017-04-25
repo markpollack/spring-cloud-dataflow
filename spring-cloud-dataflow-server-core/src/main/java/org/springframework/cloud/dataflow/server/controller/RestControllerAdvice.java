@@ -21,6 +21,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.batch.admin.service.NoSuchStepExecutionException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.NoSuchJobException;
@@ -78,8 +79,10 @@ public class RestControllerAdvice {
      * Log the exception message at warn level and stack trace as trace level.
      * Return response status HttpStatus.CONFLICT
      *
-     * @param e one of the exceptions, {@link AppAlreadyRegisteredException}, {@link DuplicateStreamDefinitionException},
-     *          {@link DuplicateTaskException}, {@link StreamAlreadyDeployedException}, {@link StreamAlreadyDeployingException},
+     * @param e one of the exceptions, {@link AppAlreadyRegisteredException},
+     * {@link DuplicateStreamDefinitionException},
+     *          {@link DuplicateTaskException}, {@link StreamAlreadyDeployedException},
+     *          {@link StreamAlreadyDeployingException},
      *          or {@link StreamAlreadyDeployingException}
      * @return the error response in JSON format with media type application/vnd.error+json
      */
@@ -124,7 +127,8 @@ public class RestControllerAdvice {
      * Return response status HttpStatus.NOT_FOUND
      *
      * @param e one of the exceptions, {@link NoSuchStreamDefinitionException}, {@link NoSuchAppRegistrationException},
-     *          {@link NoSuchTaskDefinitionException}, {@link NoSuchTaskExecutionException}, {@link NoSuchJobExecutionException},
+     *          {@link NoSuchTaskDefinitionException}, {@link NoSuchTaskExecutionException},
+     *          {@link NoSuchJobExecutionException},
      *          {@link NoSuchJobInstanceException}, {@link NoSuchJobException}, {@link NoSuchStepExecutionException},
      *          {@link MetricsMvcEndpoint.NoSuchMetricException}, {@link NoSuchAppException}, or
      *          {@link NoSuchAppInstanceException}
@@ -157,7 +161,8 @@ public class RestControllerAdvice {
      * Log the exception message at warn level and stack trace as trace level.
      * Return response status HttpStatus.BAD_REQUEST (400).
      *
-     * @param e one of the exceptions, {@link MissingServletRequestParameterException}, {@link UnsatisfiedServletRequestParameterException},
+     * @param e one of the exceptions, {@link MissingServletRequestParameterException},
+     * {@link UnsatisfiedServletRequestParameterException},
      *          {@link MethodArgumentTypeMismatchException}, or {@link InvalidStreamDefinitionException}
      * @return the error response in JSON format with media type application/vnd.error+json
      */

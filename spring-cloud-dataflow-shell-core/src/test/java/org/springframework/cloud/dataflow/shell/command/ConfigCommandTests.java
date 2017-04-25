@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.cloud.dataflow.rest.client.AboutOperations;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
 import org.springframework.cloud.dataflow.rest.resource.RootResource;
@@ -102,7 +103,8 @@ public class ConfigCommandTests {
         aboutResource.getRuntimeEnvironment().getAppDeployer().getPlatformSpecificInfo().put("Some", "Stuff");
         aboutResource.getRuntimeEnvironment().getTaskLauncher().setDeployerSpiVersion("6.4");
         final Table infoResult = (Table) configCommands.info().get(0);
-        String expectedOutput = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream(ConfigCommandTests.class.getSimpleName() + "-testInfo.txt"), "UTF-8"));
+        String expectedOutput = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream
+                (ConfigCommandTests.class.getSimpleName() + "-testInfo.txt"), "UTF-8"));
         assertThat(infoResult.render(80), is(expectedOutput));
     }
 

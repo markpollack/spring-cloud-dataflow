@@ -49,7 +49,8 @@ public class DataFlowServerUtil {
         } else if (hasOutput) {
             return ApplicationType.source;
         } else {
-            throw new CannotDetermineApplicationTypeException(appDefinition.getName() + " had neither input nor output set");
+            throw new CannotDetermineApplicationTypeException(appDefinition.getName() + " had neither input nor " +
+                    "output set");
         }
     }
 }

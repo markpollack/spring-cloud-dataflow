@@ -45,7 +45,8 @@ public class JobTemplate implements JobOperations {
 
     private static final String STEP_EXECUTION_RELATION_BY_ID = "jobs/executions/execution/steps";
 
-    private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID = "jobs/executions/execution/steps/step/progress";
+    private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID =
+            "jobs/executions/execution/steps/step/progress";
 
     private final RestTemplate restTemplate;
 
@@ -75,8 +76,10 @@ public class JobTemplate implements JobOperations {
         Assert.notNull(resources.getLink(INSTANCE_RELATION), "Instance relation is required");
         Assert.notNull(resources.getLink(INSTANCE_RELATION_BY_NAME), "Instance by name relation is required");
         Assert.notNull(resources.getLink(STEP_EXECUTION_RELATION_BY_ID), "Step Execution by id relation is required");
-        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution Progress by id relation is required");
-        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution View by id relation is required");
+        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution Progress by id " +
+                "relation is required");
+        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution View by id relation" +
+                " is required");
 
 
         this.restTemplate = restTemplate;

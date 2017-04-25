@@ -48,8 +48,10 @@ public class Target {
     private boolean authenticationEnabled;
     private boolean authorizationEnabled = true;
     private boolean authenticated;
+
     /**
-     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
+     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a
+     * {@link URI}.
      * This method allows for providing a username and password for authentication.
      *
      * @param targetUriAsString the data flow server URI, must not be empty
@@ -71,7 +73,8 @@ public class Target {
     }
 
     /**
-     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a {@link URI}.
+     * Construct a new Target. The passed in <code>targetUriAsString</code> String parameter will be converted to a
+     * {@link URI}.
      *
      * @param targetUriAsString Must not be empty
      * @throws IllegalArgumentException if the given string violates RFC 2396

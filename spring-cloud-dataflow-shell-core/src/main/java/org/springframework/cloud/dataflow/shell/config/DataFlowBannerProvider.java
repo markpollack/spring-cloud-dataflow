@@ -33,7 +33,8 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DataFlowBannerProvider implements BannerProvider {
 
-    private static final String WELCOME = "Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type \"help\".";
+    private static final String WELCOME = "Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or " +
+            "type \"help\".";
 
     @Override
     public String getProviderName() {

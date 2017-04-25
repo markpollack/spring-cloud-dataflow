@@ -87,7 +87,8 @@ public class JobExecutionController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public PagedResources<JobExecutionResource> list(Pageable pageable,
-                                                     PagedResourcesAssembler<TaskJobExecution> assembler) throws NoSuchJobExecutionException {
+                                                     PagedResourcesAssembler<TaskJobExecution> assembler) throws
+            NoSuchJobExecutionException {
         List<TaskJobExecution> jobExecutions = taskJobService.listJobExecutions(pageable);
         Page<TaskJobExecution> page = new PageImpl<>(jobExecutions, pageable, taskJobService.countJobExecutions());
         return assembler.toResource(page, jobAssembler);
@@ -142,7 +143,8 @@ public class JobExecutionController {
      */
     @RequestMapping(value = {"/{executionId}"}, method = RequestMethod.PUT, params = "stop=true")
     @ResponseStatus(HttpStatus.OK)
-    public void stopJobExecution(@PathVariable("executionId") long jobExecutionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+    public void stopJobExecution(@PathVariable("executionId") long jobExecutionId) throws
+            NoSuchJobExecutionException, JobExecutionNotRunningException {
         taskJobService.stopJobExecution(jobExecutionId);
     }
 
@@ -156,7 +158,8 @@ public class JobExecutionController {
      */
     @RequestMapping(value = {"/{executionId}"}, method = RequestMethod.PUT, params = "restart=true")
     @ResponseStatus(HttpStatus.OK)
-    public void restartJobExecution(@PathVariable("executionId") long jobExecutionId) throws NoSuchJobExecutionException {
+    public void restartJobExecution(@PathVariable("executionId") long jobExecutionId) throws
+            NoSuchJobExecutionException {
         taskJobService.restartJobExecution(jobExecutionId);
     }
 

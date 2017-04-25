@@ -84,7 +84,7 @@ public class CounterCommands extends AbstractMetricsCommands implements CommandM
     @CliCommand(value = DELETE_COUNTER, help = "Reset the counter with the given name")
     public String reset(
             @CliOption(mandatory = true, key = {"", "name"}, help = "the name of the counter to reset"
-					/*, optionContext = "existing-counter disable-string-converter"*/) String name) {
+                    /*, optionContext = "existing-counter disable-string-converter"*/) String name) {
         counterOperations().reset(name);
         return String.format("Deleted counter '%s'", name);
     }

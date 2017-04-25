@@ -44,7 +44,8 @@ public class FieldValueCounterTemplate implements FieldValueCounterOperations {
 
     @Override
     public FieldValueCounterResource retrieve(String name) {
-        return restTemplate.getForObject(links.getLink(FVC_RELATION).expand(name).getHref(), FieldValueCounterResource.class);
+        return restTemplate.getForObject(links.getLink(FVC_RELATION).expand(name).getHref(),
+                FieldValueCounterResource.class);
     }
 
     @Override

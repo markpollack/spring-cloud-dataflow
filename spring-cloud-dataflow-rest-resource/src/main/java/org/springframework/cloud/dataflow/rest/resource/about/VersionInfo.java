@@ -26,6 +26,7 @@ public class VersionInfo {
     private Dependency implementation = new Dependency();
     private Dependency core = new Dependency();
     private Dependency dashboard = new Dependency();
+
     /**
      * Default constructor for serialization frameworks.
      */

@@ -118,7 +118,8 @@ public class JobDependencies {
 
     @Bean
     public TaskJobService taskJobExecutionRepository(JobService jobService,
-                                                     TaskExplorer taskExplorer, TaskDefinitionRepository taskDefinitionRepository, TaskService taskService) {
+                                                     TaskExplorer taskExplorer, TaskDefinitionRepository
+                                                                 taskDefinitionRepository, TaskService taskService) {
         return new DefaultTaskJobService(jobService, taskExplorer, taskDefinitionRepository, taskService);
     }
 
@@ -164,7 +165,9 @@ public class JobDependencies {
     }
 
     @Bean
-    public JobRepositoryFactoryBean jobRepositoryFactoryBeanForServer(DataSource dataSource, DataSourceTransactionManager dataSourceTransactionManager) {
+    public JobRepositoryFactoryBean jobRepositoryFactoryBeanForServer(DataSource dataSource,
+                                                                      DataSourceTransactionManager
+                                                                              dataSourceTransactionManager) {
         JobRepositoryFactoryBean repositoryFactoryBean = new JobRepositoryFactoryBean();
         repositoryFactoryBean.setDataSource(dataSource);
         repositoryFactoryBean.setTransactionManager(dataSourceTransactionManager);
@@ -185,7 +188,8 @@ public class JobDependencies {
 
     @Bean
     public BatchDatabaseInitializer batchRepositoryInitializerForDefaultDBForServer(DataSource dataSource,
-                                                                                    ResourceLoader resourceLoader, BatchProperties properties) {
+                                                                                    ResourceLoader resourceLoader,
+                                                                                    BatchProperties properties) {
         return new BatchDatabaseInitializer(dataSource, resourceLoader, properties);
     }
 

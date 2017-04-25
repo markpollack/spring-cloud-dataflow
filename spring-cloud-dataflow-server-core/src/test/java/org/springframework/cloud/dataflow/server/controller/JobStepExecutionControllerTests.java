@@ -22,6 +22,7 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
@@ -114,7 +115,8 @@ public class JobStepExecutionControllerTests {
         }
         for (HttpMessageConverter<?> converter : adapter.getMessageConverters()) {
             if (converter instanceof MappingJackson2HttpMessageConverter) {
-                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter)
+                        converter;
                 jacksonConverter.getObjectMapper().addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
                 jacksonConverter.getObjectMapper().addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
                 jacksonConverter.getObjectMapper().setDateFormat(new ISO8601DateFormatWithMilliSeconds());

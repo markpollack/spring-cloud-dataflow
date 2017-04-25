@@ -113,7 +113,8 @@ class StreamApplicationDefinitionBuilder {
         }
         SinkDestinationNode sinkDestination = streamNode.getSinkDestinationNode();
         if (sinkDestination != null) {
-            builders.getFirst().setProperty(BindingPropertyKeys.OUTPUT_DESTINATION, sinkDestination.getDestinationName());
+            builders.getFirst().setProperty(BindingPropertyKeys.OUTPUT_DESTINATION, sinkDestination
+                    .getDestinationName());
         }
         List<StreamAppDefinition> streamAppDefinitions = new ArrayList<>(builders.size());
         for (StreamAppDefinition.Builder builder : builders) {

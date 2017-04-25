@@ -64,7 +64,8 @@ public class StreamCommandTemplate {
      *
      * @param streamname       the name of the stream
      * @param streamdefinition the stream definition DSL
-     * @param values           will be injected into streamdefinition according to {@link String#format(String, Object...)} syntax
+     * @param values           will be injected into streamdefinition according to
+     * {@link String#format(String, Object...)} syntax
      */
     public void create(String streamname, String streamdefinition, Object... values) {
         doCreate(streamname, streamdefinition, true, values);
@@ -168,7 +169,9 @@ public class StreamCommandTemplate {
 
         Table table = (org.springframework.shell.table.Table) cr.getResult();
         TableModel model = table.getModel();
-        Collection<String> statuses = deployed ? Arrays.asList(DeploymentStateResource.DEPLOYED.getDescription(), DeploymentStateResource.DEPLOYING.getDescription()) : Arrays.asList(DeploymentStateResource.UNDEPLOYED.getDescription());
+        Collection<String> statuses = deployed ? Arrays.asList(DeploymentStateResource.DEPLOYED.getDescription(),
+                DeploymentStateResource.DEPLOYING.getDescription()) : Arrays.asList(DeploymentStateResource
+                .UNDEPLOYED.getDescription());
         for (int row = 0; row < model.getRowCount(); row++) {
             if (streamName.equals(model.getValue(row, 0))
                     && definition.replace("\\\\", "\\").equals(model.getValue(row, 1))

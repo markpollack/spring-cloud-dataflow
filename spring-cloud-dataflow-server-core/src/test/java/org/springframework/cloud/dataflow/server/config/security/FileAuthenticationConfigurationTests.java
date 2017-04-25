@@ -16,6 +16,7 @@
 package org.springframework.cloud.dataflow.server.config.security;
 
 import org.junit.Test;
+
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
 import static org.hamcrest.CoreMatchers.is;

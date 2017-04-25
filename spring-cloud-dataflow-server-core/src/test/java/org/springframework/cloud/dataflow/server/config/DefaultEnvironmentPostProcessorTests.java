@@ -17,6 +17,7 @@
 package org.springframework.cloud.dataflow.server.config;
 
 import org.junit.Test;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;

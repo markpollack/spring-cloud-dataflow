@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
@@ -97,7 +98,8 @@ public class ManualOAuthAuthenticationProvider implements AuthenticationProvider
         }
 
         final Collection<GrantedAuthority> authorities = new ArrayList<>();
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, authorities);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password,
+                authorities);
         return token;
     }
 

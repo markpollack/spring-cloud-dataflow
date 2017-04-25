@@ -79,7 +79,8 @@ public class RuntimeCommands implements CommandMarker {
     public Table list(
             @CliOption(key = "summary", help = "whether to hide app instance details",
                     unspecifiedDefaultValue = "false", specifiedDefaultValue = "true") boolean summary,
-            @CliOption(key = {"appId", "appIds"}, help = "app id(s) to display, also supports '<group>.*' pattern") String[] appIds) {
+            @CliOption(key = {"appId", "appIds"}, help = "app id(s) to display, also supports '<group>.*' pattern")
+                    String[] appIds) {
 
         Set<String> filter = null;
         if (appIds != null) {
@@ -147,7 +148,8 @@ public class RuntimeCommands implements CommandMarker {
             if (splits.contains(i)) {
                 builder.paintBorder(fancy_light, TOP).fromRowColumn(i, 0).toRowColumn(i + 1, model.getColumnCount());
             } else {
-                builder.paintBorder(fancy_light_quadruple_dash, TOP).fromRowColumn(i, 0).toRowColumn(i + 1, model.getColumnCount());
+                builder.paintBorder(fancy_light_quadruple_dash, TOP).fromRowColumn(i, 0).toRowColumn(i + 1, model
+                        .getColumnCount());
             }
         }
 

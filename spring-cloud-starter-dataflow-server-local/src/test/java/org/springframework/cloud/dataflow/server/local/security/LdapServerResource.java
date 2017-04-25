@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -33,8 +34,10 @@ import org.springframework.util.SocketUtils;
 public class LdapServerResource extends ExternalResource {
 
     private static final String LDAP_PORT_PROPERTY = "ldap.port";
-    private static final ClassPathResource keyStoreResource = new ClassPathResource("/org/springframework/cloud/dataflow/server/local/security/dataflow.keystore");
-    private static final ClassPathResource trustStoreResource = new ClassPathResource("/org/springframework/cloud/dataflow/server/local/security/dataflow.truststore");
+    private static final ClassPathResource keyStoreResource = new ClassPathResource
+            ("/org/springframework/cloud/dataflow/server/local/security/dataflow.keystore");
+    private static final ClassPathResource trustStoreResource = new ClassPathResource
+            ("/org/springframework/cloud/dataflow/server/local/security/dataflow.truststore");
     private static final String TRUST_STORE_PASSWORD = "dataflow";
     private static final String KEY_STORE_PASSWORD = "dataflow";
     private String originalLdapPort;

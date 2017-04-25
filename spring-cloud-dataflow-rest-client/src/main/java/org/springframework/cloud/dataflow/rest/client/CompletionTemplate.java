@@ -43,12 +43,14 @@ public class CompletionTemplate implements CompletionOperations {
 
     @Override
     public CompletionProposalsResource streamCompletions(String prefix, int levelOfDetail) {
-        return restTemplate.getForObject(streamCompletionUriTemplate.expand(prefix, levelOfDetail), CompletionProposalsResource.class);
+        return restTemplate.getForObject(streamCompletionUriTemplate.expand(prefix, levelOfDetail),
+                CompletionProposalsResource.class);
     }
 
     @Override
     public CompletionProposalsResource taskCompletions(String prefix, int levelOfDetail) {
-        return restTemplate.getForObject(taskCompletionUriTemplate.expand(prefix, levelOfDetail), CompletionProposalsResource.class);
+        return restTemplate.getForObject(taskCompletionUriTemplate.expand(prefix, levelOfDetail),
+                CompletionProposalsResource.class);
     }
 
 }

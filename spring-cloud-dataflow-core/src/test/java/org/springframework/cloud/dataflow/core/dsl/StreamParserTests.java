@@ -252,11 +252,13 @@ public class StreamParserTests {
         StreamNode ast = null;
 
         // notice no space between the ' and final >
-        ast = parse(":producer > transform --expression='payload.toUpperCase()' | filter --expression='payload.length() > 4'> :consumer");
+        ast = parse(":producer > transform --expression='payload.toUpperCase()' | filter --expression='payload.length" +
+                "() > 4'> :consumer");
         assertEquals("payload.toUpperCase()", ast.getApp("transform").getArguments()[0].getValue());
         assertEquals("payload.length() > 4", ast.getApp("filter").getArguments()[0].getValue());
 
-        ast = parse("time | transform --expression='T(org.joda.time.format.DateTimeFormat).forPattern(\"yyyy-MM-dd HH:mm:ss\").parseDateTime(payload)'");
+        ast = parse("time | transform --expression='T(org.joda.time.format.DateTimeFormat).forPattern(\"yyyy-MM-dd " +
+                "HH:mm:ss\").parseDateTime(payload)'");
         assertEquals(
                 "T(org.joda.time.format.DateTimeFormat).forPattern(\"yyyy-MM-dd HH:mm:ss\").parseDateTime(payload)",
                 ast.getApp("transform").getArguments()[0].getValue());
@@ -497,10 +499,12 @@ public class StreamParserTests {
     @Test
     public void testXD2416() {
         StreamNode ast = parse("http | transform --expression='payload.replace(\"abc\", \"\")' | log");
-        assertThat((String) ast.getAppNodes().get(1).getArgumentsAsProperties().get("expression"), equalTo("payload.replace(\"abc\", \"\")"));
+        assertThat((String) ast.getAppNodes().get(1).getArgumentsAsProperties().get("expression"), equalTo("payload" +
+                ".replace(\"abc\", \"\")"));
 
         ast = parse("http | transform --expression='payload.replace(\"abc\", '''')' | log");
-        assertThat((String) ast.getAppNodes().get(1).getArgumentsAsProperties().get("expression"), equalTo("payload.replace(\"abc\", '')"));
+        assertThat((String) ast.getAppNodes().get(1).getArgumentsAsProperties().get("expression"), equalTo("payload" +
+                ".replace(\"abc\", '')"));
     }
 
     StreamNode parse(String streamDefinition) {

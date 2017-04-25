@@ -49,9 +49,11 @@ import org.springframework.util.StringUtils;
  */
 public class BootApplicationConfigurationMetadataResolver extends ApplicationConfigurationMetadataResolver {
 
-    private static final String CONFIGURATION_METADATA_PATTERN = "classpath*:/META-INF/spring-configuration-metadata.json";
+    private static final String CONFIGURATION_METADATA_PATTERN = "classpath*:/META-INF/spring-configuration-metadata" +
+            ".json";
 
-    private static final String WHITELIST_PROPERTIES = "classpath*:/META-INF/spring-configuration-metadata-whitelist.properties";
+    private static final String WHITELIST_PROPERTIES = "classpath*:/META-INF/spring-configuration-metadata-whitelist" +
+            ".properties";
 
     private static final String CONFIGURATION_PROPERTIES_CLASSES = "configuration-properties.classes";
 
@@ -71,7 +73,9 @@ public class BootApplicationConfigurationMetadataResolver extends ApplicationCon
         this.parent = parent;
         JarFile.registerUrlProtocolHandler();
         try {
-            Resource[] globalResources = new PathMatchingResourcePatternResolver(ApplicationConfigurationMetadataResolver.class.getClassLoader()).getResources(WHITELIST_PROPERTIES);
+            Resource[] globalResources = new PathMatchingResourcePatternResolver
+                    (ApplicationConfigurationMetadataResolver.class.getClassLoader()).getResources
+                    (WHITELIST_PROPERTIES);
             loadWhiteLists(globalResources, globalWhiteListedClasses, globalWhiteListedProperties);
         } catch (IOException e) {
             throw new RuntimeException("Error reading global white list of configuration properties", e);
@@ -102,7 +106,8 @@ public class BootApplicationConfigurationMetadataResolver extends ApplicationCon
             Collection<String> whiteListedClasses = new HashSet<>(globalWhiteListedClasses);
             Collection<String> whiteListedProperties = new HashSet<>(globalWhiteListedProperties);
             Resource[] whitelistDescriptors = moduleResourceLoader.getResources(WHITELIST_PROPERTIES);
-            boolean include = (whitelistDescriptors.length == 0) || exhaustive; // when no descriptors, return everything
+            boolean include = (whitelistDescriptors.length == 0) || exhaustive; // when no descriptors, return
+            // everything
             loadWhiteLists(whitelistDescriptors, whiteListedClasses, whiteListedProperties);
             ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder.create();
             for (Resource r : moduleResourceLoader.getResources(CONFIGURATION_METADATA_PATTERN)) {
@@ -128,7 +133,8 @@ public class BootApplicationConfigurationMetadataResolver extends ApplicationCon
             }
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("Exception trying to list configuration properties for application " + archive, e);
+            throw new RuntimeException("Exception trying to list configuration properties for application " +
+                    archive, e);
         }
     }
 
@@ -149,12 +155,15 @@ public class BootApplicationConfigurationMetadataResolver extends ApplicationCon
     /**
      * Loads white lists of properties and group classes and add them to the given collections.
      */
-    private void loadWhiteLists(Resource[] resources, Collection<String> classes, Collection<String> names) throws IOException {
+    private void loadWhiteLists(Resource[] resources, Collection<String> classes, Collection<String> names) throws
+            IOException {
         for (Resource resource : resources) {
             Properties properties = new Properties();
             properties.load(resource.getInputStream());
-            classes.addAll(Arrays.asList(StringUtils.delimitedListToStringArray(properties.getProperty(CONFIGURATION_PROPERTIES_CLASSES), ",", " ")));
-            names.addAll(Arrays.asList(StringUtils.delimitedListToStringArray(properties.getProperty(CONFIGURATION_PROPERTIES_NAMES), ",", " ")));
+            classes.addAll(Arrays.asList(StringUtils.delimitedListToStringArray(properties.getProperty
+                    (CONFIGURATION_PROPERTIES_CLASSES), ",", " ")));
+            names.addAll(Arrays.asList(StringUtils.delimitedListToStringArray(properties.getProperty
+                    (CONFIGURATION_PROPERTIES_NAMES), ",", " ")));
         }
     }
 

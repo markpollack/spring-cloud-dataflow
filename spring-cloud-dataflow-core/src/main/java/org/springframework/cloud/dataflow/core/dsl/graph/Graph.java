@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.springframework.cloud.dataflow.core.dsl.TransitionNode;
 
 /**
@@ -75,7 +76,8 @@ public class Graph {
             s.append("]");
         }
         for (Link l : links) {
-            s.append("[" + (l.getTransitionName() == null ? "" : l.getTransitionName() + ":") + l.from + "-" + l.to + "]");
+            s.append("[" + (l.getTransitionName() == null ? "" : l.getTransitionName() + ":") + l.from + "-" + l.to +
+                    "]");
         }
         return s.toString();
     }

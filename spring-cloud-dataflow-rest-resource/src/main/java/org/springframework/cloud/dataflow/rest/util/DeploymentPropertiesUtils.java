@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,7 +44,8 @@ public final class DeploymentPropertiesUtils {
     /**
      * Pattern used for parsing a String of command-line arguments.
      */
-    private static final Pattern DEPLOYMENT_PARAMS_PATTERN = Pattern.compile("(\\s(?=([^\\\"']*[\\\"'][^\\\"']*[\\\"'])*[^\\\"']*$))");
+    private static final Pattern DEPLOYMENT_PARAMS_PATTERN = Pattern.compile("(\\s(?=" +
+            "([^\\\"']*[\\\"'][^\\\"']*[\\\"'])*[^\\\"']*$))");
 
     private DeploymentPropertiesUtils() {
         // prevent instantiation
@@ -144,7 +146,8 @@ public final class DeploymentPropertiesUtils {
         String deprecatedCount = input.getOrDefault("app." + appName + ".count", deprecatedWildcardCound);
         if (deprecatedCount != null && deprecated.get("spring.cloud.deployer.count") == null) {
             deprecated.put("spring.cloud.deployer.count", deprecatedCount);
-            logger.warn("Usage of application property 'app.{}.count' to specify number of instances has been deprecated and will be removed in a future release\n" +
+            logger.warn("Usage of application property 'app.{}.count' to specify number of instances has been " +
+                            "deprecated and will be removed in a future release\n" +
                             "Instead, please use 'deployer.{}.count = {}'",
                     appName, appName, deprecatedCount);
         }
@@ -154,7 +157,8 @@ public final class DeploymentPropertiesUtils {
             return result;
         } else {
             deprecated.entrySet().forEach(kv -> {
-                logger.warn("Usage of application property prefix 'spring.cloud.deployer' to pass properties to the deployer has been deprecated and will be removed in a future release\n" +
+                logger.warn("Usage of application property prefix 'spring.cloud.deployer' to pass properties to the " +
+                                "deployer has been deprecated and will be removed in a future release\n" +
                                 "Instead of 'app.{}.{} = {}', please use\n" +
                                 "           'deployer.{}.{} = {}'",
                         appName, kv.getKey(), kv.getValue(),

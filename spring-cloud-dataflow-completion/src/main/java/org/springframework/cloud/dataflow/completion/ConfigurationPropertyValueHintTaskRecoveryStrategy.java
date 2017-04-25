@@ -42,7 +42,8 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
  * @author Mark Fisher
  * @author Andy Clement
  */
-public class ConfigurationPropertyValueHintTaskRecoveryStrategy extends StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
+public class ConfigurationPropertyValueHintTaskRecoveryStrategy extends
+        StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
 
     private final AppRegistry appRegistry;
 
@@ -51,14 +52,16 @@ public class ConfigurationPropertyValueHintTaskRecoveryStrategy extends Stacktra
     @Autowired
     private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
 
-    ConfigurationPropertyValueHintTaskRecoveryStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver metadataResolver) {
+    ConfigurationPropertyValueHintTaskRecoveryStrategy(AppRegistry appRegistry,
+                                                       ApplicationConfigurationMetadataResolver metadataResolver) {
         super(CheckPointedParseException.class, "foo --bar=");
         this.appRegistry = appRegistry;
         this.metadataResolver = metadataResolver;
     }
 
     @Override
-    public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel, List<CompletionProposal> collector) {
+    public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
+                             List<CompletionProposal> collector) {
 
         String propertyName = recoverPropertyName(exception);
 
@@ -83,7 +86,8 @@ public class ConfigurationPropertyValueHintTaskRecoveryStrategy extends Stacktra
                     }
                     for (ValueHintProvider valueHintProvider : valueHintProviders) {
                         for (ValueHint valueHint : valueHintProvider.generateValueHints(property, classLoader)) {
-                            collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()), valueHint.getShortDescription()));
+                            collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()), valueHint
+                                    .getShortDescription()));
                         }
                     }
                 }

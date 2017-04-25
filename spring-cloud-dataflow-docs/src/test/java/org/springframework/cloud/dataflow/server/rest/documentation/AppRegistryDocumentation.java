@@ -17,6 +17,7 @@
 package org.springframework.cloud.dataflow.server.rest.documentation;
 
 import org.junit.Test;
+
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;

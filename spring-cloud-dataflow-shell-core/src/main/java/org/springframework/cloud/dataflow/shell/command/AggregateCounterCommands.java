@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 
 import org.joda.time.DateTimeConstants;
+
 import org.springframework.analytics.rest.domain.AggregateCounterResource;
 import org.springframework.analytics.rest.domain.MetricResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,15 +75,24 @@ public class AggregateCounterCommands extends AbstractMetricsCommands implements
         return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.AGGREGATE_COUNTER);
     }
 
-    @CliCommand(value = DISPLAY_AGGR_COUNTER, help = "Display aggregate counter values by chosen interval and resolution(minute, hour)")
+    @CliCommand(value = DISPLAY_AGGR_COUNTER, help = "Display aggregate counter values by chosen interval and " +
+            "resolution(minute, hour)")
     public Table display(
-            @CliOption(key = {"", "name"}, help = "the name of the aggregate counter to display", mandatory = true) String name,
-            @CliOption(key = "from", help = "start-time for the interval. format: 'yyyy-MM-dd HH:mm:ss'", mandatory = false) String from,
-            @CliOption(key = "to", help = "end-time for the interval. format: 'yyyy-MM-dd HH:mm:ss'. defaults to now", mandatory = false) String to,
-            @CliOption(key = "lastHours", help = "set the interval to last 'n' hours", mandatory = false) Integer lastHours,
-            @CliOption(key = "lastDays", help = "set the interval to last 'n' days", mandatory = false) Integer lastDays,
-            @CliOption(key = "resolution", help = "the size of the bucket to aggregate (minute, hour, day, month)", mandatory = false, unspecifiedDefaultValue = "hour") AggregateCounterOperations.Resolution resolution,
-            @CliOption(key = "pattern", help = "the pattern used to format the count values (see DecimalFormat)", mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
+            @CliOption(key = {"", "name"}, help = "the name of the aggregate counter to display", mandatory = true)
+                    String name,
+            @CliOption(key = "from", help = "start-time for the interval. format: 'yyyy-MM-dd HH:mm:ss'", mandatory =
+                    false) String from,
+            @CliOption(key = "to", help = "end-time for the interval. format: 'yyyy-MM-dd HH:mm:ss'. defaults to " +
+                    "now", mandatory = false) String to,
+            @CliOption(key = "lastHours", help = "set the interval to last 'n' hours", mandatory = false) Integer
+                    lastHours,
+            @CliOption(key = "lastDays", help = "set the interval to last 'n' days", mandatory = false) Integer
+                    lastDays,
+            @CliOption(key = "resolution", help = "the size of the bucket to aggregate (minute, hour, day, month)",
+                    mandatory = false, unspecifiedDefaultValue = "hour") AggregateCounterOperations.Resolution
+                    resolution,
+            @CliOption(key = "pattern", help = "the pattern used to format the count values (see DecimalFormat)",
+                    mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {

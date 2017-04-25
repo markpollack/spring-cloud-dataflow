@@ -138,10 +138,12 @@ public class AppRegistryCommands implements CommandMarker, ResourceLoaderAware {
                     result.add(builder.build());
                 }
             } else {
-                result.add(String.format("Application info is not available for %s:%s", application.type, application.name));
+                result.add(String.format("Application info is not available for %s:%s", application.type, application
+                        .name));
             }
         } catch (Exception e) {
-            result.add(String.format("Application info is not available for %s:%s", application.type, application.name));
+            result.add(String.format("Application info is not available for %s:%s", application.type, application
+                    .name));
         }
         return result;
     }
@@ -204,7 +206,8 @@ public class AppRegistryCommands implements CommandMarker, ResourceLoaderAware {
         }
         if (max == 0) {
             return String.format("No registered apps.%n" +
-                    "You can register new apps with the '%s' and '%s' commands.", REGISTER_APPLICATION, IMPORT_APPLICATIONS);
+                    "You can register new apps with the '%s' and '%s' commands.", REGISTER_APPLICATION,
+                    IMPORT_APPLICATIONS);
         }
 
 
@@ -268,13 +271,15 @@ public class AppRegistryCommands implements CommandMarker, ResourceLoaderAware {
                 long numRegistered = registered.getMetadata().getTotalElements();
                 return (applications.keySet().size() == numRegistered)
                         ? String.format("Successfully registered applications: %s", applications.keySet())
-                        : String.format("Successfully registered %d applications from %s", numRegistered, applications.keySet());
+                        : String.format("Successfully registered %d applications from %s", numRegistered,
+                        applications.keySet());
             } catch (IOException e) {
                 throw new IllegalArgumentException(e);
             }
         } else {
             PagedResources<AppRegistrationResource> registered = appRegistryOperations().importFromResource(uri, force);
-            return String.format("Successfully registered %d applications from '%s'", registered.getMetadata().getTotalElements(), uri);
+            return String.format("Successfully registered %d applications from '%s'", registered.getMetadata()
+                    .getTotalElements(), uri);
         }
     }
 

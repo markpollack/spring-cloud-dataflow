@@ -49,7 +49,8 @@ public class CounterTemplate implements CounterOperations {
 
     @Override
     public PagedResources<MetricResource> list() {
-        return restTemplate.getForObject(links.getLink(COUNTERS_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
+        return restTemplate.getForObject(links.getLink(COUNTERS_COLLECTION_RELATION).getHref(), MetricResource.Page
+                .class);
     }
 
     @Override

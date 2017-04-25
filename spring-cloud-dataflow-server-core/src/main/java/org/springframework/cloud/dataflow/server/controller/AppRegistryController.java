@@ -30,6 +30,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.core.ApplicationType;
@@ -138,8 +139,10 @@ public class AppRegistryController implements ResourceLoaderAware {
         if (registration == null) {
             throw new NoSuchAppRegistrationException(name, type);
         }
-        DetailedAppRegistrationResource result = new DetailedAppRegistrationResource(assembler.toResource(registration));
-        List<ConfigurationMetadataProperty> properties = metadataResolver.listProperties(registration.getMetadataResource());
+        DetailedAppRegistrationResource result = new DetailedAppRegistrationResource(assembler.toResource
+                (registration));
+        List<ConfigurationMetadataProperty> properties = metadataResolver.listProperties(registration
+                .getMetadataResource());
         for (ConfigurationMetadataProperty property : properties) {
             result.addOption(property);
         }
@@ -168,7 +171,8 @@ public class AppRegistryController implements ResourceLoaderAware {
             throw new AppAlreadyRegisteredException(previous);
         }
         try {
-            AppRegistration registration = appRegistry.save(name, type, new URI(uri), metadataUri != null ? new URI(metadataUri) : null);
+            AppRegistration registration = appRegistry.save(name, type, new URI(uri), metadataUri != null ? new URI
+                    (metadataUri) : null);
             prefetchMetadata(Arrays.asList(registration));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
@@ -255,7 +259,8 @@ public class AppRegistryController implements ResourceLoaderAware {
 
         @Override
         public AppRegistrationResource toResource(AppRegistration registration) {
-            return createResourceWithId(String.format("%s/%s", registration.getType(), registration.getName()), registration);
+            return createResourceWithId(String.format("%s/%s", registration.getType(), registration.getName()),
+                    registration);
         }
 
         @Override

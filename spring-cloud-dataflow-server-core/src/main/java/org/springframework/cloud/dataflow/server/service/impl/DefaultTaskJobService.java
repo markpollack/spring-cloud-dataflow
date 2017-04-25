@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.batch.admin.service.JobService;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -204,7 +205,8 @@ public class DefaultTaskJobService implements TaskJobService {
         final JobExecution jobExecution = taskJobExecution.getJobExecution();
 
         if (!JobUtils.isJobExecutionRestartable(taskJobExecution.getJobExecution())) {
-            throw new JobNotRestartableException(String.format("JobExecution with Id '%s' and state '%s' is not restartable.",
+            throw new JobNotRestartableException(String.format("JobExecution with Id '%s' and state '%s' is not " +
+                            "restartable.",
                     jobExecution.getId(), taskJobExecution.getJobExecution().getStatus()));
         }
 
@@ -220,7 +222,8 @@ public class DefaultTaskJobService implements TaskJobService {
     }
 
     @Override
-    public void stopJobExecution(long jobExecutionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+    public void stopJobExecution(long jobExecutionId) throws NoSuchJobExecutionException,
+            JobExecutionNotRunningException {
         this.jobService.stop(jobExecutionId).getStatus();
     }
 

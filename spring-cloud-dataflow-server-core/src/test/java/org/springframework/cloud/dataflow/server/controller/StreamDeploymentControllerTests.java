@@ -27,6 +27,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.configuration.metadata.BootApplicationConfigurationMetadataResolver;
 import org.springframework.cloud.dataflow.core.StreamAppDefinition;
@@ -60,7 +61,8 @@ public class StreamDeploymentControllerTests {
     private AppRegistry appRegistry;
     @Mock
     private AppDeployer appDeployer;
-    private ApplicationConfigurationMetadataResolver metadataResolver = new BootApplicationConfigurationMetadataResolver();
+    private ApplicationConfigurationMetadataResolver metadataResolver = new
+            BootApplicationConfigurationMetadataResolver();
     @Mock
     private CommonApplicationProperties commonApplicationProperties;
 

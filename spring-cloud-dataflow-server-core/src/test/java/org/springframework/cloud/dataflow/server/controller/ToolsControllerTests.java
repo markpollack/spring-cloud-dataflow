@@ -18,6 +18,7 @@ package org.springframework.cloud.dataflow.server.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.server.configuration.TestDependencies;
@@ -107,7 +108,8 @@ public class ToolsControllerTests {
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.errors[0].position", is(5)))
-                .andExpect(jsonPath("$.errors[0].message", is("150E:(pos 5): task dsl flow requires a pair of &, not just one")));
+                .andExpect(jsonPath("$.errors[0].message", is("150E:(pos 5): task dsl flow requires a pair of &, not " +
+                        "just one")));
     }
 
     @Test

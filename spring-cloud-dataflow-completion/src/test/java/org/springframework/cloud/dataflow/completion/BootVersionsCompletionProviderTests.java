@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -113,7 +114,8 @@ public class BootVersionsCompletionProviderTests {
     public static class Mocks {
 
         private static final File ROOT = new File("src/test/resources",
-                BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName().replace('.', '/') + "/boot_versions");
+                BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName().replace('.', '/') +
+                        "/boot_versions");
 
         @Bean
         public AppRegistry appRegistry() {
@@ -146,7 +148,8 @@ public class BootVersionsCompletionProviderTests {
 
         @Bean
         public ApplicationConfigurationMetadataResolver metadataResolver() {
-            return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class.getClassLoader());
+            return new BootApplicationConfigurationMetadataResolver(StreamCompletionProviderTests.class
+                    .getClassLoader());
         }
     }
 }

@@ -183,7 +183,8 @@ public class RuntimeAppsController {
                             if (ObjectUtils.nullSafeEquals("integration.channel.input.send.mean", m.getName())) {
                                 appInstanceStatus.getAttributes().put("metrics.integration.channel.input.receiveRate",
                                         String.format(Locale.US, "%.2f", m.getValue()));
-                            } else if (ObjectUtils.nullSafeEquals("integration.channel.output.send.mean", m.getName())) {
+                            } else if (ObjectUtils.nullSafeEquals("integration.channel.output.send.mean", m.getName()
+                            )) {
                                 appInstanceStatus.getAttributes().put("metrics.integration.channel.output.sendRate",
                                         String.format(Locale.US, "%.2f", m.getValue()));
                             }
@@ -216,7 +217,8 @@ public class RuntimeAppsController {
 
         @Override
         protected AppStatusResource instantiateResource(AppStatus entity) {
-            AppStatusResource resource = new AppStatusResource(entity.getDeploymentId(), ControllerUtils.mapState(entity.getState()).getKey());
+            AppStatusResource resource = new AppStatusResource(entity.getDeploymentId(), ControllerUtils.mapState
+                    (entity.getState()).getKey());
             List<AppInstanceStatusResource> instanceStatusResources = new ArrayList<>();
             InstanceAssembler instanceAssembler = new InstanceAssembler(entity);
             List<AppInstanceStatus> instanceStatuses = new ArrayList<>(entity.getInstances().values());
@@ -267,7 +269,8 @@ public class RuntimeAppsController {
         }
     }
 
-    private static class InstanceAssembler extends ResourceAssemblerSupport<AppInstanceStatus, AppInstanceStatusResource> {
+    private static class InstanceAssembler extends ResourceAssemblerSupport<AppInstanceStatus,
+            AppInstanceStatusResource> {
 
         private final AppStatus owningApp;
 
@@ -283,7 +286,8 @@ public class RuntimeAppsController {
 
         @Override
         protected AppInstanceStatusResource instantiateResource(AppInstanceStatus entity) {
-            return new AppInstanceStatusResource(entity.getId(), ControllerUtils.mapState(entity.getState()).getKey(), entity.getAttributes());
+            return new AppInstanceStatusResource(entity.getId(), ControllerUtils.mapState(entity.getState()).getKey()
+                    , entity.getAttributes());
         }
     }
 }

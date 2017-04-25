@@ -21,7 +21,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
-import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolverAutoConfiguration;
+import org.springframework.cloud.dataflow.configuration.metadata
+        .ApplicationConfigurationMetadataResolverAutoConfiguration;
 import org.springframework.cloud.dataflow.registry.AppRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,7 +80,8 @@ public class CompletionConfiguration {
     }
 
     @Bean
-    public ConfigurationPropertyNameAfterDashDashRecoveryStrategy configurationPropertyNameAfterDashDashRecoveryStrategy() {
+    public ConfigurationPropertyNameAfterDashDashRecoveryStrategy
+    configurationPropertyNameAfterDashDashRecoveryStrategy() {
         return new ConfigurationPropertyNameAfterDashDashRecoveryStrategy(appRegistry, metadataResolver);
     }
 
@@ -184,7 +186,8 @@ public class CompletionConfiguration {
     }
 
     @Bean
-    public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
+    public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy
+    configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
         return new ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(appRegistry, metadataResolver);
     }
 

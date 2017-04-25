@@ -299,7 +299,8 @@ public class TaskParser extends AppParser {
                 try {
                     Integer.parseInt(t.getStatusToCheck());
                 } catch (NumberFormatException nfe) {
-                    getTokens().raiseException(transitionOn.startPos, DSLMessage.TASK_UNQUOTED_TRANSITION_CHECK_MUST_BE_NUMBER, t.getStatusToCheck());
+                    getTokens().raiseException(transitionOn.startPos, DSLMessage
+                            .TASK_UNQUOTED_TRANSITION_CHECK_MUST_BE_NUMBER, t.getStatusToCheck());
                 }
             }
             transitions.add(t);

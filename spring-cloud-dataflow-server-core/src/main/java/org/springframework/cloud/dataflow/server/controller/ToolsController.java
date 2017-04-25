@@ -66,7 +66,8 @@ public class ToolsController {
         Graph graph = null;
         List<Map<String, Object>> errors = new ArrayList<>();
         try {
-            TaskParser taskParser = new TaskParser(definition.get(TASK_NAME), definition.get(TASK_DEFINITION), true, true);
+            TaskParser taskParser = new TaskParser(definition.get(TASK_NAME), definition.get(TASK_DEFINITION), true,
+                    true);
             graph = taskParser.parse().toGraph();
         } catch (ParseException pe) {
             errors.add(pe.toExceptionDescriptor());

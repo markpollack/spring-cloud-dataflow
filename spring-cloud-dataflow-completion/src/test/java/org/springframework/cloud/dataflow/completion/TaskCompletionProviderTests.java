@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -188,7 +189,8 @@ public class TaskCompletionProviderTests {
     @Configuration
     public static class Mocks {
 
-        private static final File ROOT = new File("src/test/resources", Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
+        private static final File ROOT = new File("src/test/resources",
+                Mocks.class.getPackage().getName().replace('.', '/') + "/apps");
 
         private static final FileFilter FILTER = new FileFilter() {
             @Override

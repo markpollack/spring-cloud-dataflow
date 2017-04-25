@@ -30,7 +30,8 @@ import org.springframework.util.Assert;
  *
  * @author Ilayaperumal Gopinathan
  */
-public class RdbmsDeploymentIdRepository extends AbstractRdbmsKeyValueRepository<String> implements DeploymentIdRepository {
+public class RdbmsDeploymentIdRepository extends AbstractRdbmsKeyValueRepository<String> implements
+        DeploymentIdRepository {
 
     public RdbmsDeploymentIdRepository(DataSource dataSource) {
         super(dataSource, "DEPLOYMENT_", "IDS", new RowMapper<String>() {

@@ -48,7 +48,8 @@ class ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy
     private final ApplicationConfigurationMetadataResolver metadataResolver;
 
     ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(AppRegistry appRegistry,
-                                                               ApplicationConfigurationMetadataResolver metadataResolver) {
+                                                               ApplicationConfigurationMetadataResolver
+                                                                       metadataResolver) {
         super(CheckPointedParseException.class, "file --");
         this.appRegistry = appRegistry;
         this.metadataResolver = metadataResolver;

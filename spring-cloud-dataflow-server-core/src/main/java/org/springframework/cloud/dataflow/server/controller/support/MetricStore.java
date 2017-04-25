@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.cloud.dataflow.rest.util.HttpUtils;
 import org.springframework.cloud.dataflow.server.config.MetricsProperties;
 import org.springframework.core.ParameterizedTypeReference;
@@ -72,7 +73,8 @@ public class MetricStore {
         if (StringUtils.hasText(baseURI)) {
             try {
                 URI uri = new URI(baseURI);
-                this.collectorEndpoint = UriComponentsBuilder.fromUri(uri).path("/collector/metrics/streams").build().toString();
+                this.collectorEndpoint = UriComponentsBuilder.fromUri(uri).path("/collector/metrics/streams").build()
+                        .toString();
                 logger.info("Metrics Collector URI = [" + collectorEndpoint + "]");
                 validateUsernamePassword(metricsProperties.getCollector().getUsername(),
                         metricsProperties.getCollector().getPassword());

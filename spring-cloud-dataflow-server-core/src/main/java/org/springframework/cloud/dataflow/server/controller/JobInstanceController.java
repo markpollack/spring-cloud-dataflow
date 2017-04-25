@@ -87,10 +87,12 @@ public class JobInstanceController {
     @RequestMapping(value = "", method = RequestMethod.GET, params = "name")
     @ResponseStatus(HttpStatus.OK)
     public PagedResources<JobInstanceResource> list(@RequestParam("name") String jobName,
-                                                    Pageable pageable, PagedResourcesAssembler<JobInstanceExecutions> assembler)
+                                                    Pageable pageable, PagedResourcesAssembler<JobInstanceExecutions>
+                                                                assembler)
             throws NoSuchJobException {
         List<JobInstanceExecutions> jobInstances = taskJobService.listTaskJobInstancesForJobName(pageable, jobName);
-        Page<JobInstanceExecutions> page = new PageImpl<>(jobInstances, pageable, taskJobService.countJobInstances(jobName));
+        Page<JobInstanceExecutions> page = new PageImpl<>(jobInstances, pageable, taskJobService.countJobInstances
+                (jobName));
         return assembler.toResource(page, jobAssembler);
     }
 

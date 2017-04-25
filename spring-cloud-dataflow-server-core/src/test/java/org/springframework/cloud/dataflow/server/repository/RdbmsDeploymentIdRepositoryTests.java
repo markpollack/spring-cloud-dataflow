@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -85,7 +86,8 @@ public class RdbmsDeploymentIdRepositoryTests {
 
         @Bean
         public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(featuresProperties());
+            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer
+                    (featuresProperties());
             definitionRepositoryInitializer.setDataSource(dataSource);
             return definitionRepositoryInitializer;
         }

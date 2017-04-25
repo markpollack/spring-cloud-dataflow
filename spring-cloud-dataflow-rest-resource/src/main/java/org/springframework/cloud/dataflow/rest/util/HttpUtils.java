@@ -34,6 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
+
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -47,17 +48,21 @@ import org.springframework.web.client.RestTemplate;
 public class HttpUtils {
 
     /**
-     * Ensures that the passed-in {@link RestTemplate} is using the Apache HTTP Client. If the optional {@code username} AND
-     * {@code password} are not empty, then a {@link BasicCredentialsProvider} will be added to the {@link CloseableHttpClient}.
+     * Ensures that the passed-in {@link RestTemplate} is using the Apache HTTP Client. If the optional {@code
+     * username} AND
+     * {@code password} are not empty, then a {@link BasicCredentialsProvider} will be added to the
+     * {@link CloseableHttpClient}.
      * <p>
-     * Furthermore, you can set the underlying {@link SSLContext} of the {@link HttpClient} allowing you to accept self-signed
+     * Furthermore, you can set the underlying {@link SSLContext} of the {@link HttpClient} allowing you to accept
+     * self-signed
      * certificates.
      *
      * @param restTemplate      the rest template, must not be null
      * @param host              the target host URI
      * @param username          the username for authentication, can be null
      * @param password          the password for authentication, can be null
-     * @param skipSslValidation whether to skip ssl validation. Use with caution! If true certificate warnings will be ignored.
+     * @param skipSslValidation whether to skip ssl validation. Use with caution! If true certificate warnings will
+     *                          be ignored.
      */
     public static void prepareRestTemplate(
             RestTemplate restTemplate,
@@ -87,7 +92,8 @@ public class HttpUtils {
         final CloseableHttpClient httpClient = httpClientBuilder.build();
         final HttpHost targetHost = new HttpHost(host.getHost(), host.getPort(), host.getScheme());
 
-        final HttpComponentsClientHttpRequestFactory requestFactory = new PreemptiveBasicAuthHttpComponentsClientHttpRequestFactory(httpClient, targetHost);
+        final HttpComponentsClientHttpRequestFactory requestFactory = new
+                PreemptiveBasicAuthHttpComponentsClientHttpRequestFactory(httpClient, targetHost);
         restTemplate.setRequestFactory(requestFactory);
     }
 
@@ -109,7 +115,8 @@ public class HttpUtils {
                     })
                     .build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new IllegalStateException("Unexpected exception while building the certificate-ignoring SSLContext.", e);
+            throw new IllegalStateException("Unexpected exception while building the certificate-ignoring SSLContext" +
+                    ".", e);
         }
     }
 }

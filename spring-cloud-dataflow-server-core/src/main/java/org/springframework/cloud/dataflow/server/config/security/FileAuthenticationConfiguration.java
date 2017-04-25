@@ -38,7 +38,8 @@ import org.springframework.util.Assert;
 @ConfigurationProperties(prefix = FileAuthenticationConfiguration.CONFIGURATION_PROPERTIES_PREFIX)
 public class FileAuthenticationConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-    public static final String CONFIGURATION_PROPERTIES_PREFIX = DataFlowPropertyKeys.PREFIX + "security.authentication.file";
+    public static final String CONFIGURATION_PROPERTIES_PREFIX = DataFlowPropertyKeys.PREFIX + "security" +
+            ".authentication.file";
 
     private Properties users;
 

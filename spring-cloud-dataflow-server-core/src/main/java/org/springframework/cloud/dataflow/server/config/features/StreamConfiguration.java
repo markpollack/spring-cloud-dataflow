@@ -31,7 +31,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Ilayaperumal Gopinathan
  */
 @Configuration
-@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
+@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED,
+        matchIfMissing = true)
 public class StreamConfiguration {
 
     @Bean
@@ -43,7 +44,8 @@ public class StreamConfiguration {
     @Bean
     @ConditionalOnMissingBean(TapOnDestinationRecoveryStrategy.class)
     public RecoveryStrategy<?> tapOnDestinationExpansionStrategy(StreamCompletionProvider streamCompletionProvider,
-                                                                 StreamDefinitionRepository streamDefinitionRepository) {
+                                                                 StreamDefinitionRepository
+                                                                         streamDefinitionRepository) {
         RecoveryStrategy<?> recoveryStrategy = new TapOnDestinationRecoveryStrategy(streamDefinitionRepository);
         streamCompletionProvider.addCompletionRecoveryStrategy(recoveryStrategy);
         return recoveryStrategy;

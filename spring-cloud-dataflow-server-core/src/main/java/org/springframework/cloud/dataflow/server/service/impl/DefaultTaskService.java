@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.h2.util.Task;
+
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.bind.RelaxedNames;
 import org.springframework.cloud.dataflow.configuration.metadata.ApplicationConfigurationMetadataResolver;
@@ -163,7 +164,8 @@ public class DefaultTaskService implements TaskService {
                     createComposedTaskDefinition(taskNode.toExecutableDSL()));
         }
 
-        AppRegistration appRegistration = this.registry.find(taskDefinition.getRegisteredAppName(), ApplicationType.task);
+        AppRegistration appRegistration = this.registry.find(taskDefinition.getRegisteredAppName(), ApplicationType
+                .task);
         Assert.notNull(appRegistration, "Unknown task app: " + taskDefinition.getRegisteredAppName());
         Resource appResource = appRegistration.getResource();
         Resource metadataResource = appRegistration.getMetadataResource();
@@ -171,14 +173,18 @@ public class DefaultTaskService implements TaskService {
         TaskExecution taskExecution = taskExecutionRepository.createTaskExecution(taskName);
         taskDefinition = this.updateTaskProperties(taskDefinition);
 
-        Map<String, String> appDeploymentProperties = extractAppProperties(taskDefinition.getRegisteredAppName(), taskDeploymentProperties);
-        Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils.extractAndQualifyDeployerProperties(taskDeploymentProperties, taskDefinition.getRegisteredAppName());
+        Map<String, String> appDeploymentProperties = extractAppProperties(taskDefinition.getRegisteredAppName(),
+                taskDeploymentProperties);
+        Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils
+                .extractAndQualifyDeployerProperties(taskDeploymentProperties, taskDefinition.getRegisteredAppName());
         if (StringUtils.hasText(this.dataflowServerUri) && taskNode.isComposed()) {
             updateDataFlowUriIfNeeded(appDeploymentProperties, commandLineArgs);
         }
-        AppDefinition revisedDefinition = mergeAndExpandAppProperties(taskDefinition, metadataResource, appDeploymentProperties);
+        AppDefinition revisedDefinition = mergeAndExpandAppProperties(taskDefinition, metadataResource,
+                appDeploymentProperties);
         List<String> updatedCmdLineArgs = this.updateCommandLineArgs(commandLineArgs, taskExecution);
-        AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource, deployerDeploymentProperties, updatedCmdLineArgs);
+        AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource,
+                deployerDeploymentProperties, updatedCmdLineArgs);
         String id = this.taskLauncher.launch(request);
         if (!StringUtils.hasText(id)) {
             throw new IllegalStateException("Deployment ID is null for the task:"
@@ -243,7 +249,8 @@ public class DefaultTaskService implements TaskService {
      * Return a copy of a given task definition where short form parameters have been expanded to their long form
      * (amongst the whitelisted supported properties of the app) if applicable.
      */
-    private AppDefinition mergeAndExpandAppProperties(TaskDefinition original, Resource resource, Map<String, String> appDeploymentProperties) {
+    private AppDefinition mergeAndExpandAppProperties(TaskDefinition original, Resource resource, Map<String, String>
+            appDeploymentProperties) {
         Map<String, String> merged = new HashMap<>(original.getProperties());
         merged.putAll(appDeploymentProperties);
         merged = whitelistProperties.qualifyProperties(merged, resource);

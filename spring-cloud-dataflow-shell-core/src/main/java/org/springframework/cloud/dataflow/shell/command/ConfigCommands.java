@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,8 @@ public class ConfigCommands implements CommandMarker,
         ApplicationListener<ApplicationReadyEvent>,
         ApplicationContextAware {
 
-    public static final String HORIZONTAL_LINE = "-------------------------------------------------------------------------------\n";
+    public static final String HORIZONTAL_LINE =
+            "-------------------------------------------------------------------------------\n";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private DataFlowShell shell;
@@ -162,13 +164,15 @@ public class ConfigCommands implements CommandMarker,
                     help = "the username for authenticated access to the Admin REST endpoint",
                     unspecifiedDefaultValue = Target.DEFAULT_USERNAME) String targetUsername,
             @CliOption(mandatory = false, key = {"password"},
-                    help = "the password for authenticated access to the Admin REST endpoint (valid only with a username)",
+                    help = "the password for authenticated access to the Admin REST endpoint (valid only with a " +
+                            "username)",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_PASSWORD,
                     unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_PASSWORD) String targetPassword,
             @CliOption(mandatory = false, key = {"skip-ssl-validation"},
                     help = "accept any SSL certificate (even self-signed)",
                     specifiedDefaultValue = Target.DEFAULT_SPECIFIED_SKIP_SSL_VALIDATION,
-                    unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean skipSslValidation) {
+                    unspecifiedDefaultValue = Target.DEFAULT_UNSPECIFIED_SKIP_SSL_VALIDATION) boolean
+                    skipSslValidation) {
         if (!StringUtils.isEmpty(targetPassword) && StringUtils.isEmpty(targetUsername)) {
             return "A password may be specified only together with a username";
         }
@@ -184,12 +188,16 @@ public class ConfigCommands implements CommandMarker,
             HttpUtils.prepareRestTemplate(this.restTemplate, this.targetHolder.getTarget().getTargetUri(),
                     targetUsername, targetPassword, skipSslValidation);
 
-            this.shell.setDataFlowOperations(new DataFlowTemplate(targetHolder.getTarget().getTargetUri(), this.restTemplate));
-            this.targetHolder.getTarget().setTargetResultMessage(String.format("Successfully targeted %s", targetUriString));
+            this.shell.setDataFlowOperations(new DataFlowTemplate(targetHolder.getTarget().getTargetUri(), this
+                    .restTemplate));
+            this.targetHolder.getTarget().setTargetResultMessage(String.format("Successfully targeted %s",
+                    targetUriString));
 
-            final SecurityInfoResource securityInfoResource = restTemplate.getForObject(targetUriString + "/security/info", SecurityInfoResource.class);
+            final SecurityInfoResource securityInfoResource = restTemplate.getForObject(targetUriString +
+                    "/security/info", SecurityInfoResource.class);
 
-            if (securityInfoResource.isAuthenticated() && this.targetHolder.getTarget().getTargetCredentials() != null) {
+            if (securityInfoResource.isAuthenticated() && this.targetHolder.getTarget().getTargetCredentials() !=
+                    null) {
                 for (String roleAsString : securityInfoResource.getRoles()) {
                     this.targetHolder.getTarget().getTargetCredentials().getRoles().add(RoleType.fromKey(roleAsString));
                 }
@@ -298,9 +306,11 @@ public class ConfigCommands implements CommandMarker,
                 .addAligner(new KeyValueHorizontalAligner(":"))
                 .addSizer(new KeyValueSizeConstraints(": "))
                 .addWrapper(new KeyValueTextWrapper(": "));
-        builder.on(CellMatchers.ofType(List.class)).addFormatter(value -> ((List<String>) value).toArray(new String[0]));
+        builder.on(CellMatchers.ofType(List.class)).addFormatter(value -> ((List<String>) value).toArray(new
+                String[0]));
         builder.on(CellMatchers.ofType(RuntimeEnvironmentDetails.class))
-                .addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, Arrays.asList("class", "platformSpecificInfo")))
+                .addFormatter(new DataFlowTables.BeanWrapperFormatter(": ", null, Arrays.asList("class",
+                        "platformSpecificInfo")))
                 .addAligner(new KeyValueHorizontalAligner(":"))
                 .addSizer(new KeyValueSizeConstraints(": "))
                 .addWrapper(new KeyValueTextWrapper(": "));
@@ -325,7 +335,8 @@ public class ConfigCommands implements CommandMarker,
         Exception targetException = target.getTargetException();
         Assert.isTrue(targetException != null, "TargetException must not be null");
         if (targetException instanceof DataFlowServerException) {
-            String message = String.format("Unable to parse server response: %s - at URI '%s'.", targetException.getMessage(),
+            String message = String.format("Unable to parse server response: %s - at URI '%s'.", targetException
+                            .getMessage(),
                     target.getTargetUriAsString());
             if (logger.isDebugEnabled()) {
                 logger.debug(message, targetException);
@@ -335,10 +346,12 @@ public class ConfigCommands implements CommandMarker,
             this.targetHolder.getTarget().setTargetResultMessage(message);
         } else {
             if (targetException instanceof HttpClientErrorException && targetException.getMessage().startsWith("401")) {
-                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to access Data Flow Server at '%s': '%s'. Unauthorized, did you forget to authenticate?",
+                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to access Data Flow Server" +
+                                " at '%s': '%s'. Unauthorized, did you forget to authenticate?",
                         target.getTargetUriAsString(), targetException.toString()));
             } else {
-                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to contact Data Flow Server at '%s': '%s'.",
+                this.targetHolder.getTarget().setTargetResultMessage(String.format("Unable to contact Data Flow " +
+                                "Server at '%s': '%s'.",
                         target.getTargetUriAsString(), targetException.toString()));
             }
         }
