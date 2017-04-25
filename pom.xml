@@ -46,6 +46,9 @@
         <spring-session.version>1.2.2.RELEASE</spring-session.version>
         <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
         <sonar-maven-plugin.version>3.0.2</sonar-maven-plugin.version>
+	<checkstyle.config.location>/home/mpollack/projects/spring-cloud-dataflow/src/checkstyle/checkstyle.xml</checkstyle.config.location>
+	<checkstyle.header.file>/home/mpollack/projects/spring-cloud-dataflow/src/checkstyle/checkstyle-header.xml</checkstyle.header.file>
+	<checkstyle.suppressions.file>/home/mpollack/projects/spring-cloud-dataflow/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
     </properties>
     <modules>
         <module>spring-cloud-dataflow-configuration-metadata</module>
@@ -159,9 +162,12 @@
                         <id>checkstyle-validation</id>
                         <phase>validate</phase>
                         <configuration>
-                            <configLocation>src/checkstyle/checkstyle.xml</configLocation>
+			  <!--
+                              <configLocation>${basedir}/src/checkstyle/checkstyle.xml</configLocation>
+			      -->
                             <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
                             <suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+			   
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
