@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings>
-    <servers>
-        <server>
-            <id>repo.spring.io</id>
-            <username>${env.CI_DEPLOY_USERNAME}</username>
-            <password>${env.CI_DEPLOY_PASSWORD}</password>
-        </server>
-    </servers>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-build</artifactId>
+        <version>1.3.2.BUILD-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>spring-cloud-dataflow-tools</artifactId>
+    <version>1.2.0.BUILD-SNAPSHOT</version>
+    <name>spring-cloud-dataflow-tools</name>
+    <description>Spring Cloud Data Flow Build Tools</description>
+
     <profiles>
         <profile>
-            <!--
-                N.B. this profile is only here to support users and IDEs that do not use Maven 3.3.
-                It isn't needed on the command line if you use the wrapper script (mvnw) or if you use
-                a native Maven with the right version. Eclipse users should point their Maven tooling to
-                this settings file, or copy the profile into their ~/.m2/settings.xml.
-            -->
             <id>spring</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <repositories>
                 <repository>
                     <id>spring-snapshots</id>
                     <name>Spring Snapshots</name>
-                    <url>http://repo.spring.io/libs-snapshot-local</url>
+                    <url>https://repo.spring.io/libs-snapshot-local</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
                 </repository>
                 <repository>
                     <id>spring-milestones</id>
                     <name>Spring Milestones</name>
-                    <url>http://repo.spring.io/libs-milestone-local</url>
+                    <url>https://repo.spring.io/libs-milestone-local</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
@@ -39,7 +40,7 @@
                 <repository>
                     <id>spring-releases</id>
                     <name>Spring Releases</name>
-                    <url>http://repo.spring.io/release</url>
+                    <url>https://repo.spring.io/release</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
@@ -49,15 +50,26 @@
                 <pluginRepository>
                     <id>spring-snapshots</id>
                     <name>Spring Snapshots</name>
-                    <url>http://repo.spring.io/libs-snapshot-local</url>
+                    <url>https://repo.spring.io/libs-snapshot-local</url>
                     <snapshots>
                         <enabled>true</enabled>
                     </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
                 </pluginRepository>
                 <pluginRepository>
                     <id>spring-milestones</id>
                     <name>Spring Milestones</name>
-                    <url>http://repo.spring.io/libs-milestone-local</url>
+                    <url>https://repo.spring.io/libs-milestone-local</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>spring-releases</id>
+                    <name>Spring Releases</name>
+                    <url>https://repo.spring.io/libs-release-local</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
@@ -65,4 +77,4 @@
             </pluginRepositories>
         </profile>
     </profiles>
-</settings>
+</project>
