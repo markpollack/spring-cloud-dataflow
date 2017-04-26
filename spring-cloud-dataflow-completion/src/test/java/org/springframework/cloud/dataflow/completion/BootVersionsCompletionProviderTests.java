@@ -50,8 +50,7 @@ import static org.springframework.cloud.dataflow.completion.Proposals.proposalTh
  * @author Eric Bottard
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { CompletionConfiguration.class,
-		BootVersionsCompletionProviderTests.Mocks.class })
+@SpringBootTest(classes = { CompletionConfiguration.class, BootVersionsCompletionProviderTests.Mocks.class })
 public class BootVersionsCompletionProviderTests {
 
 	@Autowired
@@ -60,37 +59,30 @@ public class BootVersionsCompletionProviderTests {
 	@Test
 	public void testBoot13Layout() {
 		List<CompletionProposal> result = completionProvider.complete("boot13 --", 0);
-		assertThat(result,
-				hasItems(proposalThat(is("boot13 --level=")),
-						proposalThat(is("boot13 --number=")),
-						proposalThat(is("boot13 --some-string="))));
+		assertThat(result, hasItems(proposalThat(is("boot13 --level=")), proposalThat(is("boot13 --number=")),
+				proposalThat(is("boot13 --some-string="))));
 
 		// Test that custom classes can also be loaded correctly
 		result = completionProvider.complete("boot13 --level=", 0);
-		assertThat(result, hasItems(proposalThat(is("boot13 --level=low")),
-				proposalThat(is("boot13 --level=high"))));
+		assertThat(result, hasItems(proposalThat(is("boot13 --level=low")), proposalThat(is("boot13 --level=high"))));
 
 		result = completionProvider.complete("boot13 --number=", 0);
-		assertThat(result, hasItems(proposalThat(is("boot13 --number=one")),
-				proposalThat(is("boot13 --number=two"))));
+		assertThat(result, hasItems(proposalThat(is("boot13 --number=one")), proposalThat(is("boot13 --number=two"))));
 	}
 
 	@Test
 	public void testBoot14Layout() {
 		List<CompletionProposal> result = completionProvider.complete("boot14 --", 0);
-		assertThat(result,
-				hasItems(proposalThat(is("boot14 --level=")),
-						proposalThat(is("boot14 --number=")),
-						proposalThat(is("boot14 --some-string="))));
+		assertThat(result, hasItems(proposalThat(is("boot14 --level=")), proposalThat(is("boot14 --number=")),
+				proposalThat(is("boot14 --some-string="))));
 
 		// Test that custom classes can also be loaded correctly
 		result = completionProvider.complete("boot14 --level=", 0);
-		assertThat(result, hasItems(proposalThat(is("boot14 --level=very_low")),
-				proposalThat(is("boot14 --level=very_high"))));
+		assertThat(result,
+				hasItems(proposalThat(is("boot14 --level=very_low")), proposalThat(is("boot14 --level=very_high"))));
 
 		result = completionProvider.complete("boot14 --number=", 0);
-		assertThat(result, hasItems(proposalThat(is("boot14 --number=one")),
-				proposalThat(is("boot14 --number=two"))));
+		assertThat(result, hasItems(proposalThat(is("boot14 --number=one")), proposalThat(is("boot14 --number=two"))));
 
 	}
 
@@ -105,8 +97,8 @@ public class BootVersionsCompletionProviderTests {
 	public static class Mocks {
 
 		private static final File ROOT = new File("src/test/resources",
-				BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName()
-						.replace('.', '/') + "/boot_versions");
+				BootVersionsCompletionProviderTests.Mocks.class.getPackage().getName().replace('.', '/')
+						+ "/boot_versions");
 
 		@Bean
 		public AppRegistry appRegistry() {
@@ -121,8 +113,7 @@ public class BootVersionsCompletionProviderTests {
 					String filename = name + "-1.0.0.BUILD-SNAPSHOT.jar";
 					File file = new File(ROOT, filename);
 					if (file.exists()) {
-						return new AppRegistration(name, type, file.toURI(),
-								resourceLoader);
+						return new AppRegistration(name, type, file.toURI(), resourceLoader);
 					}
 					else {
 						return null;
