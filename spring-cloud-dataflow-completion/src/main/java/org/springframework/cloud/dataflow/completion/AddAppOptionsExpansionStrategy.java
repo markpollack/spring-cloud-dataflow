@@ -39,59 +39,59 @@ import static org.springframework.cloud.dataflow.completion.CompletionProposal.e
  */
 class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    private final ApplicationConfigurationMetadataResolver metadataResolver;
+	private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-    public AddAppOptionsExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver
-            metadataResolver) {
-        this.appRegistry = appRegistry;
-        this.metadataResolver = metadataResolver;
-    }
+	public AddAppOptionsExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver
+			metadataResolver) {
+		this.appRegistry = appRegistry;
+		this.metadataResolver = metadataResolver;
+	}
 
-    @Override
-    public boolean addProposals(String text, StreamDefinition streamDefinition, int detailLevel,
-                                List<CompletionProposal> collector) {
-        StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
+	@Override
+	public boolean addProposals(String text, StreamDefinition streamDefinition, int detailLevel,
+								List<CompletionProposal> collector) {
+		StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
 
-        String lastAppName = lastApp.getName();
-        AppRegistration lastAppRegistration = null;
-        for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
-            lastAppRegistration = this.appRegistry.find(lastAppName, appType);
-            if (lastAppRegistration != null) {
-                break;
-            }
-        }
-        if (lastAppRegistration == null) {
-            // Not a valid app name, do nothing
-            return false;
-        }
-        Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
+		String lastAppName = lastApp.getName();
+		AppRegistration lastAppRegistration = null;
+		for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
+			lastAppRegistration = this.appRegistry.find(lastAppName, appType);
+			if (lastAppRegistration != null) {
+				break;
+			}
+		}
+		if (lastAppRegistration == null) {
+			// Not a valid app name, do nothing
+			return false;
+		}
+		Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
 
-        Resource metadataResource = lastAppRegistration.getMetadataResource();
+		Resource metadataResource = lastAppRegistration.getMetadataResource();
 
-        CompletionProposal.Factory proposals = expanding(text);
+		CompletionProposal.Factory proposals = expanding(text);
 
-        // For whitelisted properties, use their simple name
-        for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
-            if (!alreadyPresentOptions.contains(property.getName())) {
-                collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property
-                        .getShortDescription()));
-            }
-        }
+		// For whitelisted properties, use their simple name
+		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
+			if (!alreadyPresentOptions.contains(property.getName())) {
+				collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property
+						.getShortDescription()));
+			}
+		}
 
-        // For other properties (including WL'ed in full form), use their id
-        if (detailLevel > 1) {
-            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-                if (!alreadyPresentOptions.contains(property.getId())) {
-                    collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property
-                            .getShortDescription()));
-                }
-            }
+		// For other properties (including WL'ed in full form), use their id
+		if (detailLevel > 1) {
+			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+				if (!alreadyPresentOptions.contains(property.getId())) {
+					collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property
+							.getShortDescription()));
+				}
+			}
 
-        }
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 }

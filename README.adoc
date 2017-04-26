@@ -64,7 +64,7 @@ We welcome contributions! Follow this https://github.com/spring-cloud/spring-clo
 
 === Code formatting guidelines
 
-* Use the Spring Boot code formatter from https://github.com/spring-projects/spring-boot/blob/master/eclipse/eclipse-code-formatter.xml[here]
+* Use the Spring Boot code formatter from https://raw.githubusercontent.com/spring-projects/spring-boot/master/eclipse/eclipse-code-formatter.xml[here]
 * If you are using `IntelliJ` then Go to Preferences -> Editor -> Code Style -> Java -> Manage and import the formatter file
 
   ** Go to Import settings in Preferences -> Editor -> Code Style -> Java -> Import and set
