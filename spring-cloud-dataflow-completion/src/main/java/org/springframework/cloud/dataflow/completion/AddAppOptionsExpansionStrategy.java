@@ -32,7 +32,8 @@ import org.springframework.core.io.Resource;
 import static org.springframework.cloud.dataflow.completion.CompletionProposal.expanding;
 
 /**
- * Adds missing application configuration properties at the end of a well formed stream definition.
+ * Adds missing application configuration properties at the end of a well formed stream
+ * definition.
  *
  * @author Eric Bottard
  * @author Mark Fisher
@@ -43,15 +44,15 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
 
 	private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-	public AddAppOptionsExpansionStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver
-			metadataResolver) {
+	public AddAppOptionsExpansionStrategy(AppRegistry appRegistry,
+			ApplicationConfigurationMetadataResolver metadataResolver) {
 		this.appRegistry = appRegistry;
 		this.metadataResolver = metadataResolver;
 	}
 
 	@Override
 	public boolean addProposals(String text, StreamDefinition streamDefinition, int detailLevel,
-								List<CompletionProposal> collector) {
+			List<CompletionProposal> collector) {
 		StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
 
 		String lastAppName = lastApp.getName();
@@ -75,17 +76,19 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
 		// For whitelisted properties, use their simple name
 		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
 			if (!alreadyPresentOptions.contains(property.getName())) {
-				collector.add(proposals.withSeparateTokens("--" + property.getName() + "=", property
-						.getShortDescription()));
+				collector.add(
+						proposals.withSeparateTokens("--" + property.getName() + "=",
+								property.getShortDescription()));
 			}
 		}
 
 		// For other properties (including WL'ed in full form), use their id
 		if (detailLevel > 1) {
-			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+			for (ConfigurationMetadataProperty property :
+					metadataResolver.listProperties(metadataResource, true)) {
 				if (!alreadyPresentOptions.contains(property.getId())) {
-					collector.add(proposals.withSeparateTokens("--" + property.getId() + "=", property
-							.getShortDescription()));
+					collector.add(proposals.withSeparateTokens("--" + property.getId() + "=",
+							property.getShortDescription()));
 				}
 			}
 
