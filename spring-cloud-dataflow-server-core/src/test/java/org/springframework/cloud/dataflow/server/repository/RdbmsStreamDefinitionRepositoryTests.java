@@ -573,7 +573,8 @@ public class RdbmsStreamDefinitionRepositoryTests {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED, matchIfMissing = true)
+		@ConditionalOnProperty(prefix = FeaturesProperties.FEATURES_PREFIX, name = FeaturesProperties.STREAMS_ENABLED,
+				matchIfMissing = true)
 		public StreamDefinitionRepository rdbmsStreamDefinitionRepository(DataSource dataSource) {
 			return new RdbmsStreamDefinitionRepository(dataSource);
 		}

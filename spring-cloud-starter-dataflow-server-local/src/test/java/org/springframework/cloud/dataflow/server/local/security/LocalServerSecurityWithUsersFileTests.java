@@ -120,9 +120,9 @@ public class LocalServerSecurityWithUsersFileTests {
 						ImmutableMap.of("uri", "???", "apps", "??", "force", "true") },
 				{ HttpMethod.POST, HttpStatus.CREATED, "/apps", createOnlyUser,
 						ImmutableMap.of("uri", "http://bit" + ".ly/1-0-2-GA-stream-applications-rabbit-maven", "apps",
-								"app=is_ignored", "force", "false") }, // Should be 400 -
-																		// See
-																		// https://github.com/spring-cloud/spring-cloud-dataflow/issues/1071
+								"app=is_ignored", "force", "false") },
+				// Should be 400 -
+				// See https://github.com/spring-cloud/spring-cloud-dataflow/issues/1071
 				{ HttpMethod.POST, HttpStatus.CREATED, "/apps", createOnlyUser,
 						ImmutableMap.of("uri", "http://bit" + ".ly/1-0-2-GA-stream-applications-rabbit-maven", "force",
 								"false") },

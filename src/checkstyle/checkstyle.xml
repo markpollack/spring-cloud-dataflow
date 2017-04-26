@@ -12,10 +12,10 @@
         <property name="lineSeparator" value="lf"/>
     </module>
     <module name="TreeWalker">
-
-        <module name="LineLength">
-            <property name="max" value="120"/>
-        </module>
+        <property name="tabWidth" value="4"/>
+        <!--<module name="LineLength">-->
+            <!--<property name="max" value="120"/>-->
+        <!--</module>-->
 
         <!-- Annotations -->
         <!--<module name="AnnotationUseStyle">-->

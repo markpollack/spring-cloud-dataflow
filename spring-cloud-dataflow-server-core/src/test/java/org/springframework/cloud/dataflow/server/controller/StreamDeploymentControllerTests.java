@@ -61,7 +61,8 @@ public class StreamDeploymentControllerTests {
 	private AppRegistry appRegistry;
 	@Mock
 	private AppDeployer appDeployer;
-	private ApplicationConfigurationMetadataResolver metadataResolver = new BootApplicationConfigurationMetadataResolver();
+	private ApplicationConfigurationMetadataResolver metadataResolver =
+			new BootApplicationConfigurationMetadataResolver();
 	@Mock
 	private CommonApplicationProperties commonApplicationProperties;
 

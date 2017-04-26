@@ -45,7 +45,8 @@ public class JobTemplate implements JobOperations {
 
 	private static final String STEP_EXECUTION_RELATION_BY_ID = "jobs/executions/execution/steps";
 
-	private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID = "jobs/executions/execution/steps/step/progress";
+	private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID =
+			"jobs/executions/execution/steps/step/progress";
 
 	private final RestTemplate restTemplate;
 

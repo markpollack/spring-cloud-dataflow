@@ -73,7 +73,8 @@ public class CompletionConfiguration {
 	}
 
 	@Bean
-	public ConfigurationPropertyNameAfterDashDashRecoveryStrategy configurationPropertyNameAfterDashDashRecoveryStrategy() {
+	public ConfigurationPropertyNameAfterDashDashRecoveryStrategy
+				configurationPropertyNameAfterDashDashRecoveryStrategy() {
 		return new ConfigurationPropertyNameAfterDashDashRecoveryStrategy(appRegistry, metadataResolver);
 	}
 
@@ -175,7 +176,8 @@ public class CompletionConfiguration {
 	}
 
 	@Bean
-	public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
+	public ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy
+					configurationPropertyNameAfterDashDashTaskRecoveryStrategy() {
 		return new ConfigurationPropertyNameAfterDashDashTaskRecoveryStrategy(appRegistry, metadataResolver);
 	}
 

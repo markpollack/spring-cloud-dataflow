@@ -128,8 +128,8 @@ public class BasicAuthSecurityConfiguration extends WebSecurityConfigurerAdapter
 			security.anyRequest().authenticated();
 		}
 
-		final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter = new SessionRepositoryFilter<ExpiringSession>(
-				sessionRepository());
+		final SessionRepositoryFilter<ExpiringSession> sessionRepositoryFilter =
+				new SessionRepositoryFilter<ExpiringSession>(sessionRepository());
 		sessionRepositoryFilter.setHttpSessionStrategy(new HeaderHttpSessionStrategy());
 
 		http.addFilterBefore(sessionRepositoryFilter, ChannelProcessingFilter.class).csrf().disable();
