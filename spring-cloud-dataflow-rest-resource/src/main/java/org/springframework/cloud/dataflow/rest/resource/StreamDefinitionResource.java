@@ -21,9 +21,8 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * A HATEOAS representation of a {@link StreamDefinition}.
- * This class also includes a description of the
- * {@link #status stream status}.
+ * A HATEOAS representation of a {@link StreamDefinition}. This class also includes a
+ * description of the {@link #status stream status}.
  * <p>
  * Note: this implementation is not thread safe.
  *
@@ -33,101 +32,101 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class StreamDefinitionResource extends ResourceSupport {
 
-    /**
-     * Stream name.
-     */
-    private String name;
+	/**
+	 * Stream name.
+	 */
+	private String name;
 
-    /**
-     * Stream definition DSL text.
-     */
-    private String dslText;
+	/**
+	 * Stream definition DSL text.
+	 */
+	private String dslText;
 
-    /**
-     * Stream status (i.e. deployed, undeployed, etc).
-     */
-    private String status;
+	/**
+	 * Stream status (i.e. deployed, undeployed, etc).
+	 */
+	private String status;
 
-    /**
-     * Description of the Stream status.
-     */
-    private String statusDescription;
+	/**
+	 * Description of the Stream status.
+	 */
+	private String statusDescription;
 
-    /**
-     * Default constructor for serialization frameworks.
-     */
-    protected StreamDefinitionResource() {
-    }
+	/**
+	 * Default constructor for serialization frameworks.
+	 */
+	protected StreamDefinitionResource() {
+	}
 
-    /**
-     * Construct a {@code StreamDefinitionResource}.
-     *
-     * @param name    stream name
-     * @param dslText stream definition DSL text
-     */
-    public StreamDefinitionResource(String name, String dslText) {
-        this.name = name;
-        this.dslText = dslText;
-    }
+	/**
+	 * Construct a {@code StreamDefinitionResource}.
+	 *
+	 * @param name stream name
+	 * @param dslText stream definition DSL text
+	 */
+	public StreamDefinitionResource(String name, String dslText) {
+		this.name = name;
+		this.dslText = dslText;
+	}
 
-    /**
-     * Return the name of this stream.
-     *
-     * @return stream name
-     */
-    public String getName() {
-        return this.name;
-    }
+	/**
+	 * Return the name of this stream.
+	 *
+	 * @return stream name
+	 */
+	public String getName() {
+		return this.name;
+	}
 
-    /**
-     * Return the DSL definition for this stream.
-     *
-     * @return stream definition DSL
-     */
-    public String getDslText() {
-        return this.dslText;
-    }
+	/**
+	 * Return the DSL definition for this stream.
+	 *
+	 * @return stream definition DSL
+	 */
+	public String getDslText() {
+		return this.dslText;
+	}
 
-    /**
-     * Return the status of this stream (i.e. deployed, undeployed, etc).
-     *
-     * @return stream status
-     */
-    public String getStatus() {
-        return status;
-    }
+	/**
+	 * Return the status of this stream (i.e. deployed, undeployed, etc).
+	 *
+	 * @return stream status
+	 */
+	public String getStatus() {
+		return status;
+	}
 
-    /**
-     * Set the status of this stream (i.e. deployed, undeployed, etc).
-     *
-     * @param status stream status
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	/**
+	 * Set the status of this stream (i.e. deployed, undeployed, etc).
+	 *
+	 * @param status stream status
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    /**
-     * Get a descriptive text of the stream's deployment status. See also
-     * {@link DeploymentStateResource}.
-     *
-     * @return a descriptive text of the stream's deployment status
-     */
-    public String getStatusDescription() {
-        return statusDescription;
-    }
+	/**
+	 * Get a descriptive text of the stream's deployment status. See also
+	 * {@link DeploymentStateResource}.
+	 *
+	 * @return a descriptive text of the stream's deployment status
+	 */
+	public String getStatusDescription() {
+		return statusDescription;
+	}
 
-    /**
-     * Set the descriptive text of the stream's deployment status. See also
-     * {@link DeploymentStateResource}
-     *
-     * @param statusDescription the stream's deployment status description
-     */
-    public void setStatusDescription(String statusDescription) {
-        this.statusDescription = statusDescription;
-    }
+	/**
+	 * Set the descriptive text of the stream's deployment status. See also
+	 * {@link DeploymentStateResource}
+	 *
+	 * @param statusDescription the stream's deployment status description
+	 */
+	public void setStatusDescription(String statusDescription) {
+		this.statusDescription = statusDescription;
+	}
 
-    public static class Page extends PagedResources<StreamDefinitionResource> {
+	public static class Page extends PagedResources<StreamDefinitionResource> {
 
-    }
+	}
 
 }

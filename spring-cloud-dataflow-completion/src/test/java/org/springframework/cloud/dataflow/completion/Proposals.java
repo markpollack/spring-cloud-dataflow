@@ -24,10 +24,8 @@ import org.hamcrest.FeatureMatcher;
  * @author Eric Bottard
  */
 class Proposals {
-	static org.hamcrest.Matcher<CompletionProposal> proposalThat(
-			org.hamcrest.Matcher<String> matcher) {
-		return new FeatureMatcher<CompletionProposal, String>(matcher,
-				"a proposal whose text", "text") {
+	static org.hamcrest.Matcher<CompletionProposal> proposalThat(org.hamcrest.Matcher<String> matcher) {
+		return new FeatureMatcher<CompletionProposal, String>(matcher, "a proposal whose text", "text") {
 			@Override
 			protected String featureValueOf(CompletionProposal actual) {
 				return actual.getText();

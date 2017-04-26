@@ -20,75 +20,82 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The AST node representing a split. A split is a series of things to execute in parallel. Those things
- * can themselves be individual flows or further splits. In DSL form a split is expressed like this:
- * <pre><tt><aa || bb></tt></pre>.
+ * The AST node representing a split. A split is a series of things to execute in
+ * parallel. Those things can themselves be individual flows or further splits. In DSL
+ * form a split is expressed like this:
+ *
+ * <pre>
+ * <tt><aa || bb></tt>
+ * </pre>
+ *
+ * .
  *
  * @author Andy Clement
  */
 public class SplitNode extends LabelledTaskNode {
 
-    private List<LabelledTaskNode> parallelTaskApps;
+	private List<LabelledTaskNode> parallelTaskApps;
 
-    SplitNode(int startpos, int endpos, List<LabelledTaskNode> parallelSequences) {
-        super(startpos, endpos);
-        this.parallelTaskApps = Collections.unmodifiableList(parallelSequences);
-    }
+	SplitNode(int startpos, int endpos, List<LabelledTaskNode> parallelSequences) {
+		super(startpos, endpos);
+		this.parallelTaskApps = Collections.unmodifiableList(parallelSequences);
+	}
 
-    @Override
-    public String stringify(boolean includePositionInfo) {
-        if (parallelTaskApps.size() == 1) {
-            return parallelTaskApps.get(0).stringify(includePositionInfo);
-        } else {
-            StringBuilder s = new StringBuilder();
-            s.append(TokenKind.LT.tokenChars);
-            for (int i = 0; i < parallelTaskApps.size(); i++) {
-                LabelledTaskNode jn = parallelTaskApps.get(i);
-                if (i > 0) {
-                    s.append(" ").append(TokenKind.OROR.tokenChars).append(" ");
-                }
-                s.append(jn.stringify(includePositionInfo));
-            }
-            s.append(TokenKind.GT.tokenChars);
-            return s.toString();
-        }
-    }
+	@Override
+	public String stringify(boolean includePositionInfo) {
+		if (parallelTaskApps.size() == 1) {
+			return parallelTaskApps.get(0).stringify(includePositionInfo);
+		}
+		else {
+			StringBuilder s = new StringBuilder();
+			s.append(TokenKind.LT.tokenChars);
+			for (int i = 0; i < parallelTaskApps.size(); i++) {
+				LabelledTaskNode jn = parallelTaskApps.get(i);
+				if (i > 0) {
+					s.append(" ").append(TokenKind.OROR.tokenChars).append(" ");
+				}
+				s.append(jn.stringify(includePositionInfo));
+			}
+			s.append(TokenKind.GT.tokenChars);
+			return s.toString();
+		}
+	}
 
-    @Override
-    public int getSeriesLength() {
-        return parallelTaskApps.size();
-    }
+	@Override
+	public int getSeriesLength() {
+		return parallelTaskApps.size();
+	}
 
-    @Override
-    public LabelledTaskNode getSeriesElement(int index) {
-        return parallelTaskApps.get(index);
-    }
+	@Override
+	public LabelledTaskNode getSeriesElement(int index) {
+		return parallelTaskApps.get(index);
+	}
 
-    @Override
-    public List<LabelledTaskNode> getSeries() {
-        return parallelTaskApps;
-    }
+	@Override
+	public List<LabelledTaskNode> getSeries() {
+		return parallelTaskApps;
+	}
 
-    @Override
-    public boolean isSplit() {
-        return true;
-    }
+	@Override
+	public boolean isSplit() {
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "[Split:" + stringify(true) + "]";
-    }
+	@Override
+	public String toString() {
+		return "[Split:" + stringify(true) + "]";
+	}
 
-    @Override
-    public void accept(TaskVisitor visitor) {
-        boolean cont = visitor.preVisit(this);
-        if (!cont) {
-            return;
-        }
-        visitor.visit(this);
-        for (LabelledTaskNode labelledTaskNode : parallelTaskApps) {
-            labelledTaskNode.accept(visitor);
-        }
-        visitor.postVisit(this);
-    }
+	@Override
+	public void accept(TaskVisitor visitor) {
+		boolean cont = visitor.preVisit(this);
+		if (!cont) {
+			return;
+		}
+		visitor.visit(this);
+		for (LabelledTaskNode labelledTaskNode : parallelTaskApps) {
+			labelledTaskNode.accept(visitor);
+		}
+		visitor.postVisit(this);
+	}
 }

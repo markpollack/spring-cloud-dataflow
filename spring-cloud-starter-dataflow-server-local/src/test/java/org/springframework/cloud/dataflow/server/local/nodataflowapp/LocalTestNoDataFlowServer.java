@@ -20,18 +20,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Bootstrap class for dummy spring boot app having
- * no enabled dataflow server configs.
+ * Bootstrap class for dummy spring boot app having no enabled dataflow server configs.
  * <p>
- * Multiple SpringBootApplication's needs to be in
- * their own directories due to component scanning.
+ * Multiple SpringBootApplication's needs to be in their own directories due to component
+ * scanning.
  *
  * @author Janne Valkealahti
  */
 @SpringBootApplication
 public class LocalTestNoDataFlowServer {
 
-    public static void main(String[] args) {
-        SpringApplication.run(LocalTestNoDataFlowServer.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(LocalTestNoDataFlowServer.class, args);
+	}
 }

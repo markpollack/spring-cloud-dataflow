@@ -97,228 +97,218 @@ import org.springframework.scheduling.concurrent.ForkJoinPoolFactoryBean;
 @SuppressWarnings("all")
 @Configuration
 @Import(CompletionConfiguration.class)
-@ConditionalOnBean({EnableDataFlowServerConfiguration.Marker.class, AppDeployer.class, TaskLauncher.class})
-@EnableConfigurationProperties({AuthorizationConfig.class, FeaturesProperties.class,
-        VersionInfoProperties.class, MetricsProperties.class})
+@ConditionalOnBean({ EnableDataFlowServerConfiguration.Marker.class, AppDeployer.class, TaskLauncher.class })
+@EnableConfigurationProperties({ AuthorizationConfig.class, FeaturesProperties.class, VersionInfoProperties.class,
+		MetricsProperties.class })
 @ConditionalOnProperty(prefix = "dataflow.server", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableCircuitBreaker
 public class DataFlowControllerAutoConfiguration {
 
-    @Bean
-    public UriRegistry uriRegistry(DataSource dataSource) {
-        return new RdbmsUriRegistry(dataSource);
-    }
+	@Bean
+	public UriRegistry uriRegistry(DataSource dataSource) {
+		return new RdbmsUriRegistry(dataSource);
+	}
 
-    @Bean
-    public AppRegistry appRegistry(UriRegistry uriRegistry, DelegatingResourceLoader resourceLoader) {
-        return new AppRegistry(uriRegistry, resourceLoader);
-    }
+	@Bean
+	public AppRegistry appRegistry(UriRegistry uriRegistry, DelegatingResourceLoader resourceLoader) {
+		return new AppRegistry(uriRegistry, resourceLoader);
+	}
 
-    @Bean
-    public RootController rootController(EntityLinks entityLinks) {
-        return new RootController(entityLinks);
-    }
+	@Bean
+	public RootController rootController(EntityLinks entityLinks) {
+		return new RootController(entityLinks);
+	}
 
-    @Bean
-    public AppInstanceController appInstanceController(AppDeployer appDeployer) {
-        return new AppInstanceController(appDeployer);
-    }
+	@Bean
+	public AppInstanceController appInstanceController(AppDeployer appDeployer) {
+		return new AppInstanceController(appDeployer);
+	}
 
-    @Bean
-    public MetricStore metricStore(MetricsProperties metricsProperties) {
-        return new MetricStore(metricsProperties);
-    }
+	@Bean
+	public MetricStore metricStore(MetricsProperties metricsProperties) {
+		return new MetricStore(metricsProperties);
+	}
 
-    @Bean
-    @ConditionalOnBean(StreamDefinitionRepository.class)
-    public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository,
-                                                                 StreamDeploymentController deploymentController,
-                                                                 AppDeployer deployer, AppRegistry appRegistry) {
-        return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, deployer,
-                appRegistry);
-    }
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
+			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
+			AppDeployer deployer, AppRegistry appRegistry) {
+		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, deployer,
+				appRegistry);
+	}
 
-    @Bean
-    @ConditionalOnBean(StreamDefinitionRepository.class)
-    public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-                                                                 DeploymentIdRepository deploymentIdRepository,
-                                                                 AppRegistry registry, AppDeployer deployer,
-                                                                 ApplicationConfigurationMetadataResolver
-                                                                             metadataResolver,
-                                                                 CommonApplicationProperties appsProperties) {
-        return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer,
-                metadataResolver, appsProperties);
-    }
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
+			DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
+			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties) {
+		return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer, metadataResolver,
+				appsProperties);
+	}
 
-    @Bean
-    @ConditionalOnBean(StreamDefinitionRepository.class)
-    public RuntimeAppsController runtimeAppsController(StreamDefinitionRepository repository,
-                                                       DeploymentIdRepository deploymentIdRepository, AppDeployer
-                                                                   appDeployer, MetricStore metricStore) {
-        return new RuntimeAppsController(repository, deploymentIdRepository, appDeployer, metricStore,
-                runtimeAppsStatusFJPFB().getObject());
-    }
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	public RuntimeAppsController runtimeAppsController(StreamDefinitionRepository repository,
+			DeploymentIdRepository deploymentIdRepository, AppDeployer appDeployer, MetricStore metricStore) {
+		return new RuntimeAppsController(repository, deploymentIdRepository, appDeployer, metricStore,
+				runtimeAppsStatusFJPFB().getObject());
+	}
 
-    @Bean
-    public MetricsController metricsController(MetricStore metricStore) {
-        return new MetricsController(metricStore);
-    }
+	@Bean
+	public MetricsController metricsController(MetricStore metricStore) {
+		return new MetricsController(metricStore);
+	}
 
-    @Bean
-    @ConditionalOnBean(StreamDefinitionRepository.class)
-    @ConditionalOnMissingBean(name = "runtimeAppsStatusFJPFB")
-    public ForkJoinPoolFactoryBean runtimeAppsStatusFJPFB() {
-        ForkJoinPoolFactoryBean forkJoinPoolFactoryBean = new ForkJoinPoolFactoryBean();
-        forkJoinPoolFactoryBean.setParallelism(8);
-        return forkJoinPoolFactoryBean;
-    }
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	@ConditionalOnMissingBean(name = "runtimeAppsStatusFJPFB")
+	public ForkJoinPoolFactoryBean runtimeAppsStatusFJPFB() {
+		ForkJoinPoolFactoryBean forkJoinPoolFactoryBean = new ForkJoinPoolFactoryBean();
+		forkJoinPoolFactoryBean.setParallelism(8);
+		return forkJoinPoolFactoryBean;
+	}
 
-    @Bean
-    public MavenResourceLoader mavenResourceLoader(MavenProperties properties) {
-        return new MavenResourceLoader(properties);
-    }
+	@Bean
+	public MavenResourceLoader mavenResourceLoader(MavenProperties properties) {
+		return new MavenResourceLoader(properties);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(DelegatingResourceLoader.class)
-    public DelegatingResourceLoader delegatingResourceLoader(MavenResourceLoader mavenResourceLoader) {
-        Map<String, ResourceLoader> loaders = new HashMap<>();
-        loaders.put("maven", mavenResourceLoader);
-        return new DelegatingResourceLoader(loaders);
-    }
+	@Bean
+	@ConditionalOnMissingBean(DelegatingResourceLoader.class)
+	public DelegatingResourceLoader delegatingResourceLoader(MavenResourceLoader mavenResourceLoader) {
+		Map<String, ResourceLoader> loaders = new HashMap<>();
+		loaders.put("maven", mavenResourceLoader);
+		return new DelegatingResourceLoader(loaders);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public TaskDefinitionController taskDefinitionController(
-            TaskDefinitionRepository repository,
-            DeploymentIdRepository deploymentIdRepository,
-            TaskLauncher taskLauncher, AppRegistry appRegistry, TaskService taskService) {
-        return new TaskDefinitionController(repository, deploymentIdRepository,
-                taskLauncher, appRegistry, taskService);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public TaskDefinitionController taskDefinitionController(TaskDefinitionRepository repository,
+			DeploymentIdRepository deploymentIdRepository, TaskLauncher taskLauncher, AppRegistry appRegistry,
+			TaskService taskService) {
+		return new TaskDefinitionController(repository, deploymentIdRepository, taskLauncher, appRegistry, taskService);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public TaskExecutionController taskExecutionController(TaskExplorer explorer, TaskService taskService,
-                                                           TaskDefinitionRepository taskDefinitionRepository) {
-        return new TaskExecutionController(explorer, taskService, taskDefinitionRepository);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public TaskExecutionController taskExecutionController(TaskExplorer explorer, TaskService taskService,
+			TaskDefinitionRepository taskDefinitionRepository) {
+		return new TaskExecutionController(explorer, taskService, taskDefinitionRepository);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public JobExecutionController jobExecutionController(TaskJobService repository) {
-        return new JobExecutionController(repository);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public JobExecutionController jobExecutionController(TaskJobService repository) {
+		return new JobExecutionController(repository);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public JobStepExecutionController jobStepExecutionController(JobService service) {
-        return new JobStepExecutionController(service);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public JobStepExecutionController jobStepExecutionController(JobService service) {
+		return new JobStepExecutionController(service);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public JobStepExecutionProgressController jobStepExecutionProgressController(JobService service) {
-        return new JobStepExecutionProgressController(service);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public JobStepExecutionProgressController jobStepExecutionProgressController(JobService service) {
+		return new JobStepExecutionProgressController(service);
+	}
 
-    @Bean
-    @ConditionalOnBean(TaskDefinitionRepository.class)
-    public JobInstanceController jobInstanceController(TaskJobService repository) {
-        return new JobInstanceController(repository);
-    }
+	@Bean
+	@ConditionalOnBean(TaskDefinitionRepository.class)
+	public JobInstanceController jobInstanceController(TaskJobService repository) {
+		return new JobInstanceController(repository);
+	}
 
-    @Bean
-    @ConditionalOnBean(MetricRepository.class)
-    public CounterController counterController(MetricRepository metricRepository) {
-        return new CounterController(metricRepository);
-    }
+	@Bean
+	@ConditionalOnBean(MetricRepository.class)
+	public CounterController counterController(MetricRepository metricRepository) {
+		return new CounterController(metricRepository);
+	}
 
-    @Bean
-    @ConditionalOnBean(FieldValueCounterRepository.class)
-    public FieldValueCounterController fieldValueCounterController(FieldValueCounterRepository repository) {
-        return new FieldValueCounterController(repository);
-    }
+	@Bean
+	@ConditionalOnBean(FieldValueCounterRepository.class)
+	public FieldValueCounterController fieldValueCounterController(FieldValueCounterRepository repository) {
+		return new FieldValueCounterController(repository);
+	}
 
-    @Bean
-    @ConditionalOnBean(AggregateCounterRepository.class)
-    public AggregateCounterController aggregateCounterController(AggregateCounterRepository repository) {
-        return new AggregateCounterController(repository);
-    }
+	@Bean
+	@ConditionalOnBean(AggregateCounterRepository.class)
+	public AggregateCounterController aggregateCounterController(AggregateCounterRepository repository) {
+		return new AggregateCounterController(repository);
+	}
 
-    @Bean
-    public CompletionController completionController(StreamCompletionProvider completionProvider,
-                                                     TaskCompletionProvider taskCompletionProvider) {
-        return new CompletionController(completionProvider, taskCompletionProvider);
-    }
+	@Bean
+	public CompletionController completionController(StreamCompletionProvider completionProvider,
+			TaskCompletionProvider taskCompletionProvider) {
+		return new CompletionController(completionProvider, taskCompletionProvider);
+	}
 
-    @Bean
-    public ToolsController toolsController() {
-        return new ToolsController();
-    }
+	@Bean
+	public ToolsController toolsController() {
+		return new ToolsController();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(name = "appRegistryFJPFB")
-    public ForkJoinPoolFactoryBean appRegistryFJPFB() {
-        ForkJoinPoolFactoryBean forkJoinPoolFactoryBean = new ForkJoinPoolFactoryBean();
-        forkJoinPoolFactoryBean.setParallelism(4);
-        return forkJoinPoolFactoryBean;
-    }
+	@Bean
+	@ConditionalOnMissingBean(name = "appRegistryFJPFB")
+	public ForkJoinPoolFactoryBean appRegistryFJPFB() {
+		ForkJoinPoolFactoryBean forkJoinPoolFactoryBean = new ForkJoinPoolFactoryBean();
+		forkJoinPoolFactoryBean.setParallelism(4);
+		return forkJoinPoolFactoryBean;
+	}
 
-    @Bean
-    public AppRegistryController appRegistryController(AppRegistry appRegistry,
-                                                       ApplicationConfigurationMetadataResolver metadataResolver) {
-        return new AppRegistryController(appRegistry, metadataResolver, appRegistryFJPFB().getObject());
-    }
+	@Bean
+	public AppRegistryController appRegistryController(AppRegistry appRegistry,
+			ApplicationConfigurationMetadataResolver metadataResolver) {
+		return new AppRegistryController(appRegistry, metadataResolver, appRegistryFJPFB().getObject());
+	}
 
-    @Bean
-    public SecurityController securityController(SecurityStateBean securityStateBean) {
-        return new SecurityController(securityStateBean);
-    }
+	@Bean
+	public SecurityController securityController(SecurityStateBean securityStateBean) {
+		return new SecurityController(securityStateBean);
+	}
 
-    @Bean
-    @ConditionalOnProperty("security.basic.enabled")
-    public LoginController loginController() {
-        return new LoginController();
-    }
+	@Bean
+	@ConditionalOnProperty("security.basic.enabled")
+	public LoginController loginController() {
+		return new LoginController();
+	}
 
-    @Bean
-    public FeaturesController featuresController(FeaturesProperties featuresProperties) {
-        return new FeaturesController(featuresProperties);
-    }
+	@Bean
+	public FeaturesController featuresController(FeaturesProperties featuresProperties) {
+		return new FeaturesController(featuresProperties);
+	}
 
-    @Bean
-    public AboutController aboutController(
-            AppDeployer appDeployer,
-            TaskLauncher taskLauncher,
-            FeaturesProperties featuresProperties,
-            VersionInfoProperties versionInfoProperties,
-            SecurityStateBean securityStateBean) {
-        return new AboutController(appDeployer, taskLauncher, featuresProperties, versionInfoProperties,
-                securityStateBean);
-    }
+	@Bean
+	public AboutController aboutController(AppDeployer appDeployer, TaskLauncher taskLauncher,
+			FeaturesProperties featuresProperties, VersionInfoProperties versionInfoProperties,
+			SecurityStateBean securityStateBean) {
+		return new AboutController(appDeployer, taskLauncher, featuresProperties, versionInfoProperties,
+				securityStateBean);
+	}
 
-    @Bean
-    public UiController uiController() {
-        return new UiController();
-    }
+	@Bean
+	public UiController uiController() {
+		return new UiController();
+	}
 
-    @Bean
-    public RestControllerAdvice restControllerAdvice() {
-        return new RestControllerAdvice();
-    }
+	@Bean
+	public RestControllerAdvice restControllerAdvice() {
+		return new RestControllerAdvice();
+	}
 
-    @Bean
-    public MavenProperties mavenProperties() {
-        return new MavenConfigurationProperties();
-    }
+	@Bean
+	public MavenProperties mavenProperties() {
+		return new MavenConfigurationProperties();
+	}
 
-    @Bean
-    SecurityStateBean securityStateBean() {
-        return new SecurityStateBean();
-    }
+	@Bean
+	SecurityStateBean securityStateBean() {
+		return new SecurityStateBean();
+	}
 
-    @ConfigurationProperties(prefix = "maven")
-    static class MavenConfigurationProperties extends MavenProperties {
-    }
+	@ConfigurationProperties(prefix = "maven")
+	static class MavenConfigurationProperties extends MavenProperties {
+	}
 }

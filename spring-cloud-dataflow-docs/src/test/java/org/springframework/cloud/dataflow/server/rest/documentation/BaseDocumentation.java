@@ -36,28 +36,24 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
  */
 public abstract class BaseDocumentation {
 
-    @ClassRule
-    public final static LocalDataflowResource springDataflowServer =
-            new LocalDataflowResource("classpath:rest-docs-config.yml");
-    protected String TARGET_DIRECTORY = "target/generated-snippets";
-    @Rule
-    public JUnitRestDocumentation restDocumentation =
-            new JUnitRestDocumentation(TARGET_DIRECTORY);
-    protected MockMvc mockMvc;
-    protected RestDocumentationResultHandler documentationHandler;
+	@ClassRule
+	public final static LocalDataflowResource springDataflowServer = new LocalDataflowResource(
+			"classpath:rest-docs-config.yml");
+	protected String TARGET_DIRECTORY = "target/generated-snippets";
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation(TARGET_DIRECTORY);
+	protected MockMvc mockMvc;
+	protected RestDocumentationResultHandler documentationHandler;
 
-    @Before
-    public void setupMocks() {
-        prepareDocumentationTests(restDocumentation);
-    }
+	@Before
+	public void setupMocks() {
+		prepareDocumentationTests(restDocumentation);
+	}
 
-    protected void prepareDocumentationTests(JUnitRestDocumentation restDocumentation) {
-        this.documentationHandler = document("{class-name}/{method-name}",
-                preprocessResponse(prettyPrint()));
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(springDataflowServer.getWebApplicationContext())
-                .apply(documentationConfiguration(restDocumentation))
-                .alwaysDo(this.documentationHandler)
-                .build();
-    }
+	protected void prepareDocumentationTests(JUnitRestDocumentation restDocumentation) {
+		this.documentationHandler = document("{class-name}/{method-name}", preprocessResponse(prettyPrint()));
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(springDataflowServer.getWebApplicationContext())
+				.apply(documentationConfiguration(restDocumentation)).alwaysDo(this.documentationHandler).build();
+	}
 
 }

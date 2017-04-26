@@ -30,43 +30,44 @@ import org.springframework.util.Assert;
  */
 public class JobInstanceResource extends ResourceSupport {
 
-    private String jobName;
+	private String jobName;
 
-    private long jobInstanceId;
+	private long jobInstanceId;
 
-    private List<JobExecutionResource> jobExecutions;
+	private List<JobExecutionResource> jobExecutions;
 
-    /**
-     * Default constructor to be used by Jackson.
-     */
-    private JobInstanceResource() {
+	/**
+	 * Default constructor to be used by Jackson.
+	 */
+	private JobInstanceResource() {
 
-    }
+	}
 
-    public JobInstanceResource(String jobName, long jobInstanceId, List<JobExecutionResource> taskJobExecutions) {
-        Assert.hasText(jobName, "jobName must not be empty nor null");
-        this.jobName = jobName;
-        this.jobInstanceId = jobInstanceId;
-        if (taskJobExecutions == null) {
-            this.jobExecutions = Collections.emptyList();
-        } else {
-            this.jobExecutions = taskJobExecutions;
-            this.jobExecutions = Collections.unmodifiableList(this.jobExecutions);
-        }
-    }
+	public JobInstanceResource(String jobName, long jobInstanceId, List<JobExecutionResource> taskJobExecutions) {
+		Assert.hasText(jobName, "jobName must not be empty nor null");
+		this.jobName = jobName;
+		this.jobInstanceId = jobInstanceId;
+		if (taskJobExecutions == null) {
+			this.jobExecutions = Collections.emptyList();
+		}
+		else {
+			this.jobExecutions = taskJobExecutions;
+			this.jobExecutions = Collections.unmodifiableList(this.jobExecutions);
+		}
+	}
 
-    public String getJobName() {
-        return jobName;
-    }
+	public String getJobName() {
+		return jobName;
+	}
 
-    public long getJobInstanceId() {
-        return jobInstanceId;
-    }
+	public long getJobInstanceId() {
+		return jobInstanceId;
+	}
 
-    public List<JobExecutionResource> getJobExecutions() {
-        return jobExecutions;
-    }
+	public List<JobExecutionResource> getJobExecutions() {
+		return jobExecutions;
+	}
 
-    public static class Page extends PagedResources<JobInstanceResource> {
-    }
+	public static class Page extends PagedResources<JobInstanceResource> {
+	}
 }

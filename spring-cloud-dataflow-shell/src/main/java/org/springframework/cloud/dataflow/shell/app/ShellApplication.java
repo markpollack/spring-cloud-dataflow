@@ -32,10 +32,7 @@ import org.springframework.cloud.dataflow.shell.EnableDataFlowShell;
 @SpringBootApplication
 public class ShellApplication {
 
-    public static void main(String[] args) throws Exception {
-        new SpringApplicationBuilder()
-                .sources(ShellApplication.class)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-    }
+	public static void main(String[] args) throws Exception {
+		new SpringApplicationBuilder().sources(ShellApplication.class).bannerMode(Banner.Mode.OFF).run(args);
+	}
 }

@@ -32,62 +32,64 @@ import org.springframework.util.StringUtils;
 /**
  * Expands constructs that start with {@literal :} to add stream name and app identifiers.
  * <p>
- * <p>Lives in this package as it needs access to a {@link StreamDefinitionRepository}.</p>
+ * <p>
+ * Lives in this package as it needs access to a {@link StreamDefinitionRepository}.
+ * </p>
  *
  * @author Eric Bottard
  * @author Ilayaperumal Gopinathan
  */
 public class TapOnDestinationRecoveryStrategy implements RecoveryStrategy<ParseException> {
 
-    private final StreamDefinitionRepository streamDefinitionRepository;
+	private final StreamDefinitionRepository streamDefinitionRepository;
 
-    public TapOnDestinationRecoveryStrategy(StreamDefinitionRepository streamDefinitionRepository) {
-        this.streamDefinitionRepository = streamDefinitionRepository;
-    }
+	public TapOnDestinationRecoveryStrategy(StreamDefinitionRepository streamDefinitionRepository) {
+		this.streamDefinitionRepository = streamDefinitionRepository;
+	}
 
-    @Override
-    public boolean shouldTrigger(String dslStart, Exception exception) {
-        return dslStart.startsWith(":") && !dslStart.contains(" ") &&
-                (((ParseException) exception).getMessageCode() == DSLMessage.EXPECTED_STREAM_NAME_AFTER_LABEL_COLON ||
-                        ((ParseException) exception).getMessageCode() == DSLMessage.EXPECTED_APPNAME);
-    }
+	@Override
+	public boolean shouldTrigger(String dslStart, Exception exception) {
+		return dslStart.startsWith(":") && !dslStart.contains(" ")
+				&& (((ParseException) exception).getMessageCode() == DSLMessage.EXPECTED_STREAM_NAME_AFTER_LABEL_COLON
+						|| ((ParseException) exception).getMessageCode() == DSLMessage.EXPECTED_APPNAME);
+	}
 
-    @Override
-    public void addProposals(String dsl, ParseException exception, int detailLevel, List<CompletionProposal>
-            collector) {
-        String streamName = dsl.substring(":".length());
-        String appName = "";
-        if (streamName.contains(".")) {
-            String[] splits = streamName.split("\\.");
-            streamName = splits[0];
-            if (splits.length > 1) {
-                appName = splits[1];
-            }
-        }
+	@Override
+	public void addProposals(String dsl, ParseException exception, int detailLevel,
+			List<CompletionProposal> collector) {
+		String streamName = dsl.substring(":".length());
+		String appName = "";
+		if (streamName.contains(".")) {
+			String[] splits = streamName.split("\\.");
+			streamName = splits[0];
+			if (splits.length > 1) {
+				appName = splits[1];
+			}
+		}
 
-        StreamDefinition streamDefinition = null;
-        if (StringUtils.hasText(streamName)) {
-            streamDefinition = streamDefinitionRepository.findOne(streamName);
-        }
-        // User has started to type an app name, or at least the stream name is valid
-        if (streamDefinition != null) {
-            CompletionProposal.Factory proposals = CompletionProposal.expanding(":" + streamName + ".");
-            for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
-                ApplicationType applicationType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-                if (streamAppDefinition.getName().startsWith(appName) && !applicationType.equals(ApplicationType
-                        .sink)) {
-                    collector.add(proposals.withSuffix(streamAppDefinition.getName()));
-                }
-            }
-        } // Stream name is not valid (yet). Try to use it as a prefix
-        else {
-            CompletionProposal.Factory proposals = CompletionProposal.expanding(":");
-            for (StreamDefinition stream : streamDefinitionRepository.findAll()) {
-                if (stream.getName().startsWith(streamName)) {
-                    collector.add(proposals.withSuffix(stream.getName()));
-                }
-            }
-        }
+		StreamDefinition streamDefinition = null;
+		if (StringUtils.hasText(streamName)) {
+			streamDefinition = streamDefinitionRepository.findOne(streamName);
+		}
+		// User has started to type an app name, or at least the stream name is valid
+		if (streamDefinition != null) {
+			CompletionProposal.Factory proposals = CompletionProposal.expanding(":" + streamName + ".");
+			for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
+				ApplicationType applicationType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
+				if (streamAppDefinition.getName().startsWith(appName)
+						&& !applicationType.equals(ApplicationType.sink)) {
+					collector.add(proposals.withSuffix(streamAppDefinition.getName()));
+				}
+			}
+		} // Stream name is not valid (yet). Try to use it as a prefix
+		else {
+			CompletionProposal.Factory proposals = CompletionProposal.expanding(":");
+			for (StreamDefinition stream : streamDefinitionRepository.findAll()) {
+				if (stream.getName().startsWith(streamName)) {
+					collector.add(proposals.withSuffix(stream.getName()));
+				}
+			}
+		}
 
-    }
+	}
 }

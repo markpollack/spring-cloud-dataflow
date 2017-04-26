@@ -23,30 +23,29 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("common")
 public class ConfigProperties {
-    /**
-     * Some number.
-     */
-    private SomeEnum number = SomeEnum.two;
+	/**
+	 * Some number.
+	 */
+	private SomeEnum number = SomeEnum.two;
 
-    /**
-     * Some string.
-     */
-    private String someString = "hello";
+	/**
+	 * Some string.
+	 */
+	private String someString = "hello";
 
-    public String getSomeString() {
-        return someString;
-    }
+	public String getSomeString() {
+		return someString;
+	}
 
-    public void setSomeString(String someString) {
-        this.someString = someString;
-    }
+	public void setSomeString(String someString) {
+		this.someString = someString;
+	}
 
+	public SomeEnum getNumber() {
+		return number;
+	}
 
-    public SomeEnum getNumber() {
-        return number;
-    }
-
-    public void setNumber(SomeEnum number) {
-        this.number = number;
-    }
+	public void setNumber(SomeEnum number) {
+		this.number = number;
+	}
 }

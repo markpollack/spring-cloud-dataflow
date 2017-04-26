@@ -26,28 +26,28 @@ import org.springframework.util.StringUtils;
  */
 public class LdapSecurityPropertiesValidator implements ConstraintValidator<LdapSecurityPropertiesValid, Object> {
 
-    @Override
-    public void initialize(LdapSecurityPropertiesValid constraintAnnotation) {
-    }
+	@Override
+	public void initialize(LdapSecurityPropertiesValid constraintAnnotation) {
+	}
 
-    @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (!(value instanceof LdapSecurityProperties)) {
-            throw new IllegalArgumentException("@LdapSecurityPropertiesValid only applies to LdapSecurityProperties");
-        }
+	@Override
+	public boolean isValid(Object value, ConstraintValidatorContext context) {
+		if (!(value instanceof LdapSecurityProperties)) {
+			throw new IllegalArgumentException("@LdapSecurityPropertiesValid only applies to LdapSecurityProperties");
+		}
 
-        final LdapSecurityProperties ldapSecurityProperties = (LdapSecurityProperties) value;
+		final LdapSecurityProperties ldapSecurityProperties = (LdapSecurityProperties) value;
 
-        boolean isValid = true;
+		boolean isValid = true;
 
-        if (!(StringUtils.isEmpty(ldapSecurityProperties.getUserDnPattern())
-                ^ StringUtils.isEmpty(ldapSecurityProperties.getUserSearchFilter()))) {
-            context.buildConstraintViolationWithTemplate(
-                    "Exactly one of 'userDnPattern' or 'userSearch' must be provided").addConstraintViolation();
-            isValid = false;
-        }
+		if (!(StringUtils.isEmpty(ldapSecurityProperties.getUserDnPattern())
+				^ StringUtils.isEmpty(ldapSecurityProperties.getUserSearchFilter()))) {
+			context.buildConstraintViolationWithTemplate(
+					"Exactly one of 'userDnPattern' or 'userSearch' must be provided").addConstraintViolation();
+			isValid = false;
+		}
 
-        return isValid;
-    }
+		return isValid;
+	}
 
 }

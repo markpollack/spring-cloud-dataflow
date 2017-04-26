@@ -21,36 +21,36 @@ package org.springframework.cloud.dataflow.core.dsl;
  */
 public class SinkDestinationNode extends AstNode {
 
-    private final DestinationNode destinationNode;
+	private final DestinationNode destinationNode;
 
-    public SinkDestinationNode(DestinationNode destinationNode, int startPos) {
-        super(startPos, destinationNode.endPos);
-        this.destinationNode = destinationNode;
-    }
+	public SinkDestinationNode(DestinationNode destinationNode, int startPos) {
+		super(startPos, destinationNode.endPos);
+		this.destinationNode = destinationNode;
+	}
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public String stringify(boolean includePositionalInfo) {
-        return ">" + destinationNode.stringify(includePositionalInfo);
-    }
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public String stringify(boolean includePositionalInfo) {
+		return ">" + destinationNode.stringify(includePositionalInfo);
+	}
 
-    @Override
-    public String toString() {
-        return " > " + destinationNode.toString();
-    }
+	@Override
+	public String toString() {
+		return " > " + destinationNode.toString();
+	}
 
-    public DestinationNode getDestinationNode() {
-        return destinationNode;
-    }
+	public DestinationNode getDestinationNode() {
+		return destinationNode;
+	}
 
-    public String getDestinationName() {
-        return destinationNode.getDestinationName();
-    }
+	public String getDestinationName() {
+		return destinationNode.getDestinationName();
+	}
 
-    public SinkDestinationNode copyOf() {
-        return new SinkDestinationNode(destinationNode.copyOf(), super.startPos);
-    }
+	public SinkDestinationNode copyOf() {
+		return new SinkDestinationNode(destinationNode.copyOf(), super.startPos);
+	}
 
 }

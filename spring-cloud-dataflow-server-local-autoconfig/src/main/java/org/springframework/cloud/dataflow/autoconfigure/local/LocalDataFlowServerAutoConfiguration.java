@@ -38,13 +38,13 @@ import org.springframework.core.io.ResourceLoader;
 @AutoConfigureBefore(DataFlowControllerAutoConfiguration.class)
 public class LocalDataFlowServerAutoConfiguration {
 
-    @Bean
-    public DelegatingResourceLoader delegatingResourceLoader(MavenProperties mavenProperties) {
-        DockerResourceLoader dockerLoader = new DockerResourceLoader();
-        MavenResourceLoader mavenResourceLoader = new MavenResourceLoader(mavenProperties);
-        Map<String, ResourceLoader> loaders = new HashMap<>();
-        loaders.put("docker", dockerLoader);
-        loaders.put("maven", mavenResourceLoader);
-        return new DelegatingResourceLoader(loaders);
-    }
+	@Bean
+	public DelegatingResourceLoader delegatingResourceLoader(MavenProperties mavenProperties) {
+		DockerResourceLoader dockerLoader = new DockerResourceLoader();
+		MavenResourceLoader mavenResourceLoader = new MavenResourceLoader(mavenProperties);
+		Map<String, ResourceLoader> loaders = new HashMap<>();
+		loaders.put("docker", dockerLoader);
+		loaders.put("maven", mavenResourceLoader);
+		return new DelegatingResourceLoader(loaders);
+	}
 }

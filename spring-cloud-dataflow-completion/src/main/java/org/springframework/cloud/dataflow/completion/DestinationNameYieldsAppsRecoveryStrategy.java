@@ -31,36 +31,36 @@ import static org.springframework.cloud.dataflow.core.ApplicationType.sink;
  * @author Eric Bottard
  * @author Mark Fisher
  */
-class DestinationNameYieldsAppsRecoveryStrategy extends
-        StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
+class DestinationNameYieldsAppsRecoveryStrategy
+		extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    public DestinationNameYieldsAppsRecoveryStrategy(AppRegistry appRegistry) {
-        super(CheckPointedParseException.class, ":foo >", ":foo > ");
-        this.appRegistry = appRegistry;
-    }
+	public DestinationNameYieldsAppsRecoveryStrategy(AppRegistry appRegistry) {
+		super(CheckPointedParseException.class, ":foo >", ":foo > ");
+		this.appRegistry = appRegistry;
+	}
 
-    @Override
-    public boolean shouldTrigger(String dslStart, Exception exception) {
-        if (!super.shouldTrigger(dslStart, exception)) {
-            return false;
-        }
-        // Cast is safe from call to super.
-        // Backtracking would return even before the destination
-        return ((CheckPointedParseException) exception).getExpressionStringUntilCheckpoint().trim().isEmpty();
-    }
+	@Override
+	public boolean shouldTrigger(String dslStart, Exception exception) {
+		if (!super.shouldTrigger(dslStart, exception)) {
+			return false;
+		}
+		// Cast is safe from call to super.
+		// Backtracking would return even before the destination
+		return ((CheckPointedParseException) exception).getExpressionStringUntilCheckpoint().trim().isEmpty();
+	}
 
-    @Override
-    public void addProposals(String dsl, CheckPointedParseException exception,
-                             int detailLevel, List<CompletionProposal> proposals) {
-        CompletionProposal.Factory completionFactory = CompletionProposal.expanding(dsl);
-        for (AppRegistration appRegistration : appRegistry.findAll()) {
-            if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
-                proposals.add(completionFactory.withSeparateTokens(appRegistration.getName(),
-                        "Wire destination into a " + appRegistration.getType() + " app"));
-            }
-        }
-    }
+	@Override
+	public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
+			List<CompletionProposal> proposals) {
+		CompletionProposal.Factory completionFactory = CompletionProposal.expanding(dsl);
+		for (AppRegistration appRegistration : appRegistry.findAll()) {
+			if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
+				proposals.add(completionFactory.withSeparateTokens(appRegistration.getName(),
+						"Wire destination into a " + appRegistration.getType() + " app"));
+			}
+		}
+	}
 
 }

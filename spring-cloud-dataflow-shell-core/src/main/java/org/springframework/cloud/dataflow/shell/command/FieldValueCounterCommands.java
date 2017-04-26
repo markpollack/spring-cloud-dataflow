@@ -53,71 +53,64 @@ import org.springframework.stereotype.Component;
 @Component
 public class FieldValueCounterCommands extends AbstractMetricsCommands implements CommandMarker {
 
-    private static final String DISPLAY_COUNTER = "field-value-counter display";
-    private static final String LIST_COUNTERS = "field-value-counter list";
-    private static final String RESET_COUNTER = "field-value-counter reset";
-    @Autowired
-    private DataFlowShell dataFlowShell;
+	private static final String DISPLAY_COUNTER = "field-value-counter display";
+	private static final String LIST_COUNTERS = "field-value-counter list";
+	private static final String RESET_COUNTER = "field-value-counter reset";
+	@Autowired
+	private DataFlowShell dataFlowShell;
 
-    protected FieldValueCounterCommands() {
-        super("Field Value Counter");
-    }
+	protected FieldValueCounterCommands() {
+		super("Field Value Counter");
+	}
 
-    @CliAvailabilityIndicator({LIST_COUNTERS, DISPLAY_COUNTER})
-    public boolean availableWithViewRole() {
-        return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.FIELD_VALUE_COUNTER);
-    }
+	@CliAvailabilityIndicator({ LIST_COUNTERS, DISPLAY_COUNTER })
+	public boolean availableWithViewRole() {
+		return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.FIELD_VALUE_COUNTER);
+	}
 
-    @CliAvailabilityIndicator({RESET_COUNTER})
-    public boolean availableWithCreateRole() {
-        return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.FIELD_VALUE_COUNTER);
-    }
+	@CliAvailabilityIndicator({ RESET_COUNTER })
+	public boolean availableWithCreateRole() {
+		return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.FIELD_VALUE_COUNTER);
+	}
 
-    @CliCommand(value = DISPLAY_COUNTER, help = "Display the value of a field value counter")
-    public List<Object> display(
-            @CliOption(key = {"", "name"}, help = "the name of the field value counter to display", mandatory = true)
-                    String name,
-            final @CliOption(key = "pattern", help = "the pattern used to format the values (see DecimalFormat)",
-                    mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
-        FieldValueCounterResource counter = fvcOperations().retrieve(name);
+	@CliCommand(value = DISPLAY_COUNTER, help = "Display the value of a field value counter")
+	public List<Object> display(
+			@CliOption(key = { "",
+					"name" }, help = "the name of the field value counter to display", mandatory = true) String name,
+			final @CliOption(key = "pattern", help = "the pattern used to format the values (see DecimalFormat)", mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
+		FieldValueCounterResource counter = fvcOperations().retrieve(name);
 
-        LinkedHashMap<String, Object> header = new LinkedHashMap<>();
-        header.put("key", "Value");
-        header.put("value", "Count");
-        TableModel model = new BeanListTableModel<>(counter.getValues().entrySet(), header);
+		LinkedHashMap<String, Object> header = new LinkedHashMap<>();
+		header.put("key", "Value");
+		header.put("value", "Count");
+		TableModel model = new BeanListTableModel<>(counter.getValues().entrySet(), header);
 
-        Table table = DataFlowTables.applyStyle(new TableBuilder(model))
-                .on(CellMatchers.ofType(Double.class))
-                .addFormatter(new Formatter() {
-                    @Override
-                    public String[] format(Object value) {
-                        return new String[]{pattern.format(value)};
-                    }
-                })
-                .addAligner(SimpleHorizontalAligner.right)
-                .build();
-        return Arrays.asList(
-                String.format("Displaying values for field value counter '%s'", name),
-                table
-        );
-    }
+		Table table = DataFlowTables.applyStyle(new TableBuilder(model)).on(CellMatchers.ofType(Double.class))
+				.addFormatter(new Formatter() {
+					@Override
+					public String[] format(Object value) {
+						return new String[] { pattern.format(value) };
+					}
+				}).addAligner(SimpleHorizontalAligner.right).build();
+		return Arrays.asList(String.format("Displaying values for field value counter '%s'", name), table);
+	}
 
-    @CliCommand(value = LIST_COUNTERS, help = "List all available field value counter names")
-    public Table list() {
-        PagedResources<MetricResource> list = fvcOperations().list();
-        return displayMetrics(list);
-    }
+	@CliCommand(value = LIST_COUNTERS, help = "List all available field value counter names")
+	public Table list() {
+		PagedResources<MetricResource> list = fvcOperations().list();
+		return displayMetrics(list);
+	}
 
-    @CliCommand(value = RESET_COUNTER, help = "Reset the field value counter with the given name")
-    public String reset(
-            @CliOption(mandatory = true, key = {"", "name"}, help = "the name of the field value counter to reset"
-                    /*, optionContext = "existing-counter disable-string-converter"*/) String name) {
-        fvcOperations().reset(name);
-        return String.format("Deleted field value counter '%s'", name);
-    }
+	@CliCommand(value = RESET_COUNTER, help = "Reset the field value counter with the given name")
+	public String reset(
+			@CliOption(mandatory = true, key = { "", "name" }, help = "the name of the field value counter to reset"
+			/* , optionContext = "existing-counter disable-string-converter" */) String name) {
+		fvcOperations().reset(name);
+		return String.format("Deleted field value counter '%s'", name);
+	}
 
-    private FieldValueCounterOperations fvcOperations() {
-        return dataFlowShell.getDataFlowOperations().fieldValueCounterOperations();
-    }
+	private FieldValueCounterOperations fvcOperations() {
+		return dataFlowShell.getDataFlowOperations().fieldValueCounterOperations();
+	}
 
 }

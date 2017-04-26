@@ -19,16 +19,18 @@ package org.springframework.cloud.dataflow.rest.client;
 import org.springframework.cloud.dataflow.rest.resource.about.AboutResource;
 
 /**
- * Interface defining operations to query information about the server and runtime environment.
+ * Interface defining operations to query information about the server and runtime
+ * environment.
  *
  * @author Eric Bottard
  */
 public interface AboutOperations {
 
-    /**
-     * Return various pieces of information about the server, such as version and deployer runtime.
-     *
-     * @return the metadata about the Spring Cloud Data Flow server.
-     */
-    AboutResource get();
+	/**
+	 * Return various pieces of information about the server, such as version and deployer
+	 * runtime.
+	 *
+	 * @return the metadata about the Spring Cloud Data Flow server.
+	 */
+	AboutResource get();
 }

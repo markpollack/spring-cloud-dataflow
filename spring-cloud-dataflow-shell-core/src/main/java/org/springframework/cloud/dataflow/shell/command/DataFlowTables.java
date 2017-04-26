@@ -38,72 +38,69 @@ import org.springframework.shell.table.Tables;
  */
 public class DataFlowTables {
 
-    /**
-     * Customize the given TableBuilder with the following common features
-     * (these choices can always be overridden by applying later customizations) :<ul>
-     * <li>double border around the whole table and first row</li>
-     * <li>vertical space (air) borders, single line separators between rows</li>
-     * <li>first row is assumed to be a header and is centered horizontally and vertically</li>
-     * <li>cells containing Map values are rendered as {@literal key = value} lines, trying to align on equal signs</li>
-     * </ul>
-     *
-     * @param builder the table builder to use
-     * @return the configured table builder
-     */
-    public static TableBuilder applyStyle(TableBuilder builder) {
-        builder.addOutlineBorder(BorderStyle.fancy_double)
-                .paintBorder(BorderStyle.air, BorderSpecification.INNER_VERTICAL)
-                .fromTopLeft().toBottomRight()
-                .paintBorder(BorderStyle.fancy_light, BorderSpecification.INNER_VERTICAL)
-                .fromTopLeft().toBottomRight()
-                .addHeaderBorder(BorderStyle.fancy_double)
-                .on(CellMatchers.row(0))
-                .addAligner(SimpleVerticalAligner.middle)
-                .addAligner(SimpleHorizontalAligner.center)
-        ;
-        return Tables.configureKeyValueRendering(builder, " = ");
-    }
+	/**
+	 * Customize the given TableBuilder with the following common features (these choices
+	 * can always be overridden by applying later customizations) :
+	 * <ul>
+	 * <li>double border around the whole table and first row</li>
+	 * <li>vertical space (air) borders, single line separators between rows</li>
+	 * <li>first row is assumed to be a header and is centered horizontally and
+	 * vertically</li>
+	 * <li>cells containing Map values are rendered as {@literal key = value} lines,
+	 * trying to align on equal signs</li>
+	 * </ul>
+	 *
+	 * @param builder the table builder to use
+	 * @return the configured table builder
+	 */
+	public static TableBuilder applyStyle(TableBuilder builder) {
+		builder.addOutlineBorder(BorderStyle.fancy_double)
+				.paintBorder(BorderStyle.air, BorderSpecification.INNER_VERTICAL).fromTopLeft().toBottomRight()
+				.paintBorder(BorderStyle.fancy_light, BorderSpecification.INNER_VERTICAL).fromTopLeft().toBottomRight()
+				.addHeaderBorder(BorderStyle.fancy_double).on(CellMatchers.row(0))
+				.addAligner(SimpleVerticalAligner.middle).addAligner(SimpleHorizontalAligner.center);
+		return Tables.configureKeyValueRendering(builder, " = ");
+	}
 
-    /**
-     * A formatter that collects bean property names and turns them into capitalized, separated words.
-     *
-     * @author Eric Bottard
-     */
-    public static class BeanWrapperFormatter implements Formatter {
+	/**
+	 * A formatter that collects bean property names and turns them into capitalized,
+	 * separated words.
+	 *
+	 * @author Eric Bottard
+	 */
+	public static class BeanWrapperFormatter implements Formatter {
 
-        private final Collection<String> includes;
+		private final Collection<String> includes;
 
-        private final Collection<String> excludes;
+		private final Collection<String> excludes;
 
-        private final String delimiter;
+		private final String delimiter;
 
-        public BeanWrapperFormatter(String delimiter) {
-            this(delimiter, null, Arrays.asList("class"));
-        }
+		public BeanWrapperFormatter(String delimiter) {
+			this(delimiter, null, Arrays.asList("class"));
+		}
 
-        public BeanWrapperFormatter(String delimiter, Collection<String> includes, Collection<String> excludes) {
-            this.delimiter = delimiter;
-            this.includes = includes;
-            this.excludes = excludes;
-        }
+		public BeanWrapperFormatter(String delimiter, Collection<String> includes, Collection<String> excludes) {
+			this.delimiter = delimiter;
+			this.includes = includes;
+			this.excludes = excludes;
+		}
 
-        @Override
-        public String[] format(Object value) {
-            if (value == null) {
-                return new String[0];
-            } else {
-                BeanWrapper beanWrapper = new BeanWrapperImpl(value);
-                return Arrays.stream(beanWrapper.getPropertyDescriptors())
-                        .map(PropertyDescriptor::getName)
-                        .filter(n -> (includes == null || includes.contains(n)) && (excludes == null || !excludes
-                                .contains(n)))
-                        .map(n -> title(n) + delimiter + beanWrapper.getPropertyValue(n))
-                        .toArray(String[]::new);
-            }
-        }
+		@Override
+		public String[] format(Object value) {
+			if (value == null) {
+				return new String[0];
+			}
+			else {
+				BeanWrapper beanWrapper = new BeanWrapperImpl(value);
+				return Arrays.stream(beanWrapper.getPropertyDescriptors()).map(PropertyDescriptor::getName).filter(
+						n -> (includes == null || includes.contains(n)) && (excludes == null || !excludes.contains(n)))
+						.map(n -> title(n) + delimiter + beanWrapper.getPropertyValue(n)).toArray(String[]::new);
+			}
+		}
 
-        private String title(String n) {
-            return Character.toUpperCase(n.charAt(0)) + n.substring(1).replaceAll("([A-Z])", " $1");
-        }
-    }
+		private String title(String n) {
+			return Character.toUpperCase(n.charAt(0)) + n.substring(1).replaceAll("([A-Z])", " $1");
+		}
+	}
 }

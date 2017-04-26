@@ -67,285 +67,272 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultTaskService implements TaskService {
 
-    private static final String DATAFLOW_SERVER_URI_KEY = "dataflowServerUri";
-    private final DataSourceProperties dataSourceProperties;
-    /**
-     * Used to create TaskExecutions.
-     */
-    private final TaskRepository taskExecutionRepository;
-    /**
-     * Used to read TaskExecutions.
-     */
-    private final TaskExplorer taskExplorer;
-    /**
-     * Used to launch apps as tasks.
-     */
-    private final TaskLauncher taskLauncher;
-    /**
-     * The {@link AppRegistry} this service will use to look up task app URIs.
-     */
-    private final AppRegistry registry;
-    /**
-     * The {@link ResourceLoader} that will resolve URIs to {@link Resource}s.
-     */
-    private final ResourceLoader resourceLoader;
-    private final TaskDefinitionRepository taskDefinitionRepository;
-    private final WhitelistProperties whitelistProperties;
-    private final TaskConfigurationProperties taskConfigurationProperties;
-    private final DeploymentIdRepository deploymentIdRepository;
-    private final String dataflowServerUri;
+	private static final String DATAFLOW_SERVER_URI_KEY = "dataflowServerUri";
+	private final DataSourceProperties dataSourceProperties;
+	/**
+	 * Used to create TaskExecutions.
+	 */
+	private final TaskRepository taskExecutionRepository;
+	/**
+	 * Used to read TaskExecutions.
+	 */
+	private final TaskExplorer taskExplorer;
+	/**
+	 * Used to launch apps as tasks.
+	 */
+	private final TaskLauncher taskLauncher;
+	/**
+	 * The {@link AppRegistry} this service will use to look up task app URIs.
+	 */
+	private final AppRegistry registry;
+	/**
+	 * The {@link ResourceLoader} that will resolve URIs to {@link Resource}s.
+	 */
+	private final ResourceLoader resourceLoader;
+	private final TaskDefinitionRepository taskDefinitionRepository;
+	private final WhitelistProperties whitelistProperties;
+	private final TaskConfigurationProperties taskConfigurationProperties;
+	private final DeploymentIdRepository deploymentIdRepository;
+	private final String dataflowServerUri;
 
-    /**
-     * Initializes the {@link DefaultTaskService}.
-     *
-     * @param dataSourceProperties        the data source properties.
-     * @param taskDefinitionRepository    the {@link TaskDefinitionRepository} this service will use for
-     *                                    task CRUD operations.
-     * @param taskExecutionRepository     the repository this service will use for deployment
-     *                                    IDs.
-     * @param taskExplorer                the explorer this service will use to lookup task executions
-     * @param registry                    URI registry this service will use to look up app URIs.
-     * @param resourceLoader              the {@link ResourceLoader} that will resolve URIs to
-     *                                    {@link Resource}s.
-     * @param taskLauncher                the launcher this service will use to launch task apps.
-     * @param metaDataResolver            the metadata resolver
-     * @param taskConfigurationProperties the properties used to define the behavior of tasks
-     * @param deploymentIdRepository      the repository that maps deployment keys to IDs
-     * @param dataflowServerUri           the data flow server URI
-     */
-    public DefaultTaskService(DataSourceProperties dataSourceProperties,
-                              TaskDefinitionRepository taskDefinitionRepository,
-                              TaskExplorer taskExplorer,
-                              TaskRepository taskExecutionRepository, AppRegistry registry,
-                              ResourceLoader resourceLoader, TaskLauncher taskLauncher,
-                              ApplicationConfigurationMetadataResolver metaDataResolver,
-                              TaskConfigurationProperties taskConfigurationProperties,
-                              DeploymentIdRepository deploymentIdRepository,
-                              String dataflowServerUri) {
-        Assert.notNull(dataSourceProperties, "DataSourceProperties must not be null");
-        Assert.notNull(taskDefinitionRepository, "TaskDefinitionRepository must not be null");
-        Assert.notNull(taskExecutionRepository, "TaskExecutionRepository must not be null");
-        Assert.notNull(taskExplorer, "TaskExplorer must not be null");
-        Assert.notNull(registry, "UriRegistry must not be null");
-        Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-        Assert.notNull(taskLauncher, "TaskLauncher must not be null");
-        Assert.notNull(metaDataResolver, "metaDataResolver must not be null");
-        Assert.notNull(taskConfigurationProperties, "taskConfigurationProperties must not be null");
-        Assert.notNull(deploymentIdRepository, "deploymentIdRepository must not be null");
-        this.dataSourceProperties = dataSourceProperties;
-        this.taskDefinitionRepository = taskDefinitionRepository;
-        this.taskExecutionRepository = taskExecutionRepository;
-        this.taskExplorer = taskExplorer;
-        this.registry = registry;
-        this.taskLauncher = taskLauncher;
-        this.resourceLoader = resourceLoader;
-        this.whitelistProperties = new WhitelistProperties(metaDataResolver);
-        this.taskConfigurationProperties = taskConfigurationProperties;
-        this.deploymentIdRepository = deploymentIdRepository;
-        this.dataflowServerUri = dataflowServerUri;
-    }
+	/**
+	 * Initializes the {@link DefaultTaskService}.
+	 *
+	 * @param dataSourceProperties the data source properties.
+	 * @param taskDefinitionRepository the {@link TaskDefinitionRepository} this service
+	 * will use for task CRUD operations.
+	 * @param taskExecutionRepository the repository this service will use for deployment
+	 * IDs.
+	 * @param taskExplorer the explorer this service will use to lookup task executions
+	 * @param registry URI registry this service will use to look up app URIs.
+	 * @param resourceLoader the {@link ResourceLoader} that will resolve URIs to
+	 * {@link Resource}s.
+	 * @param taskLauncher the launcher this service will use to launch task apps.
+	 * @param metaDataResolver the metadata resolver
+	 * @param taskConfigurationProperties the properties used to define the behavior of
+	 * tasks
+	 * @param deploymentIdRepository the repository that maps deployment keys to IDs
+	 * @param dataflowServerUri the data flow server URI
+	 */
+	public DefaultTaskService(DataSourceProperties dataSourceProperties,
+			TaskDefinitionRepository taskDefinitionRepository, TaskExplorer taskExplorer,
+			TaskRepository taskExecutionRepository, AppRegistry registry, ResourceLoader resourceLoader,
+			TaskLauncher taskLauncher, ApplicationConfigurationMetadataResolver metaDataResolver,
+			TaskConfigurationProperties taskConfigurationProperties, DeploymentIdRepository deploymentIdRepository,
+			String dataflowServerUri) {
+		Assert.notNull(dataSourceProperties, "DataSourceProperties must not be null");
+		Assert.notNull(taskDefinitionRepository, "TaskDefinitionRepository must not be null");
+		Assert.notNull(taskExecutionRepository, "TaskExecutionRepository must not be null");
+		Assert.notNull(taskExplorer, "TaskExplorer must not be null");
+		Assert.notNull(registry, "UriRegistry must not be null");
+		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		Assert.notNull(taskLauncher, "TaskLauncher must not be null");
+		Assert.notNull(metaDataResolver, "metaDataResolver must not be null");
+		Assert.notNull(taskConfigurationProperties, "taskConfigurationProperties must not be null");
+		Assert.notNull(deploymentIdRepository, "deploymentIdRepository must not be null");
+		this.dataSourceProperties = dataSourceProperties;
+		this.taskDefinitionRepository = taskDefinitionRepository;
+		this.taskExecutionRepository = taskExecutionRepository;
+		this.taskExplorer = taskExplorer;
+		this.registry = registry;
+		this.taskLauncher = taskLauncher;
+		this.resourceLoader = resourceLoader;
+		this.whitelistProperties = new WhitelistProperties(metaDataResolver);
+		this.taskConfigurationProperties = taskConfigurationProperties;
+		this.deploymentIdRepository = deploymentIdRepository;
+		this.dataflowServerUri = dataflowServerUri;
+	}
 
-    @Override
-    public long executeTask(String taskName, Map<String, String> taskDeploymentProperties,
-                            List<String> commandLineArgs) {
-        Assert.hasText(taskName, "The provided taskName must not be null or empty.");
-        Assert.notNull(taskDeploymentProperties,
-                "The provided runtimeProperties must not be null.");
-        TaskDefinition taskDefinition = this.taskDefinitionRepository.findOne(taskName);
-        if (taskDefinition == null) {
-            throw new NoSuchTaskDefinitionException(taskName);
-        }
-        TaskParser taskParser = new TaskParser(taskDefinition.getName(),
-                taskDefinition.getDslText(), true, true);
-        TaskNode taskNode = taskParser.parse();
-        // if composed task definition replace definition with  with one composed task runner and executable graph.
-        if (taskNode.isComposed()) {
-            taskDefinition = new TaskDefinition(taskDefinition.getName(),
-                    createComposedTaskDefinition(taskNode.toExecutableDSL()));
-        }
+	@Override
+	public long executeTask(String taskName, Map<String, String> taskDeploymentProperties,
+			List<String> commandLineArgs) {
+		Assert.hasText(taskName, "The provided taskName must not be null or empty.");
+		Assert.notNull(taskDeploymentProperties, "The provided runtimeProperties must not be null.");
+		TaskDefinition taskDefinition = this.taskDefinitionRepository.findOne(taskName);
+		if (taskDefinition == null) {
+			throw new NoSuchTaskDefinitionException(taskName);
+		}
+		TaskParser taskParser = new TaskParser(taskDefinition.getName(), taskDefinition.getDslText(), true, true);
+		TaskNode taskNode = taskParser.parse();
+		// if composed task definition replace definition with with one composed task
+		// runner and executable graph.
+		if (taskNode.isComposed()) {
+			taskDefinition = new TaskDefinition(taskDefinition.getName(),
+					createComposedTaskDefinition(taskNode.toExecutableDSL()));
+		}
 
-        AppRegistration appRegistration = this.registry.find(taskDefinition.getRegisteredAppName(), ApplicationType
-                .task);
-        Assert.notNull(appRegistration, "Unknown task app: " + taskDefinition.getRegisteredAppName());
-        Resource appResource = appRegistration.getResource();
-        Resource metadataResource = appRegistration.getMetadataResource();
+		AppRegistration appRegistration = this.registry.find(taskDefinition.getRegisteredAppName(),
+				ApplicationType.task);
+		Assert.notNull(appRegistration, "Unknown task app: " + taskDefinition.getRegisteredAppName());
+		Resource appResource = appRegistration.getResource();
+		Resource metadataResource = appRegistration.getMetadataResource();
 
-        TaskExecution taskExecution = taskExecutionRepository.createTaskExecution(taskName);
-        taskDefinition = this.updateTaskProperties(taskDefinition);
+		TaskExecution taskExecution = taskExecutionRepository.createTaskExecution(taskName);
+		taskDefinition = this.updateTaskProperties(taskDefinition);
 
-        Map<String, String> appDeploymentProperties = extractAppProperties(taskDefinition.getRegisteredAppName(),
-                taskDeploymentProperties);
-        Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils
-                .extractAndQualifyDeployerProperties(taskDeploymentProperties, taskDefinition.getRegisteredAppName());
-        if (StringUtils.hasText(this.dataflowServerUri) && taskNode.isComposed()) {
-            updateDataFlowUriIfNeeded(appDeploymentProperties, commandLineArgs);
-        }
-        AppDefinition revisedDefinition = mergeAndExpandAppProperties(taskDefinition, metadataResource,
-                appDeploymentProperties);
-        List<String> updatedCmdLineArgs = this.updateCommandLineArgs(commandLineArgs, taskExecution);
-        AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource,
-                deployerDeploymentProperties, updatedCmdLineArgs);
-        String id = this.taskLauncher.launch(request);
-        if (!StringUtils.hasText(id)) {
-            throw new IllegalStateException("Deployment ID is null for the task:"
-                    + taskName);
-        }
-        taskExecutionRepository.updateExternalExecutionId(taskExecution.getExecutionId(), id);
-        return taskExecution.getExecutionId();
-    }
+		Map<String, String> appDeploymentProperties = extractAppProperties(taskDefinition.getRegisteredAppName(),
+				taskDeploymentProperties);
+		Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils
+				.extractAndQualifyDeployerProperties(taskDeploymentProperties, taskDefinition.getRegisteredAppName());
+		if (StringUtils.hasText(this.dataflowServerUri) && taskNode.isComposed()) {
+			updateDataFlowUriIfNeeded(appDeploymentProperties, commandLineArgs);
+		}
+		AppDefinition revisedDefinition = mergeAndExpandAppProperties(taskDefinition, metadataResource,
+				appDeploymentProperties);
+		List<String> updatedCmdLineArgs = this.updateCommandLineArgs(commandLineArgs, taskExecution);
+		AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource,
+				deployerDeploymentProperties, updatedCmdLineArgs);
+		String id = this.taskLauncher.launch(request);
+		if (!StringUtils.hasText(id)) {
+			throw new IllegalStateException("Deployment ID is null for the task:" + taskName);
+		}
+		taskExecutionRepository.updateExternalExecutionId(taskExecution.getExecutionId(), id);
+		return taskExecution.getExecutionId();
+	}
 
-    private void updateDataFlowUriIfNeeded(Map<String, String> appDeploymentProperties, List<String> commandLineArgs) {
-        if (StringUtils.isEmpty(this.dataflowServerUri)) {
-            return;
-        }
-        RelaxedNames relaxedNames = new RelaxedNames(DATAFLOW_SERVER_URI_KEY);
-        for (String dataFlowUriKey : relaxedNames) {
-            if (appDeploymentProperties.containsKey(dataFlowUriKey)) {
-                return;
-            }
-            for (String cmdLineArg : commandLineArgs) {
-                if (cmdLineArg.contains(dataFlowUriKey + "=")) {
-                    return;
-                }
-            }
-        }
-        appDeploymentProperties.put(DATAFLOW_SERVER_URI_KEY, this.dataflowServerUri);
-    }
+	private void updateDataFlowUriIfNeeded(Map<String, String> appDeploymentProperties, List<String> commandLineArgs) {
+		if (StringUtils.isEmpty(this.dataflowServerUri)) {
+			return;
+		}
+		RelaxedNames relaxedNames = new RelaxedNames(DATAFLOW_SERVER_URI_KEY);
+		for (String dataFlowUriKey : relaxedNames) {
+			if (appDeploymentProperties.containsKey(dataFlowUriKey)) {
+				return;
+			}
+			for (String cmdLineArg : commandLineArgs) {
+				if (cmdLineArg.contains(dataFlowUriKey + "=")) {
+					return;
+				}
+			}
+		}
+		appDeploymentProperties.put(DATAFLOW_SERVER_URI_KEY, this.dataflowServerUri);
+	}
 
-    private List<String> updateCommandLineArgs(List<String> commandLineArgs, TaskExecution taskExecution) {
-        return Stream.concat(
-                commandLineArgs.stream().filter(a -> !a.startsWith("--spring.cloud.task.executionid=")),
-                Stream.of("--spring.cloud.task.executionid=" + taskExecution.getExecutionId())
-        ).collect(Collectors.toList());
-    }
+	private List<String> updateCommandLineArgs(List<String> commandLineArgs, TaskExecution taskExecution) {
+		return Stream
+				.concat(commandLineArgs.stream().filter(a -> !a.startsWith("--spring.cloud.task.executionid=")),
+						Stream.of("--spring.cloud.task.executionid=" + taskExecution.getExecutionId()))
+				.collect(Collectors.toList());
+	}
 
-    @Override
-    public boolean isComposedDefinition(String dsl) {
-        Assert.hasText(dsl, "dsl must not be empty nor null");
-        TaskParser taskParser = new TaskParser("__dummy", dsl, true, true);
-        return taskParser.parse().isComposed();
-    }
+	@Override
+	public boolean isComposedDefinition(String dsl) {
+		Assert.hasText(dsl, "dsl must not be empty nor null");
+		TaskParser taskParser = new TaskParser("__dummy", dsl, true, true);
+		return taskParser.parse().isComposed();
+	}
 
-    @Override
-    public void cleanupExecution(long id) {
-        TaskExecution taskExecution = taskExplorer.getTaskExecution(id);
-        Assert.notNull(taskExecution, "There was no task execution with id " + id);
-        String launchId = taskExecution.getExternalExecutionId();
-        Assert.hasLength(launchId, "The TaskExecution for id " + id + " did not have an externalExecutionId");
-        taskLauncher.cleanup(launchId);
-    }
+	@Override
+	public void cleanupExecution(long id) {
+		TaskExecution taskExecution = taskExplorer.getTaskExecution(id);
+		Assert.notNull(taskExecution, "There was no task execution with id " + id);
+		String launchId = taskExecution.getExternalExecutionId();
+		Assert.hasLength(launchId, "The TaskExecution for id " + id + " did not have an externalExecutionId");
+		taskLauncher.cleanup(launchId);
+	}
 
-    private Map<String, String> extractAppProperties(String name, Map<String, String> taskDeploymentProperties) {
-        final String prefix = "app." + name + ".";
-        return taskDeploymentProperties.entrySet().stream()
-                .filter(kv -> kv.getKey().startsWith(prefix))
-                .collect(Collectors.toMap(
-                        kv -> kv.getKey().substring(prefix.length()),
-                        kv -> kv.getValue()
-                ));
-    }
+	private Map<String, String> extractAppProperties(String name, Map<String, String> taskDeploymentProperties) {
+		final String prefix = "app." + name + ".";
+		return taskDeploymentProperties.entrySet().stream().filter(kv -> kv.getKey().startsWith(prefix))
+				.collect(Collectors.toMap(kv -> kv.getKey().substring(prefix.length()), kv -> kv.getValue()));
+	}
 
-    /**
-     * Return a copy of a given task definition where short form parameters have been expanded to their long form
-     * (amongst the whitelisted supported properties of the app) if applicable.
-     */
-    private AppDefinition mergeAndExpandAppProperties(TaskDefinition original, Resource resource, Map<String, String>
-            appDeploymentProperties) {
-        Map<String, String> merged = new HashMap<>(original.getProperties());
-        merged.putAll(appDeploymentProperties);
-        merged = whitelistProperties.qualifyProperties(merged, resource);
-        return new AppDefinition(original.getName(), merged);
-    }
+	/**
+	 * Return a copy of a given task definition where short form parameters have been
+	 * expanded to their long form (amongst the whitelisted supported properties of the
+	 * app) if applicable.
+	 */
+	private AppDefinition mergeAndExpandAppProperties(TaskDefinition original, Resource resource,
+			Map<String, String> appDeploymentProperties) {
+		Map<String, String> merged = new HashMap<>(original.getProperties());
+		merged.putAll(appDeploymentProperties);
+		merged = whitelistProperties.qualifyProperties(merged, resource);
+		return new AppDefinition(original.getName(), merged);
+	}
 
-    private TaskDefinition updateTaskProperties(TaskDefinition taskDefinition) {
-        TaskDefinitionBuilder builder = TaskDefinitionBuilder.from(taskDefinition);
-        builder.setProperty("spring.datasource.url", dataSourceProperties.getUrl());
-        builder.setProperty("spring.datasource.username",
-                dataSourceProperties.getUsername());
-        // password may be empty
-        if (StringUtils.hasText(dataSourceProperties.getPassword())) {
-            builder.setProperty("spring.datasource.password",
-                    dataSourceProperties.getPassword());
-        }
-        builder.setProperty("spring.datasource.driverClassName",
-                dataSourceProperties.getDriverClassName());
+	private TaskDefinition updateTaskProperties(TaskDefinition taskDefinition) {
+		TaskDefinitionBuilder builder = TaskDefinitionBuilder.from(taskDefinition);
+		builder.setProperty("spring.datasource.url", dataSourceProperties.getUrl());
+		builder.setProperty("spring.datasource.username", dataSourceProperties.getUsername());
+		// password may be empty
+		if (StringUtils.hasText(dataSourceProperties.getPassword())) {
+			builder.setProperty("spring.datasource.password", dataSourceProperties.getPassword());
+		}
+		builder.setProperty("spring.datasource.driverClassName", dataSourceProperties.getDriverClassName());
 
-        return builder.build();
-    }
+		return builder.build();
+	}
 
-    @Override
-    public void saveTaskDefinition(String name, String dsl) {
-        TaskParser taskParser = new TaskParser(name,
-                dsl, true, true);
-        TaskNode taskNode = taskParser.parse();
-        if (taskNode.isComposed()) {
-            //Create the child task definitions needed for the composed task
-            taskNode.getTaskApps().stream().forEach(task -> {
-                //Add arguments to child task definitions
-                String generatedTaskDSL = task.getName() +
-                        task.getArguments().entrySet().stream()
-                                .map(argument -> String.format(" --%s=%s",
-                                        argument.getKey(), argument.getValue()))
-                                .collect(Collectors.joining());
-                TaskDefinition composedTaskDefinition = new TaskDefinition(
-                        task.getExecutableDSLName(), generatedTaskDSL);
-                saveStandardTaskDefinition(composedTaskDefinition);
-            });
-            taskDefinitionRepository.save(
-                    new TaskDefinition(name, dsl));
-        } else {
-            saveStandardTaskDefinition(new TaskDefinition(name, dsl));
-        }
+	@Override
+	public void saveTaskDefinition(String name, String dsl) {
+		TaskParser taskParser = new TaskParser(name, dsl, true, true);
+		TaskNode taskNode = taskParser.parse();
+		if (taskNode.isComposed()) {
+			// Create the child task definitions needed for the composed task
+			taskNode.getTaskApps().stream().forEach(task -> {
+				// Add arguments to child task definitions
+				String generatedTaskDSL = task.getName() + task.getArguments().entrySet().stream()
+						.map(argument -> String.format(" --%s=%s", argument.getKey(), argument.getValue()))
+						.collect(Collectors.joining());
+				TaskDefinition composedTaskDefinition = new TaskDefinition(task.getExecutableDSLName(),
+						generatedTaskDSL);
+				saveStandardTaskDefinition(composedTaskDefinition);
+			});
+			taskDefinitionRepository.save(new TaskDefinition(name, dsl));
+		}
+		else {
+			saveStandardTaskDefinition(new TaskDefinition(name, dsl));
+		}
 
-    }
+	}
 
-    private void saveStandardTaskDefinition(TaskDefinition taskDefinition) {
-        String appName = taskDefinition.getRegisteredAppName();
-        if (registry.find(appName, ApplicationType.task) == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Application name '%s' with type '%s' does not exist in the app registry.",
-                    appName, ApplicationType.task));
-        }
-        taskDefinitionRepository.save(taskDefinition);
-    }
+	private void saveStandardTaskDefinition(TaskDefinition taskDefinition) {
+		String appName = taskDefinition.getRegisteredAppName();
+		if (registry.find(appName, ApplicationType.task) == null) {
+			throw new IllegalArgumentException(
+					String.format("Application name '%s' with type '%s' does not exist in the app registry.", appName,
+							ApplicationType.task));
+		}
+		taskDefinitionRepository.save(taskDefinition);
+	}
 
-    private String createComposedTaskDefinition(String graph) {
-        return String.format("%s --graph=\"%s\"", taskConfigurationProperties.getComposedTaskRunnerName(), graph);
-    }
+	private String createComposedTaskDefinition(String graph) {
+		return String.format("%s --graph=\"%s\"", taskConfigurationProperties.getComposedTaskRunnerName(), graph);
+	}
 
-    @Override
-    public void deleteTaskDefinition(String name) {
-        TaskDefinition taskDefinition = taskDefinitionRepository.findOne(name);
-        if (taskDefinition == null) {
-            throw new NoSuchTaskDefinitionException(name);
-        }
-        TaskParser taskParser = new TaskParser(taskDefinition.getName(),
-                taskDefinition.getDslText(), true, true);
-        TaskNode taskNode = taskParser.parse();
-        //if composed-task-runner definition then destroy all child tasks associated with it.
-        if (taskNode.isComposed()) {
-            String childTaskPrefix = TaskNode.getTaskPrefix(name);
-            //destroy composed child tasks
-            taskNode.getTaskApps().stream().forEach(task -> {
-                String childName = task.getName();
-                if (task.getLabel() != null) {
-                    childName = task.getLabel();
-                }
-                destroyTask(childTaskPrefix + childName);
-            });
-        }
-        //destroy normal task or composed parent task
-        destroyTask(name);
-    }
+	@Override
+	public void deleteTaskDefinition(String name) {
+		TaskDefinition taskDefinition = taskDefinitionRepository.findOne(name);
+		if (taskDefinition == null) {
+			throw new NoSuchTaskDefinitionException(name);
+		}
+		TaskParser taskParser = new TaskParser(taskDefinition.getName(), taskDefinition.getDslText(), true, true);
+		TaskNode taskNode = taskParser.parse();
+		// if composed-task-runner definition then destroy all child tasks associated with
+		// it.
+		if (taskNode.isComposed()) {
+			String childTaskPrefix = TaskNode.getTaskPrefix(name);
+			// destroy composed child tasks
+			taskNode.getTaskApps().stream().forEach(task -> {
+				String childName = task.getName();
+				if (task.getLabel() != null) {
+					childName = task.getLabel();
+				}
+				destroyTask(childTaskPrefix + childName);
+			});
+		}
+		// destroy normal task or composed parent task
+		destroyTask(name);
+	}
 
-    private void destroyTask(String name) {
-        TaskDefinition taskDefinition = taskDefinitionRepository.findOne(name);
-        if (taskDefinition == null) {
-            throw new NoSuchTaskDefinitionException(name);
-        }
-        taskLauncher.destroy(name);
-        deploymentIdRepository.delete(DeploymentKey.forTaskDefinition(taskDefinition));
-        taskDefinitionRepository.delete(name);
-    }
+	private void destroyTask(String name) {
+		TaskDefinition taskDefinition = taskDefinitionRepository.findOne(name);
+		if (taskDefinition == null) {
+			throw new NoSuchTaskDefinitionException(name);
+		}
+		taskLauncher.destroy(name);
+		deploymentIdRepository.delete(DeploymentKey.forTaskDefinition(taskDefinition));
+		taskDefinitionRepository.delete(name);
+	}
 
 }

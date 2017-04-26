@@ -45,87 +45,76 @@ import static org.junit.Assert.assertEquals;
  * @author Glenn Renfro
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {TaskDependencies.class,
-        EmbeddedDataSourceConfiguration.class,
-        PropertyPlaceholderAutoConfiguration.class})
+@SpringBootTest(classes = { TaskDependencies.class, EmbeddedDataSourceConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 @DirtiesContext
 public class TaskExecutionExplorerTests {
-    @Autowired
-    private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-    @Autowired
-    private TaskExplorer explorer;
+	@Autowired
+	private TaskExplorer explorer;
 
-    private JdbcTemplate template;
+	private JdbcTemplate template;
 
-    @Before
-    public void setup() throws Exception {
-        template = new JdbcTemplate(dataSource);
-        template.execute("DELETE FROM task_execution");
-    }
+	@Before
+	public void setup() throws Exception {
+		template = new JdbcTemplate(dataSource);
+		template.execute("DELETE FROM task_execution");
+	}
 
-    @Test
-    public void testInitializer() throws Exception {
-        int actual = template.queryForObject("SELECT COUNT(*) from TASK_EXECUTION", Integer.class);
-        assertEquals("expected 0 entries returned from task_execution", 0, actual);
-        actual = template.queryForObject("SELECT COUNT(*) from TASK_EXECUTION_PARAMS", Integer.class);
-        assertEquals("expected 0 entries returned from task_execution_params", 0, actual);
-    }
+	@Test
+	public void testInitializer() throws Exception {
+		int actual = template.queryForObject("SELECT COUNT(*) from TASK_EXECUTION", Integer.class);
+		assertEquals("expected 0 entries returned from task_execution", 0, actual);
+		actual = template.queryForObject("SELECT COUNT(*) from TASK_EXECUTION_PARAMS", Integer.class);
+		assertEquals("expected 0 entries returned from task_execution_params", 0, actual);
+	}
 
+	@Test
+	public void testExplorerFindAll() throws Exception {
+		final int ENTRY_COUNT = 4;
+		insertTestExecutionDataIntoRepo(template, 3L, "foo");
+		insertTestExecutionDataIntoRepo(template, 2L, "foo");
+		insertTestExecutionDataIntoRepo(template, 1L, "foo");
+		insertTestExecutionDataIntoRepo(template, 0L, "foo");
 
-    @Test
-    public void testExplorerFindAll() throws Exception {
-        final int ENTRY_COUNT = 4;
-        insertTestExecutionDataIntoRepo(template, 3L, "foo");
-        insertTestExecutionDataIntoRepo(template, 2L, "foo");
-        insertTestExecutionDataIntoRepo(template, 1L, "foo");
-        insertTestExecutionDataIntoRepo(template, 0L, "foo");
+		List<TaskExecution> resultList = explorer.findAll(new PageRequest(0, 10)).getContent();
+		assertEquals(String.format("expected %s entries returned from task_execution", ENTRY_COUNT), ENTRY_COUNT,
+				resultList.size());
+		Map<Long, TaskExecution> actual = new HashMap<>();
+		for (int executionId = 0; executionId < ENTRY_COUNT; executionId++) {
+			TaskExecution taskExecution = resultList.get(executionId);
+			actual.put(taskExecution.getExecutionId(), taskExecution);
+		}
+		for (long executionId = 0; executionId < ENTRY_COUNT; executionId++) {
+			TaskExecution taskExecution = actual.get(executionId);
+			assertEquals("expected execution id does not match actual", executionId, taskExecution.getExecutionId());
+			assertEquals("expected taskName does not match actual", "foo", taskExecution.getTaskName());
+		}
 
-        List<TaskExecution> resultList = explorer.
-                findAll(new PageRequest(0, 10)).getContent();
-        assertEquals(String.format("expected %s entries returned from task_execution",
-                ENTRY_COUNT), ENTRY_COUNT, resultList.size());
-        Map<Long, TaskExecution> actual = new HashMap<>();
-        for (int executionId = 0; executionId < ENTRY_COUNT; executionId++) {
-            TaskExecution taskExecution = resultList.get(executionId);
-            actual.put(taskExecution.getExecutionId(), taskExecution);
-        }
-        for (long executionId = 0; executionId < ENTRY_COUNT; executionId++) {
-            TaskExecution taskExecution = actual.get(executionId);
-            assertEquals("expected execution id does not match actual", executionId,
-                    taskExecution.getExecutionId());
-            assertEquals("expected taskName does not match actual", "foo",
-                    taskExecution.getTaskName());
-        }
+	}
 
-    }
+	@Test
+	public void testExplorerFindByName() throws Exception {
+		insertTestExecutionDataIntoRepo(template, 3L, "foo");
+		insertTestExecutionDataIntoRepo(template, 2L, "bar");
+		insertTestExecutionDataIntoRepo(template, 1L, "baz");
+		insertTestExecutionDataIntoRepo(template, 0L, "fee");
 
-    @Test
-    public void testExplorerFindByName() throws Exception {
-        insertTestExecutionDataIntoRepo(template, 3L, "foo");
-        insertTestExecutionDataIntoRepo(template, 2L, "bar");
-        insertTestExecutionDataIntoRepo(template, 1L, "baz");
-        insertTestExecutionDataIntoRepo(template, 0L, "fee");
+		List<TaskExecution> resultList = explorer.findTaskExecutionsByName("fee", new PageRequest(0, 10)).getContent();
+		assertEquals("expected 1 entries returned from task_execution", 1, resultList.size());
+		TaskExecution taskExecution = resultList.get(0);
+		assertEquals("expected execution id does not match actual", 0, taskExecution.getExecutionId());
+		assertEquals("expected taskName does not match actual", "fee", taskExecution.getTaskName());
+	}
 
-        List<TaskExecution> resultList = explorer.
-                findTaskExecutionsByName("fee", new PageRequest(0, 10)).getContent();
-        assertEquals("expected 1 entries returned from task_execution", 1, resultList.size());
-        TaskExecution taskExecution = resultList.get(0);
-        assertEquals("expected execution id does not match actual", 0,
-                taskExecution.getExecutionId());
-        assertEquals("expected taskName does not match actual", "fee",
-                taskExecution.getTaskName());
-    }
-
-    private void insertTestExecutionDataIntoRepo(JdbcTemplate template,
-                                                 long id, String taskName) {
-        final String INSERT_STATEMENT = "INSERT INTO task_execution (task_execution_id, "
-                + "start_time, end_time, task_name, "
-                + "exit_code,exit_message,last_updated) "
-                + "VALUES (?,?,?,?,?,?,?)";
-        Object[] param = new Object[]{id, new Date(id), new Date(), taskName, 0, null,
-                new Date()};
-        template.update(INSERT_STATEMENT, param);
-    }
+	private void insertTestExecutionDataIntoRepo(JdbcTemplate template, long id, String taskName) {
+		final String INSERT_STATEMENT = "INSERT INTO task_execution (task_execution_id, "
+				+ "start_time, end_time, task_name, " + "exit_code,exit_message,last_updated) "
+				+ "VALUES (?,?,?,?,?,?,?)";
+		Object[] param = new Object[] { id, new Date(id), new Date(), taskName, 0, null, new Date() };
+		template.update(INSERT_STATEMENT, param);
+	}
 
 }

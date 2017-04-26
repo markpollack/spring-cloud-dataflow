@@ -33,9 +33,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Provides security-related meta information. Provides one REST endpoint at present
- * time {@code /security/info} that provides information such as whether security
- * is enabled and if so what is the username of the currently logged in user etc.
+ * Provides security-related meta information. Provides one REST endpoint at present time
+ * {@code /security/info} that provides information such as whether security is enabled
+ * and if so what is the username of the currently logged in user etc.
  *
  * @author Gunnar Hillert
  * @author Ilayaperumal Gopinathan
@@ -46,53 +46,54 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(SecurityInfoResource.class)
 public class SecurityController {
 
-    private final SecurityStateBean securityStateBean;
+	private final SecurityStateBean securityStateBean;
 
-    @Value("${security.oauth2.client.client-id:#{null}}")
-    private String oauthClientId;
+	@Value("${security.oauth2.client.client-id:#{null}}")
+	private String oauthClientId;
 
-    public SecurityController(SecurityStateBean securityStateBean) {
-        this.securityStateBean = securityStateBean;
-    }
+	public SecurityController(SecurityStateBean securityStateBean) {
+		this.securityStateBean = securityStateBean;
+	}
 
-    /**
-     * Return security information. E.g. is security enabled? Which user do you represent?
-     *
-     * @return the security info
-     */
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public SecurityInfoResource getSecurityInfo() {
+	/**
+	 * Return security information. E.g. is security enabled? Which user do you represent?
+	 *
+	 * @return the security info
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public SecurityInfoResource getSecurityInfo() {
 
-        final boolean authenticationEnabled = securityStateBean.isAuthenticationEnabled();
-        final boolean authorizationEnabled = securityStateBean.isAuthorizationEnabled();
+		final boolean authenticationEnabled = securityStateBean.isAuthenticationEnabled();
+		final boolean authorizationEnabled = securityStateBean.isAuthorizationEnabled();
 
-        final SecurityInfoResource securityInfo = new SecurityInfoResource();
-        securityInfo.setAuthenticationEnabled(authenticationEnabled);
-        securityInfo.setAuthorizationEnabled(authorizationEnabled);
-        securityInfo.add(ControllerLinkBuilder.linkTo(SecurityController.class).withSelfRel());
+		final SecurityInfoResource securityInfo = new SecurityInfoResource();
+		securityInfo.setAuthenticationEnabled(authenticationEnabled);
+		securityInfo.setAuthorizationEnabled(authorizationEnabled);
+		securityInfo.add(ControllerLinkBuilder.linkTo(SecurityController.class).withSelfRel());
 
-        if (authenticationEnabled && SecurityContextHolder.getContext() != null) {
-            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authentication instanceof AnonymousAuthenticationToken)) {
-                securityInfo.setAuthenticated(authentication.isAuthenticated());
-                securityInfo.setUsername(authentication.getName());
+		if (authenticationEnabled && SecurityContextHolder.getContext() != null) {
+			final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (!(authentication instanceof AnonymousAuthenticationToken)) {
+				securityInfo.setAuthenticated(authentication.isAuthenticated());
+				securityInfo.setUsername(authentication.getName());
 
-                if (authorizationEnabled) {
-                    for (GrantedAuthority authority : authentication.getAuthorities()) {
-                        securityInfo.addRole(authority.getAuthority());
-                    }
-                }
-                if (this.oauthClientId == null) {
-                    securityInfo.setFormLogin(true);
-                } else {
-                    securityInfo.setFormLogin(false);
-                }
-            }
-        }
+				if (authorizationEnabled) {
+					for (GrantedAuthority authority : authentication.getAuthorities()) {
+						securityInfo.addRole(authority.getAuthority());
+					}
+				}
+				if (this.oauthClientId == null) {
+					securityInfo.setFormLogin(true);
+				}
+				else {
+					securityInfo.setFormLogin(false);
+				}
+			}
+		}
 
-        return securityInfo;
-    }
+		return securityInfo;
+	}
 
 }

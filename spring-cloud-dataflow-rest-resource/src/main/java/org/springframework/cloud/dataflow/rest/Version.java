@@ -23,15 +23,16 @@ package org.springframework.cloud.dataflow.rest;
  */
 public class Version {
 
-    /**
-     * Should be incremented each time the API evolves whether it's a breaking change or not.
-     */
-    public static final int REVISION = 14;
+	/**
+	 * Should be incremented each time the API evolves whether it's a breaking change or
+	 * not.
+	 */
+	public static final int REVISION = 14;
 
-    public static final String REVISION_KEY = "api.revision";
+	public static final String REVISION_KEY = "api.revision";
 
-    private Version() {
+	private Version() {
 
-    }
+	}
 
 }

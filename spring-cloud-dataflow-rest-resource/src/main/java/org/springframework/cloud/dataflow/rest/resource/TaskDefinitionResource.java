@@ -27,76 +27,76 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class TaskDefinitionResource extends ResourceSupport {
 
-    private String name;
+	private String name;
 
-    private String dslText;
+	private String dslText;
 
-    /**
-     * Indicates whether this is a composed task.
-     */
-    private boolean composed;
+	/**
+	 * Indicates whether this is a composed task.
+	 */
+	private boolean composed;
 
-    /**
-     * Stream status (i.e. running, complete, etc).
-     */
-    private String status;
+	/**
+	 * Stream status (i.e. running, complete, etc).
+	 */
+	private String status;
 
-    /**
-     * Default constructor to be used by Jackson.
-     */
-    @SuppressWarnings("unused")
-    protected TaskDefinitionResource() {
-    }
+	/**
+	 * Default constructor to be used by Jackson.
+	 */
+	@SuppressWarnings("unused")
+	protected TaskDefinitionResource() {
+	}
 
-    public TaskDefinitionResource(String name, String dslText) {
-        this.name = name;
-        this.dslText = dslText;
-    }
+	public TaskDefinitionResource(String name, String dslText) {
+		this.name = name;
+		this.dslText = dslText;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getDslText() {
-        return dslText;
-    }
+	public String getDslText() {
+		return dslText;
+	}
 
-    /**
-     * Return if this task is a composed task
-     *
-     * @return composed
-     */
-    public boolean isComposed() {
-        return composed;
-    }
+	/**
+	 * Return if this task is a composed task
+	 *
+	 * @return composed
+	 */
+	public boolean isComposed() {
+		return composed;
+	}
 
-    /**
-     * Set if this task is a composed task
-     *
-     * @param composed is task a composed task
-     */
-    public void setComposed(boolean composed) {
-        this.composed = composed;
-    }
+	/**
+	 * Set if this task is a composed task
+	 *
+	 * @param composed is task a composed task
+	 */
+	public void setComposed(boolean composed) {
+		this.composed = composed;
+	}
 
-    /**
-     * Return the status of this task (i.e. running, complete, etc)
-     *
-     * @return task status
-     */
-    public String getStatus() {
-        return status;
-    }
+	/**
+	 * Return the status of this task (i.e. running, complete, etc)
+	 *
+	 * @return task status
+	 */
+	public String getStatus() {
+		return status;
+	}
 
-    /**
-     * Set the status of this task (i.e. running, complete, etc)
-     *
-     * @param status task status
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	/**
+	 * Set the status of this task (i.e. running, complete, etc)
+	 *
+	 * @param status task status
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public static class Page extends PagedResources<TaskDefinitionResource> {
-    }
+	public static class Page extends PagedResources<TaskDefinitionResource> {
+	}
 }

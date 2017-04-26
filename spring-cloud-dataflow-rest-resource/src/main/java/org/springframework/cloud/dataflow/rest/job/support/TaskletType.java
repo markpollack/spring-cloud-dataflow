@@ -24,8 +24,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * Types of {@link org.springframework.batch.core.step.tasklet.Tasklet} implementations
- * known by Spring Task.  These
- * include tasklets provided by Spring Batch and Spring for Apache Hadoop.
+ * known by Spring Task. These include tasklets provided by Spring Batch and Spring for
+ * Apache Hadoop.
  *
  * @author Michael Minella
  * @author Glenn Renfro
@@ -33,71 +33,70 @@ import org.springframework.util.StringUtils;
  */
 public enum TaskletType {
 
-    /**
-     * {@link org.springframework.batch.core.step.item.ChunkOrientedTasklet}
-     */
-    CHUNK_ORIENTED_TASKLET(ChunkOrientedTasklet.class.getName(), "Chunk Oriented Step"),
-    /**
-     * {@link org.springframework.batch.core.step.tasklet.SystemCommandTasklet}
-     */
-    SYSTEM_COMMAND_TASKLET(SystemCommandTasklet.class.getName(), "System Command Step"),
-    /**
-     * {@link org.springframework.batch.core.step.tasklet.CallableTaskletAdapter}
-     */
-    CALLABLE_TASKLET_ADAPTER(CallableTaskletAdapter.class.getName(), "Callable Tasklet Adapter Step"),
-    /**
-     * {@link org.springframework.batch.core.step.tasklet.MethodInvokingTaskletAdapter}
-     */
-    METHOD_INVOKING_TASKLET_ADAPTER(MethodInvokingTaskletAdapter.class.getName(), "Method Invoking Tasklet Adapter " +
-            "Step"),
-    /**
-     * Used when the type of tasklet is unknown to the system
-     */
-    UNKNOWN("", "");
+	/**
+	 * {@link org.springframework.batch.core.step.item.ChunkOrientedTasklet}
+	 */
+	CHUNK_ORIENTED_TASKLET(ChunkOrientedTasklet.class.getName(), "Chunk Oriented Step"),
+	/**
+	 * {@link org.springframework.batch.core.step.tasklet.SystemCommandTasklet}
+	 */
+	SYSTEM_COMMAND_TASKLET(SystemCommandTasklet.class.getName(), "System Command Step"),
+	/**
+	 * {@link org.springframework.batch.core.step.tasklet.CallableTaskletAdapter}
+	 */
+	CALLABLE_TASKLET_ADAPTER(CallableTaskletAdapter.class.getName(), "Callable Tasklet Adapter Step"),
+	/**
+	 * {@link org.springframework.batch.core.step.tasklet.MethodInvokingTaskletAdapter}
+	 */
+	METHOD_INVOKING_TASKLET_ADAPTER(MethodInvokingTaskletAdapter.class.getName(), "Method Invoking Tasklet Adapter " + "Step"),
+	/**
+	 * Used when the type of tasklet is unknown to the system
+	 */
+	UNKNOWN("", "");
 
-    //TODO: Add Hadoop Types
+	// TODO: Add Hadoop Types
 
-    private final String className;
-    private final String displayName;
+	private final String className;
+	private final String displayName;
 
-    TaskletType(String className, String displayName) {
-        this.className = className;
-        this.displayName = displayName;
-    }
+	TaskletType(String className, String displayName) {
+		this.className = className;
+		this.displayName = displayName;
+	}
 
-    /**
-     * @param className the fully qualified name of the {@link org.springframework.batch.core.step.tasklet.Tasklet}
-     *                  implementation
-     * @return the type if known, otherwise {@link #UNKNOWN}
-     */
-    public static TaskletType fromClassName(String className) {
-        TaskletType type = UNKNOWN;
+	/**
+	 * @param className the fully qualified name of the
+	 * {@link org.springframework.batch.core.step.tasklet.Tasklet} implementation
+	 * @return the type if known, otherwise {@link #UNKNOWN}
+	 */
+	public static TaskletType fromClassName(String className) {
+		TaskletType type = UNKNOWN;
 
-        if (StringUtils.hasText(className)) {
-            String name = className.trim();
+		if (StringUtils.hasText(className)) {
+			String name = className.trim();
 
-            for (TaskletType curType : values()) {
-                if (curType.className.equals(name)) {
-                    type = curType;
-                    break;
-                }
-            }
-        }
+			for (TaskletType curType : values()) {
+				if (curType.className.equals(name)) {
+					type = curType;
+					break;
+				}
+			}
+		}
 
-        return type;
-    }
+		return type;
+	}
 
-    /**
-     * @return the name of the class the current value represents
-     */
-    public String getClassName() {
-        return this.className;
-    }
+	/**
+	 * @return the name of the class the current value represents
+	 */
+	public String getClassName() {
+		return this.className;
+	}
 
-    /**
-     * @return the value to display in the UI or return via the REST API
-     */
-    public String getDisplayName() {
-        return this.displayName;
-    }
+	/**
+	 * @return the value to display in the UI or return via the REST API
+	 */
+	public String getDisplayName() {
+		return this.displayName;
+	}
 }

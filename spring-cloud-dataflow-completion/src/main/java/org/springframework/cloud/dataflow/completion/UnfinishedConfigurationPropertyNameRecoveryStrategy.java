@@ -34,90 +34,88 @@ import org.springframework.core.io.Resource;
 
 import static org.springframework.cloud.dataflow.completion.CompletionProposal.expanding;
 
-
 /**
- * Provides completions for the case where the user has started to type
- * an app configuration property name but it is not typed in full yet.
+ * Provides completions for the case where the user has started to type an app
+ * configuration property name but it is not typed in full yet.
  *
  * @author Eric Bottard
  * @author Mark Fisher
  */
 public class UnfinishedConfigurationPropertyNameRecoveryStrategy
-        extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
+		extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    private final ApplicationConfigurationMetadataResolver metadataResolver;
+	private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-    UnfinishedConfigurationPropertyNameRecoveryStrategy(AppRegistry appRegistry,
-                                                        ApplicationConfigurationMetadataResolver metadataResolver) {
-        super(CheckPointedParseException.class, "file --foo", "file | bar --quick", "file --foo.", "file | bar " +
-                "--quick.");
-        this.appRegistry = appRegistry;
-        this.metadataResolver = metadataResolver;
-    }
+	UnfinishedConfigurationPropertyNameRecoveryStrategy(AppRegistry appRegistry,
+			ApplicationConfigurationMetadataResolver metadataResolver) {
+		super(CheckPointedParseException.class, "file --foo", "file | bar --quick", "file --foo.",
+				"file | bar " + "--quick.");
+		this.appRegistry = appRegistry;
+		this.metadataResolver = metadataResolver;
+	}
 
-    @Override
-    public void addProposals(String dsl, CheckPointedParseException exception,
-                             int detailLevel, List<CompletionProposal> collector) {
+	@Override
+	public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
+			List<CompletionProposal> collector) {
 
-        String safe = exception.getExpressionStringUntilCheckpoint();
+		String safe = exception.getExpressionStringUntilCheckpoint();
 
-        List<Token> tokens = exception.getTokens();
-        int tokenPointer = tokens.size() - 1;
-        while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
-            tokenPointer--;
-        }
-        StringBuilder builder = null;
-        for (builder = new StringBuilder(); tokenPointer < tokens.size(); tokenPointer++) {
-            Token t = tokens.get(tokenPointer);
-            if (t.isIdentifier()) {
-                builder.append(t.stringValue());
-            } else {
-                builder.append(t.getKind().getTokenChars());
-            }
-        }
-        String buffer = builder.toString();
+		List<Token> tokens = exception.getTokens();
+		int tokenPointer = tokens.size() - 1;
+		while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
+			tokenPointer--;
+		}
+		StringBuilder builder = null;
+		for (builder = new StringBuilder(); tokenPointer < tokens.size(); tokenPointer++) {
+			Token t = tokens.get(tokenPointer);
+			if (t.isIdentifier()) {
+				builder.append(t.stringValue());
+			}
+			else {
+				builder.append(t.getKind().getTokenChars());
+			}
+		}
+		String buffer = builder.toString();
 
-        StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
-        StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
+		StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
+		StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
 
-        String lastAppName = lastApp.getName();
-        AppRegistration lastAppRegistration = null;
-        for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
-            lastAppRegistration = appRegistry.find(lastAppName, appType);
-            if (lastAppRegistration != null) {
-                break;
-            }
-        }
-        if (lastAppRegistration == null) {
-            // Not a valid app name, do nothing
-            return;
-        }
-        Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
+		String lastAppName = lastApp.getName();
+		AppRegistration lastAppRegistration = null;
+		for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
+			lastAppRegistration = appRegistry.find(lastAppName, appType);
+			if (lastAppRegistration != null) {
+				break;
+			}
+		}
+		if (lastAppRegistration == null) {
+			// Not a valid app name, do nothing
+			return;
+		}
+		Set<String> alreadyPresentOptions = new HashSet<>(lastApp.getProperties().keySet());
 
-        Resource metadataResource = lastAppRegistration.getMetadataResource();
+		Resource metadataResource = lastAppRegistration.getMetadataResource();
 
-        CompletionProposal.Factory proposals = expanding(safe);
+		CompletionProposal.Factory proposals = expanding(safe);
 
-        // For whitelisted properties, use their simple name
-        for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
-            String name = property.getName();
-            if (!alreadyPresentOptions.contains(name) && name.startsWith(buffer)) {
-                collector.add(proposals.withSeparateTokens("--" + name
-                        + "=", property.getShortDescription()));
-            }
-        }
+		// For whitelisted properties, use their simple name
+		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
+			String name = property.getName();
+			if (!alreadyPresentOptions.contains(name) && name.startsWith(buffer)) {
+				collector.add(proposals.withSeparateTokens("--" + name + "=", property.getShortDescription()));
+			}
+		}
 
-        // For other props, use their full id
-        if (detailLevel > 1) {
-            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-                String id = property.getId();
-                if (!alreadyPresentOptions.contains(id) && id.startsWith(buffer)) {
-                    collector.add(proposals.withSeparateTokens("--" + id
-                            + "=", property.getShortDescription()));
-                }
-            }
-        }
-    }
+		// For other props, use their full id
+		if (detailLevel > 1) {
+			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+				String id = property.getId();
+				if (!alreadyPresentOptions.contains(id) && id.startsWith(buffer)) {
+					collector.add(proposals.withSeparateTokens("--" + id + "=", property.getShortDescription()));
+				}
+			}
+		}
+	}
 }

@@ -34,102 +34,108 @@ import static org.junit.Assert.fail;
  */
 public class SearchPageableTests {
 
-    @Test
-    public void initializeSearchPageableWithNullPageable() throws Exception {
-        try {
-            new SearchPageable(null, null);
-        } catch (IllegalArgumentException e) {
-            assertEquals("pageable must not be null", e.getMessage());
-            return;
-        }
+	@Test
+	public void initializeSearchPageableWithNullPageable() throws Exception {
+		try {
+			new SearchPageable(null, null);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("pageable must not be null", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void initializeSearchPageableWithNullSearchQuery() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        try {
-            new SearchPageable(pageable, null);
-        } catch (IllegalArgumentException e) {
-            assertEquals("searchQuery must not be empty", e.getMessage());
-            return;
-        }
+	@Test
+	public void initializeSearchPageableWithNullSearchQuery() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		try {
+			new SearchPageable(pageable, null);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("searchQuery must not be empty", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void initializeSearchPageableWithEmptySearchQuery() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        try {
-            new SearchPageable(pageable, "  ");
-        } catch (IllegalArgumentException e) {
-            assertEquals("searchQuery must not be empty", e.getMessage());
-            return;
-        }
+	@Test
+	public void initializeSearchPageableWithEmptySearchQuery() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		try {
+			new SearchPageable(pageable, "  ");
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("searchQuery must not be empty", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void addNullCollumn() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
+	@Test
+	public void addNullCollumn() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
 
-        try {
-            searchPageable.addColumns(new String[]{});
-        } catch (IllegalArgumentException e) {
-            assertEquals("You must specify at least 1 column.", e.getMessage());
-            return;
-        }
+		try {
+			searchPageable.addColumns(new String[] {});
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("You must specify at least 1 column.", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void addNullCollumn2() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
+	@Test
+	public void addNullCollumn2() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
 
-        try {
-            searchPageable.addColumns("c1", null);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Column names cannot be null or empty.", e.getMessage());
-            return;
-        }
+		try {
+			searchPageable.addColumns("c1", null);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Column names cannot be null or empty.", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void addWhitespaceCollumn() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
+	@Test
+	public void addWhitespaceCollumn() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
 
-        try {
-            searchPageable.addColumns("     ");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Column names cannot be null or empty.", e.getMessage());
-            return;
-        }
+		try {
+			searchPageable.addColumns("     ");
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Column names cannot be null or empty.", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void testSearchPageableGetters() throws Exception {
-        final PageRequest pageable = new PageRequest(1, 5);
-        final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
+	@Test
+	public void testSearchPageableGetters() throws Exception {
+		final PageRequest pageable = new PageRequest(1, 5);
+		final SearchPageable searchPageable = new SearchPageable(pageable, "search query");
 
-        assertThat(searchPageable.getColumns(), is(empty()));
-        assertNotNull(searchPageable.getPageable());
-        assertEquals(searchPageable.getSearchQuery(), "search query");
+		assertThat(searchPageable.getColumns(), is(empty()));
+		assertNotNull(searchPageable.getPageable());
+		assertEquals(searchPageable.getSearchQuery(), "search query");
 
-        searchPageable.addColumns("c1", "c2");
+		searchPageable.addColumns("c1", "c2");
 
-        assertThat(searchPageable.getColumns(), hasSize(2));
-        assertThat(searchPageable.getColumns(), contains("c1", "c2"));
+		assertThat(searchPageable.getColumns(), hasSize(2));
+		assertThat(searchPageable.getColumns(), contains("c1", "c2"));
 
-    }
+	}
 }

@@ -23,35 +23,35 @@ package org.springframework.cloud.dataflow.rest.resource.about;
  */
 public class Dependency {
 
-    private String name;
-    private String version;
+	private String name;
+	private String version;
 
-    /**
-     * Default constructor for serialization frameworks.
-     */
-    public Dependency() {
-    }
+	/**
+	 * Default constructor for serialization frameworks.
+	 */
+	public Dependency() {
+	}
 
-    public Dependency(String name, String version) {
-        super();
-        this.name = name;
-        this.version = version;
-    }
+	public Dependency(String name, String version) {
+		super();
+		this.name = name;
+		this.version = version;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getVersion() {
-        return version;
-    }
+	public String getVersion() {
+		return version;
+	}
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
 }

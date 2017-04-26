@@ -47,51 +47,40 @@ import static org.springframework.cloud.dataflow.server.controller.UiController.
 @Conditional(OnSecurityEnabledAndOAuth2Enabled.class)
 public class OAuthSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ResourceServerTokenServices tokenServices;
+	@Autowired
+	private ResourceServerTokenServices tokenServices;
 
-    @Autowired
-    private SecurityStateBean securityStateBean;
+	@Autowired
+	private SecurityStateBean securityStateBean;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(oAuth2AuthenticationProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
-        http.authorizeRequests()
-                .antMatchers(
-                        "/security/info**",
-                        "/login**",
-                        dashboard("/logout-success-oauth.html"),
-                        dashboard("/styles/**"),
-                        dashboard("/images/**"),
-                        dashboard("/fonts/**"),
-                        dashboard("/lib/**")
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.addFilterBefore(oAuth2AuthenticationProcessingFilter(), AbstractPreAuthenticatedProcessingFilter.class);
+		http.authorizeRequests().antMatchers("/security/info**", "/login**", dashboard("/logout-success-oauth.html"),
+				dashboard("/styles/**"), dashboard("/images/**"), dashboard("/fonts/**"), dashboard("/lib/**")
 
-                ).permitAll()
-                .anyRequest().authenticated()
-                .and().httpBasic()
-                .and().logout().logoutSuccessUrl(dashboard("/logout-success-oauth.html"))
-                .and().csrf().disable();
+		).permitAll().anyRequest().authenticated().and().httpBasic().and().logout()
+				.logoutSuccessUrl(dashboard("/logout-success-oauth.html")).and().csrf().disable();
 
-        securityStateBean.setAuthenticationEnabled(true);
-        securityStateBean.setAuthorizationEnabled(false);
-    }
+		securityStateBean.setAuthenticationEnabled(true);
+		securityStateBean.setAuthorizationEnabled(false);
+	}
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        return new ManualOAuthAuthenticationProvider();
-    }
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		return new ManualOAuthAuthenticationProvider();
+	}
 
-    private OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() {
-        final OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter = new
-                OAuth2AuthenticationProcessingFilter();
-        oAuth2AuthenticationProcessingFilter.setAuthenticationManager(oauthAuthenticationManager());
-        oAuth2AuthenticationProcessingFilter.setStateless(false);
-        return oAuth2AuthenticationProcessingFilter;
-    }
+	private OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter() {
+		final OAuth2AuthenticationProcessingFilter oAuth2AuthenticationProcessingFilter = new OAuth2AuthenticationProcessingFilter();
+		oAuth2AuthenticationProcessingFilter.setAuthenticationManager(oauthAuthenticationManager());
+		oAuth2AuthenticationProcessingFilter.setStateless(false);
+		return oAuth2AuthenticationProcessingFilter;
+	}
 
-    private AuthenticationManager oauthAuthenticationManager() {
-        final OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
-        oauthAuthenticationManager.setTokenServices(tokenServices);
-        return oauthAuthenticationManager;
-    }
+	private AuthenticationManager oauthAuthenticationManager() {
+		final OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
+		oauthAuthenticationManager.setTokenServices(tokenServices);
+		return oauthAuthenticationManager;
+	}
 }

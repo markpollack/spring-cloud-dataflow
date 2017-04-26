@@ -20,75 +20,75 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * After parsing a task definition from a DSL string, the validation visitor may optionally run.
- * Even though it parses successfully there may be issues with how the definition is constructed. The
- * {@link TaskValidatorVisitor} will find those problems and report them as instances of
- * {@link TaskValidationProblem}.
+ * After parsing a task definition from a DSL string, the validation visitor may
+ * optionally run. Even though it parses successfully there may be issues with how the
+ * definition is constructed. The {@link TaskValidatorVisitor} will find those problems
+ * and report them as instances of {@link TaskValidationProblem}.
  *
  * @author Andy Clement
  */
 public class TaskValidationProblem {
 
-    private final String taskDsl;
-    private final int offset;
-    private final DSLMessage message;
+	private final String taskDsl;
+	private final int offset;
+	private final DSLMessage message;
 
-    public TaskValidationProblem(String taskDsl, int offset, DSLMessage message) {
-        this.taskDsl = taskDsl;
-        this.offset = offset;
-        this.message = message;
-    }
+	public TaskValidationProblem(String taskDsl, int offset, DSLMessage message) {
+		this.taskDsl = taskDsl;
+		this.offset = offset;
+		this.message = message;
+	}
 
-    public String toString() {
-        return message.formatMessage(offset);
-    }
+	public String toString() {
+		return message.formatMessage(offset);
+	}
 
-    public String toStringWithContext() {
-        StringBuilder s = new StringBuilder();
-        s.append(message.formatMessage(offset));
-        int startOfLine = getStartOfLine(offset);
-        if (taskDsl != null && taskDsl.length() > 0) {
-            s.append("\n").append(taskDsl.substring(startOfLine)).append("\n");
-        }
-        int offsetOnLine = offset - startOfLine;
-        if (offsetOnLine >= 0) {
-            for (int i = 0; i < offsetOnLine; i++) {
-                s.append(' ');
-            }
-            s.append("^\n");
-        }
-        return s.toString();
-    }
+	public String toStringWithContext() {
+		StringBuilder s = new StringBuilder();
+		s.append(message.formatMessage(offset));
+		int startOfLine = getStartOfLine(offset);
+		if (taskDsl != null && taskDsl.length() > 0) {
+			s.append("\n").append(taskDsl.substring(startOfLine)).append("\n");
+		}
+		int offsetOnLine = offset - startOfLine;
+		if (offsetOnLine >= 0) {
+			for (int i = 0; i < offsetOnLine; i++) {
+				s.append(' ');
+			}
+			s.append("^\n");
+		}
+		return s.toString();
+	}
 
-    public DSLMessage getMessage() {
-        return message;
-    }
+	public DSLMessage getMessage() {
+		return message;
+	}
 
-    public int getOffset() {
-        return offset;
-    }
+	public int getOffset() {
+		return offset;
+	}
 
-    private int getStartOfLine(int position) {
-        for (int p = 0; p < position; p++) {
-            if (taskDsl.charAt(p) == '\n') {
-                return p + 1;
-            }
-        }
-        return 0;
-    }
+	private int getStartOfLine(int position) {
+		for (int p = 0; p < position; p++) {
+			if (taskDsl.charAt(p) == '\n') {
+				return p + 1;
+			}
+		}
+		return 0;
+	}
 
-    /**
-     * Produce a simple map of information about the exception that
-     * can be sent to the client for display.
-     *
-     * @return map of simple information including message and position
-     */
-    public Map<String, Object> toExceptionDescriptor() {
-        Map<String, Object> descriptor = new HashMap<>();
-        String text = message.formatMessage(offset);
-        descriptor.put("message", text);
-        descriptor.put("position", offset);
-        return descriptor;
-    }
+	/**
+	 * Produce a simple map of information about the exception that can be sent to the
+	 * client for display.
+	 *
+	 * @return map of simple information including message and position
+	 */
+	public Map<String, Object> toExceptionDescriptor() {
+		Map<String, Object> descriptor = new HashMap<>();
+		String text = message.formatMessage(offset);
+		descriptor.put("message", text);
+		descriptor.put("position", offset);
+		return descriptor;
+	}
 
 }

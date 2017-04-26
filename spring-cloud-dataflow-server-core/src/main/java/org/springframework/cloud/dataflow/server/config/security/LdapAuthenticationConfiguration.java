@@ -27,8 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.authentication.configurers.ldap
-        .LdapAuthenticationProviderConfigurer;
+import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -46,42 +45,41 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(LdapSecurityProperties.class)
 public class LdapAuthenticationConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-    @Autowired
-    private LdapSecurityProperties ldapSecurityProperties;
+	@Autowired
+	private LdapSecurityProperties ldapSecurityProperties;
 
-    @Override
-    public void init(AuthenticationManagerBuilder auth) throws Exception {
+	@Override
+	public void init(AuthenticationManagerBuilder auth) throws Exception {
 
-        LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapConfigurer = auth.ldapAuthentication();
+		LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapConfigurer = auth.ldapAuthentication();
 
-        ldapConfigurer.contextSource()
-                .url(ldapSecurityProperties.getUrl().toString())
-                .managerDn(ldapSecurityProperties.getManagerDn())
-                .managerPassword(ldapSecurityProperties.getManagerPassword());
+		ldapConfigurer.contextSource().url(ldapSecurityProperties.getUrl().toString())
+				.managerDn(ldapSecurityProperties.getManagerDn())
+				.managerPassword(ldapSecurityProperties.getManagerPassword());
 
-        if (!StringUtils.isEmpty(ldapSecurityProperties.getUserDnPattern())) {
-            ldapConfigurer.userDnPatterns(ldapSecurityProperties.getUserDnPattern());
-        }
+		if (!StringUtils.isEmpty(ldapSecurityProperties.getUserDnPattern())) {
+			ldapConfigurer.userDnPatterns(ldapSecurityProperties.getUserDnPattern());
+		}
 
-        if (!StringUtils.isEmpty(ldapSecurityProperties.getUserSearchFilter())) {
-            ldapConfigurer
-                    .userSearchBase(ldapSecurityProperties.getUserSearchBase())
-                    .userSearchFilter(ldapSecurityProperties.getUserSearchFilter());
-        }
+		if (!StringUtils.isEmpty(ldapSecurityProperties.getUserSearchFilter())) {
+			ldapConfigurer.userSearchBase(ldapSecurityProperties.getUserSearchBase())
+					.userSearchFilter(ldapSecurityProperties.getUserSearchFilter());
+		}
 
-        if (!StringUtils.isEmpty(ldapSecurityProperties.getGroupSearchFilter())) {
-            ldapConfigurer.groupSearchBase(ldapSecurityProperties.getGroupSearchBase())
-                    .groupSearchFilter(ldapSecurityProperties.getGroupSearchFilter())
-                    .groupRoleAttribute(ldapSecurityProperties.getGroupRoleAttribute());
-        } else {
-            ldapConfigurer.ldapAuthoritiesPopulator(new LdapAuthoritiesPopulator() {
-                @Override
-                public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData,
-                                                                                    String username) {
-                    return Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGE"));
-                }
-            });
-        }
+		if (!StringUtils.isEmpty(ldapSecurityProperties.getGroupSearchFilter())) {
+			ldapConfigurer.groupSearchBase(ldapSecurityProperties.getGroupSearchBase())
+					.groupSearchFilter(ldapSecurityProperties.getGroupSearchFilter())
+					.groupRoleAttribute(ldapSecurityProperties.getGroupRoleAttribute());
+		}
+		else {
+			ldapConfigurer.ldapAuthoritiesPopulator(new LdapAuthoritiesPopulator() {
+				@Override
+				public Collection<? extends GrantedAuthority> getGrantedAuthorities(DirContextOperations userData,
+						String username) {
+					return Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGE"));
+				}
+			});
+		}
 
-    }
+	}
 }

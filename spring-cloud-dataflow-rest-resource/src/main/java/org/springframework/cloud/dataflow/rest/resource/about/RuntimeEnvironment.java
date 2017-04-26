@@ -23,41 +23,41 @@ package org.springframework.cloud.dataflow.rest.resource.about;
  */
 public class RuntimeEnvironment {
 
-    /**
-     * The {@link RuntimeEnvironmentDetails} of the app deployer.
-     */
-    private RuntimeEnvironmentDetails appDeployer = new RuntimeEnvironmentDetails();
-    /**
-     * The {@link RuntimeEnvironmentDetails} of the task launcher.
-     */
-    private RuntimeEnvironmentDetails taskLauncher = new RuntimeEnvironmentDetails();
+	/**
+	 * The {@link RuntimeEnvironmentDetails} of the app deployer.
+	 */
+	private RuntimeEnvironmentDetails appDeployer = new RuntimeEnvironmentDetails();
+	/**
+	 * The {@link RuntimeEnvironmentDetails} of the task launcher.
+	 */
+	private RuntimeEnvironmentDetails taskLauncher = new RuntimeEnvironmentDetails();
 
-    /**
-     * Default constructor for serialization frameworks.
-     */
-    public RuntimeEnvironment() {
-    }
+	/**
+	 * Default constructor for serialization frameworks.
+	 */
+	public RuntimeEnvironment() {
+	}
 
-    /**
-     * @return Null, if the stream feature is disabled
-     */
-    public RuntimeEnvironmentDetails getAppDeployer() {
-        return appDeployer;
-    }
+	/**
+	 * @return Null, if the stream feature is disabled
+	 */
+	public RuntimeEnvironmentDetails getAppDeployer() {
+		return appDeployer;
+	}
 
-    public void setAppDeployer(RuntimeEnvironmentDetails appDeployer) {
-        this.appDeployer = appDeployer;
-    }
+	public void setAppDeployer(RuntimeEnvironmentDetails appDeployer) {
+		this.appDeployer = appDeployer;
+	}
 
-    /**
-     * @return Null, if the task feature is disabled
-     */
-    public RuntimeEnvironmentDetails getTaskLauncher() {
-        return taskLauncher;
-    }
+	/**
+	 * @return Null, if the task feature is disabled
+	 */
+	public RuntimeEnvironmentDetails getTaskLauncher() {
+		return taskLauncher;
+	}
 
-    public void setTaskLauncher(RuntimeEnvironmentDetails taskLauncher) {
-        this.taskLauncher = taskLauncher;
-    }
+	public void setTaskLauncher(RuntimeEnvironmentDetails taskLauncher) {
+		this.taskLauncher = taskLauncher;
+	}
 
 }

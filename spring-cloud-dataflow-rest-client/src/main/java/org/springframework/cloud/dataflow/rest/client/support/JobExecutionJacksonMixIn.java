@@ -22,15 +22,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.batch.core.JobExecution;
 
 /**
- * Jackson MixIn for {@link JobExecution} de-serialization. {@link JobExecution} does not have a default constructor.
+ * Jackson MixIn for {@link JobExecution} de-serialization. {@link JobExecution} does not
+ * have a default constructor.
  *
  * @author Gunnar Hillert
  * @since 1.0
  */
-@JsonIgnoreProperties({"running", "jobId", "stopping"})
+@JsonIgnoreProperties({ "running", "jobId", "stopping" })
 public abstract class JobExecutionJacksonMixIn {
 
-    JobExecutionJacksonMixIn(@JsonProperty("id") Long id) {
-    }
+	JobExecutionJacksonMixIn(@JsonProperty("id") Long id) {
+	}
 
 }

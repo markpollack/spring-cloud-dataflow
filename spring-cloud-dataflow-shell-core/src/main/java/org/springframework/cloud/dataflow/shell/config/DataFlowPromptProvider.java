@@ -23,7 +23,8 @@ import org.springframework.shell.plugin.PromptProvider;
 import org.springframework.stereotype.Component;
 
 /**
- * A provider that sets the shell prompt to 'dataflow' if the server is available, 'server-unknown' otherwise.
+ * A provider that sets the shell prompt to 'dataflow' if the server is available,
+ * 'server-unknown' otherwise.
  *
  * @author Ilayaperumal Gopinathan
  */
@@ -31,20 +32,21 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DataFlowPromptProvider implements PromptProvider {
 
-    @Autowired
-    private DataFlowShell shell;
+	@Autowired
+	private DataFlowShell shell;
 
-    @Override
-    public String getProviderName() {
-        return "dataflow";
-    }
+	@Override
+	public String getProviderName() {
+		return "dataflow";
+	}
 
-    @Override
-    public String getPrompt() {
-        if (shell.getDataFlowOperations() == null) {
-            return "server-unknown:>";
-        } else {
-            return "dataflow:>";
-        }
-    }
+	@Override
+	public String getPrompt() {
+		if (shell.getDataFlowOperations() == null) {
+			return "server-unknown:>";
+		}
+		else {
+			return "dataflow:>";
+		}
+	}
 }

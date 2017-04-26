@@ -30,27 +30,31 @@ import org.springframework.cloud.deployer.spi.core.AppDefinition;
  */
 public class DataFlowServerUtil {
 
-    /**
-     * Return the {@link ApplicationType} for a {@link AppDefinition} in the context
-     * of a defined stream.
-     *
-     * @param appDefinition the app for which to determine the type
-     * @return {@link ApplicationType} for the given app
-     * @throws CannotDetermineApplicationTypeException Thrown if the {@link ApplicationType} cannot be determined
-     */
-    public static ApplicationType determineApplicationType(StreamAppDefinition appDefinition) {
-        // Parser has already taken care of source/sink destinations, etc
-        boolean hasOutput = appDefinition.getProperties().containsKey(BindingPropertyKeys.OUTPUT_DESTINATION);
-        boolean hasInput = appDefinition.getProperties().containsKey(BindingPropertyKeys.INPUT_DESTINATION);
-        if (hasInput && hasOutput) {
-            return ApplicationType.processor;
-        } else if (hasInput) {
-            return ApplicationType.sink;
-        } else if (hasOutput) {
-            return ApplicationType.source;
-        } else {
-            throw new CannotDetermineApplicationTypeException(appDefinition.getName() + " had neither input nor " +
-                    "output set");
-        }
-    }
+	/**
+	 * Return the {@link ApplicationType} for a {@link AppDefinition} in the context of a
+	 * defined stream.
+	 *
+	 * @param appDefinition the app for which to determine the type
+	 * @return {@link ApplicationType} for the given app
+	 * @throws CannotDetermineApplicationTypeException Thrown if the
+	 * {@link ApplicationType} cannot be determined
+	 */
+	public static ApplicationType determineApplicationType(StreamAppDefinition appDefinition) {
+		// Parser has already taken care of source/sink destinations, etc
+		boolean hasOutput = appDefinition.getProperties().containsKey(BindingPropertyKeys.OUTPUT_DESTINATION);
+		boolean hasInput = appDefinition.getProperties().containsKey(BindingPropertyKeys.INPUT_DESTINATION);
+		if (hasInput && hasOutput) {
+			return ApplicationType.processor;
+		}
+		else if (hasInput) {
+			return ApplicationType.sink;
+		}
+		else if (hasOutput) {
+			return ApplicationType.source;
+		}
+		else {
+			throw new CannotDetermineApplicationTypeException(
+					appDefinition.getName() + " had neither input nor " + "output set");
+		}
+	}
 }

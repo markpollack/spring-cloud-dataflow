@@ -54,106 +54,95 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Glenn Renfro
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
-        JobDependencies.class,
-        PropertyPlaceholderAutoConfiguration.class, BatchProperties.class})
+@SpringBootTest(classes = { EmbeddedDataSourceConfiguration.class, JobDependencies.class,
+		PropertyPlaceholderAutoConfiguration.class, BatchProperties.class })
 @DirtiesContext
 public class JobInstanceControllerTests {
 
-    private final static String BASE_JOB_NAME = "myJob";
+	private final static String BASE_JOB_NAME = "myJob";
 
-    private final static String JOB_NAME_ORIG = BASE_JOB_NAME + "_ORIG";
+	private final static String JOB_NAME_ORIG = BASE_JOB_NAME + "_ORIG";
 
-    private final static String JOB_NAME_FOO = BASE_JOB_NAME + "_FOO";
+	private final static String JOB_NAME_FOO = BASE_JOB_NAME + "_FOO";
 
-    private final static String JOB_NAME_FOOBAR = BASE_JOB_NAME + "_FOOBAR";
+	private final static String JOB_NAME_FOOBAR = BASE_JOB_NAME + "_FOOBAR";
 
-    private static boolean initialized = false;
+	private static boolean initialized = false;
 
-    @Autowired
-    private TaskExecutionDao dao;
+	@Autowired
+	private TaskExecutionDao dao;
 
-    @Autowired
-    private JobRepository jobRepository;
+	@Autowired
+	private JobRepository jobRepository;
 
-    @Autowired
-    private TaskBatchDao taskBatchDao;
+	@Autowired
+	private TaskBatchDao taskBatchDao;
 
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext wac;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Before
-    public void setupMockMVC() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
-                get("/").accept(MediaType.APPLICATION_JSON)).build();
-        if (!initialized) {
-            createSampleJob(JOB_NAME_ORIG, 1);
-            createSampleJob(JOB_NAME_FOO, 1);
-            createSampleJob(JOB_NAME_FOOBAR, 2);
-            initialized = true;
-        }
-    }
+	@Before
+	public void setupMockMVC() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+				.defaultRequest(get("/").accept(MediaType.APPLICATION_JSON)).build();
+		if (!initialized) {
+			createSampleJob(JOB_NAME_ORIG, 1);
+			createSampleJob(JOB_NAME_FOO, 1);
+			createSampleJob(JOB_NAME_FOOBAR, 2);
+			initialized = true;
+		}
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testJobInstanceControllerConstructorMissingRepository() {
-        new JobInstanceController(null);
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testJobInstanceControllerConstructorMissingRepository() {
+		new JobInstanceController(null);
+	}
 
-    @Test
-    public void testGetInstanceNotFound() throws Exception {
-        mockMvc.perform(
-                get("/jobs/instances/1345345345345").accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isNotFound());
-    }
+	@Test
+	public void testGetInstanceNotFound() throws Exception {
+		mockMvc.perform(get("/jobs/instances/1345345345345").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
 
-    @Test
-    public void testGetInstance() throws Exception {
-        mockMvc.perform(
-                get("/jobs/instances/1").accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk()).andExpect(content().json("{jobInstanceId: " +
-                1 + "}"));
-    }
+	@Test
+	public void testGetInstance() throws Exception {
+		mockMvc.perform(get("/jobs/instances/1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().json("{jobInstanceId: " + 1 + "}"));
+	}
 
-    @Test
-    public void testGetInstancesByName() throws Exception {
-        mockMvc.perform(
-                get("/jobs/instances/").param("name", JOB_NAME_ORIG).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].jobName", is(JOB_NAME_ORIG)))
-                .andExpect(jsonPath("$.content", hasSize(1)));
-    }
+	@Test
+	public void testGetInstancesByName() throws Exception {
+		mockMvc.perform(get("/jobs/instances/").param("name", JOB_NAME_ORIG).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].jobName", is(JOB_NAME_ORIG)))
+				.andExpect(jsonPath("$.content", hasSize(1)));
+	}
 
-    @Test
-    public void testGetExecutionsByNameMultipleResult() throws Exception {
-        mockMvc.perform(
-                get("/jobs/instances/").param("name", JOB_NAME_FOOBAR).accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].jobName", is(JOB_NAME_FOOBAR)))
-                .andExpect(jsonPath("$.content[0].jobExecutions[0].executionId", is(4)))
-                .andExpect(jsonPath("$.content[0].jobExecutions[1].executionId", is(3)))
-                .andExpect(jsonPath("$.content", hasSize(1)));
-    }
+	@Test
+	public void testGetExecutionsByNameMultipleResult() throws Exception {
+		mockMvc.perform(get("/jobs/instances/").param("name", JOB_NAME_FOOBAR).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].jobName", is(JOB_NAME_FOOBAR)))
+				.andExpect(jsonPath("$.content[0].jobExecutions[0].executionId", is(4)))
+				.andExpect(jsonPath("$.content[0].jobExecutions[1].executionId", is(3)))
+				.andExpect(jsonPath("$.content", hasSize(1)));
+	}
 
-    @Test
-    public void testGetInstanceByNameNotFound() throws Exception {
-        mockMvc.perform(
-                get("/jobs/instances/").param("name", "BAZ").accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is4xxClientError())
-                .andReturn().getResponse().getContentAsString().contains("NoSuchJobException");
-    }
+	@Test
+	public void testGetInstanceByNameNotFound() throws Exception {
+		mockMvc.perform(get("/jobs/instances/").param("name", "BAZ").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().is4xxClientError()).andReturn().getResponse().getContentAsString()
+				.contains("NoSuchJobException");
+	}
 
-    private void createSampleJob(String jobName, int jobExecutionCount) {
-        JobInstance instance = jobRepository.createJobInstance(jobName, new JobParameters());
-        TaskExecution taskExecution = dao.createTaskExecution(
-                jobName, new Date(), new ArrayList<String>(), null);
-        JobExecution jobExecution = null;
+	private void createSampleJob(String jobName, int jobExecutionCount) {
+		JobInstance instance = jobRepository.createJobInstance(jobName, new JobParameters());
+		TaskExecution taskExecution = dao.createTaskExecution(jobName, new Date(), new ArrayList<String>(), null);
+		JobExecution jobExecution = null;
 
-        for (int i = 0; i < jobExecutionCount; i++) {
-            jobExecution = jobRepository.createJobExecution(
-                    instance, new JobParameters(), null);
-            taskBatchDao.saveRelationship(taskExecution, jobExecution);
-        }
-    }
+		for (int i = 0; i < jobExecutionCount; i++) {
+			jobExecution = jobRepository.createJobExecution(instance, new JobParameters(), null);
+			taskBatchDao.saveRelationship(taskExecution, jobExecution);
+		}
+	}
 }

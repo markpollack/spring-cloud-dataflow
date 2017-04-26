@@ -42,8 +42,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller that provides meta information regarding the dataflow server and
- * its deployers.
+ * REST controller that provides meta information regarding the dataflow server and its
+ * deployers.
  *
  * @author Gunnar Hillert
  */
@@ -52,136 +52,132 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(AboutResource.class)
 public class AboutController {
 
-    private final FeaturesProperties featuresProperties;
-    private final VersionInfoProperties versionInfoProperties;
+	private final FeaturesProperties featuresProperties;
+	private final VersionInfoProperties versionInfoProperties;
 
-    private final SecurityStateBean securityStateBean;
+	private final SecurityStateBean securityStateBean;
 
-    @Value("${security.oauth2.client.client-id:#{null}}")
-    private String oauthClientId;
+	@Value("${security.oauth2.client.client-id:#{null}}")
+	private String oauthClientId;
 
-    @Value("${info.app.name:#{null}}")
-    private String implementationName;
+	@Value("${info.app.name:#{null}}")
+	private String implementationName;
 
-    @Value("${info.app.version:#{null}}")
-    private String implementationVersion;
+	@Value("${info.app.version:#{null}}")
+	private String implementationVersion;
 
-    private AppDeployer appDeployer;
-    private TaskLauncher taskLauncher;
+	private AppDeployer appDeployer;
+	private TaskLauncher taskLauncher;
 
-    public AboutController(
-            AppDeployer appDeployer,
-            TaskLauncher taskLauncher,
-            FeaturesProperties featuresProperties,
-            VersionInfoProperties versionInfoProperties,
-            SecurityStateBean securityStateBean) {
-        this.appDeployer = appDeployer;
-        this.taskLauncher = taskLauncher;
-        this.featuresProperties = featuresProperties;
-        this.versionInfoProperties = versionInfoProperties;
-        this.securityStateBean = securityStateBean;
-    }
+	public AboutController(AppDeployer appDeployer, TaskLauncher taskLauncher, FeaturesProperties featuresProperties,
+			VersionInfoProperties versionInfoProperties, SecurityStateBean securityStateBean) {
+		this.appDeployer = appDeployer;
+		this.taskLauncher = taskLauncher;
+		this.featuresProperties = featuresProperties;
+		this.versionInfoProperties = versionInfoProperties;
+		this.securityStateBean = securityStateBean;
+	}
 
-    /**
-     * Return meta information about the dataflow server.
-     *
-     * @return Detailed information about the enabled features, versions of implementation libraries, and security
-     * configuration
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public AboutResource getAboutResource() {
-        final AboutResource aboutResource = new AboutResource();
-        final FeatureInfo featureInfo = new FeatureInfo();
-        featureInfo.setAnalyticsEnabled(featuresProperties.isAnalyticsEnabled());
-        featureInfo.setStreamsEnabled(featuresProperties.isStreamsEnabled());
-        featureInfo.setTasksEnabled(featuresProperties.isTasksEnabled());
+	/**
+	 * Return meta information about the dataflow server.
+	 *
+	 * @return Detailed information about the enabled features, versions of implementation
+	 * libraries, and security configuration
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public AboutResource getAboutResource() {
+		final AboutResource aboutResource = new AboutResource();
+		final FeatureInfo featureInfo = new FeatureInfo();
+		featureInfo.setAnalyticsEnabled(featuresProperties.isAnalyticsEnabled());
+		featureInfo.setStreamsEnabled(featuresProperties.isStreamsEnabled());
+		featureInfo.setTasksEnabled(featuresProperties.isTasksEnabled());
 
-        final VersionInfo versionInfo = new VersionInfo();
+		final VersionInfo versionInfo = new VersionInfo();
 
-        versionInfo.setImplementation(new Dependency(this.implementationName, this.implementationVersion));
-        versionInfo.setCore(new Dependency("Spring Cloud Data Flow Core", versionInfoProperties
-                .getDataflowCoreVersion()));
-        versionInfo.setDashboard(new Dependency("Spring Cloud Dataflow UI", versionInfoProperties
-                .getDataflowDashboardVersion()));
+		versionInfo.setImplementation(new Dependency(this.implementationName, this.implementationVersion));
+		versionInfo
+				.setCore(new Dependency("Spring Cloud Data Flow Core", versionInfoProperties.getDataflowCoreVersion()));
+		versionInfo.setDashboard(
+				new Dependency("Spring Cloud Dataflow UI", versionInfoProperties.getDataflowDashboardVersion()));
 
-        aboutResource.setFeatureInfo(featureInfo);
-        aboutResource.setVersionInfo(versionInfo);
+		aboutResource.setFeatureInfo(featureInfo);
+		aboutResource.setVersionInfo(versionInfo);
 
-        final boolean authenticationEnabled = securityStateBean.isAuthenticationEnabled();
-        final boolean authorizationEnabled = securityStateBean.isAuthorizationEnabled();
+		final boolean authenticationEnabled = securityStateBean.isAuthenticationEnabled();
+		final boolean authorizationEnabled = securityStateBean.isAuthorizationEnabled();
 
-        final SecurityInfo securityInfo = new SecurityInfo();
-        securityInfo.setAuthenticationEnabled(authenticationEnabled);
-        securityInfo.setAuthorizationEnabled(authorizationEnabled);
+		final SecurityInfo securityInfo = new SecurityInfo();
+		securityInfo.setAuthenticationEnabled(authenticationEnabled);
+		securityInfo.setAuthorizationEnabled(authorizationEnabled);
 
-        if (authenticationEnabled && SecurityContextHolder.getContext() != null) {
-            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authentication instanceof AnonymousAuthenticationToken)) {
-                securityInfo.setAuthenticated(authentication.isAuthenticated());
-                securityInfo.setUsername(authentication.getName());
+		if (authenticationEnabled && SecurityContextHolder.getContext() != null) {
+			final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (!(authentication instanceof AnonymousAuthenticationToken)) {
+				securityInfo.setAuthenticated(authentication.isAuthenticated());
+				securityInfo.setUsername(authentication.getName());
 
-                if (authorizationEnabled) {
-                    for (GrantedAuthority authority : authentication.getAuthorities()) {
-                        securityInfo.addRole(authority.getAuthority());
-                    }
-                }
-                if (this.oauthClientId == null) {
-                    securityInfo.setFormLogin(true);
-                } else {
-                    securityInfo.setFormLogin(false);
-                }
-            }
-        }
+				if (authorizationEnabled) {
+					for (GrantedAuthority authority : authentication.getAuthorities()) {
+						securityInfo.addRole(authority.getAuthority());
+					}
+				}
+				if (this.oauthClientId == null) {
+					securityInfo.setFormLogin(true);
+				}
+				else {
+					securityInfo.setFormLogin(false);
+				}
+			}
+		}
 
-        aboutResource.setSecurityInfo(securityInfo);
+		aboutResource.setSecurityInfo(securityInfo);
 
-        final RuntimeEnvironment runtimeEnvironment = new RuntimeEnvironment();
+		final RuntimeEnvironment runtimeEnvironment = new RuntimeEnvironment();
 
-        if (this.appDeployer != null) {
-            final RuntimeEnvironmentInfo deployerEnvironmentInfo = this.appDeployer.environmentInfo();
-            final RuntimeEnvironmentDetails deployerInfo = new RuntimeEnvironmentDetails();
+		if (this.appDeployer != null) {
+			final RuntimeEnvironmentInfo deployerEnvironmentInfo = this.appDeployer.environmentInfo();
+			final RuntimeEnvironmentDetails deployerInfo = new RuntimeEnvironmentDetails();
 
-            deployerInfo.setDeployerImplementationVersion(deployerEnvironmentInfo.getImplementationVersion());
-            deployerInfo.setDeployerName(deployerEnvironmentInfo.getImplementationName());
-            deployerInfo.setDeployerSpiVersion(deployerEnvironmentInfo.getSpiVersion());
-            deployerInfo.setJavaVersion(deployerEnvironmentInfo.getJavaVersion());
-            deployerInfo.setPlatformApiVersion(deployerEnvironmentInfo.getPlatformApiVersion());
-            deployerInfo.setPlatformClientVersion(deployerEnvironmentInfo.getPlatformClientVersion());
-            deployerInfo.setPlatformHostVersion(deployerEnvironmentInfo.getPlatformHostVersion());
-            deployerInfo.setPlatformSpecificInfo(deployerEnvironmentInfo.getPlatformSpecificInfo());
-            deployerInfo.setPlatformHostVersion(deployerEnvironmentInfo.getPlatformHostVersion());
-            deployerInfo.setPlatformType(deployerEnvironmentInfo.getPlatformType());
-            deployerInfo.setSpringBootVersion(deployerEnvironmentInfo.getSpringBootVersion());
-            deployerInfo.setSpringVersion(deployerEnvironmentInfo.getSpringVersion());
+			deployerInfo.setDeployerImplementationVersion(deployerEnvironmentInfo.getImplementationVersion());
+			deployerInfo.setDeployerName(deployerEnvironmentInfo.getImplementationName());
+			deployerInfo.setDeployerSpiVersion(deployerEnvironmentInfo.getSpiVersion());
+			deployerInfo.setJavaVersion(deployerEnvironmentInfo.getJavaVersion());
+			deployerInfo.setPlatformApiVersion(deployerEnvironmentInfo.getPlatformApiVersion());
+			deployerInfo.setPlatformClientVersion(deployerEnvironmentInfo.getPlatformClientVersion());
+			deployerInfo.setPlatformHostVersion(deployerEnvironmentInfo.getPlatformHostVersion());
+			deployerInfo.setPlatformSpecificInfo(deployerEnvironmentInfo.getPlatformSpecificInfo());
+			deployerInfo.setPlatformHostVersion(deployerEnvironmentInfo.getPlatformHostVersion());
+			deployerInfo.setPlatformType(deployerEnvironmentInfo.getPlatformType());
+			deployerInfo.setSpringBootVersion(deployerEnvironmentInfo.getSpringBootVersion());
+			deployerInfo.setSpringVersion(deployerEnvironmentInfo.getSpringVersion());
 
-            runtimeEnvironment.setAppDeployer(deployerInfo);
-        }
+			runtimeEnvironment.setAppDeployer(deployerInfo);
+		}
 
-        if (this.taskLauncher != null) {
-            final RuntimeEnvironmentInfo taskLauncherEnvironmentInfo = this.taskLauncher.environmentInfo();
-            final RuntimeEnvironmentDetails taskLauncherInfo = new RuntimeEnvironmentDetails();
+		if (this.taskLauncher != null) {
+			final RuntimeEnvironmentInfo taskLauncherEnvironmentInfo = this.taskLauncher.environmentInfo();
+			final RuntimeEnvironmentDetails taskLauncherInfo = new RuntimeEnvironmentDetails();
 
-            taskLauncherInfo.setDeployerImplementationVersion(taskLauncherEnvironmentInfo.getImplementationVersion());
-            taskLauncherInfo.setDeployerName(taskLauncherEnvironmentInfo.getImplementationName());
-            taskLauncherInfo.setDeployerSpiVersion(taskLauncherEnvironmentInfo.getSpiVersion());
-            taskLauncherInfo.setJavaVersion(taskLauncherEnvironmentInfo.getJavaVersion());
-            taskLauncherInfo.setPlatformApiVersion(taskLauncherEnvironmentInfo.getPlatformApiVersion());
-            taskLauncherInfo.setPlatformClientVersion(taskLauncherEnvironmentInfo.getPlatformClientVersion());
-            taskLauncherInfo.setPlatformHostVersion(taskLauncherEnvironmentInfo.getPlatformHostVersion());
-            taskLauncherInfo.setPlatformSpecificInfo(taskLauncherEnvironmentInfo.getPlatformSpecificInfo());
-            taskLauncherInfo.setPlatformHostVersion(taskLauncherEnvironmentInfo.getPlatformHostVersion());
-            taskLauncherInfo.setPlatformType(taskLauncherEnvironmentInfo.getPlatformType());
-            taskLauncherInfo.setSpringBootVersion(taskLauncherEnvironmentInfo.getSpringBootVersion());
-            taskLauncherInfo.setSpringVersion(taskLauncherEnvironmentInfo.getSpringVersion());
+			taskLauncherInfo.setDeployerImplementationVersion(taskLauncherEnvironmentInfo.getImplementationVersion());
+			taskLauncherInfo.setDeployerName(taskLauncherEnvironmentInfo.getImplementationName());
+			taskLauncherInfo.setDeployerSpiVersion(taskLauncherEnvironmentInfo.getSpiVersion());
+			taskLauncherInfo.setJavaVersion(taskLauncherEnvironmentInfo.getJavaVersion());
+			taskLauncherInfo.setPlatformApiVersion(taskLauncherEnvironmentInfo.getPlatformApiVersion());
+			taskLauncherInfo.setPlatformClientVersion(taskLauncherEnvironmentInfo.getPlatformClientVersion());
+			taskLauncherInfo.setPlatformHostVersion(taskLauncherEnvironmentInfo.getPlatformHostVersion());
+			taskLauncherInfo.setPlatformSpecificInfo(taskLauncherEnvironmentInfo.getPlatformSpecificInfo());
+			taskLauncherInfo.setPlatformHostVersion(taskLauncherEnvironmentInfo.getPlatformHostVersion());
+			taskLauncherInfo.setPlatformType(taskLauncherEnvironmentInfo.getPlatformType());
+			taskLauncherInfo.setSpringBootVersion(taskLauncherEnvironmentInfo.getSpringBootVersion());
+			taskLauncherInfo.setSpringVersion(taskLauncherEnvironmentInfo.getSpringVersion());
 
-            runtimeEnvironment.setTaskLauncher(taskLauncherInfo);
-        }
+			runtimeEnvironment.setTaskLauncher(taskLauncherInfo);
+		}
 
-        aboutResource.setRuntimeEnvironment(runtimeEnvironment);
-        aboutResource.add(ControllerLinkBuilder.linkTo(AboutController.class).withSelfRel());
+		aboutResource.setRuntimeEnvironment(runtimeEnvironment);
+		aboutResource.add(ControllerLinkBuilder.linkTo(AboutController.class).withSelfRel());
 
-        return aboutResource;
-    }
+		return aboutResource;
+	}
 }
-

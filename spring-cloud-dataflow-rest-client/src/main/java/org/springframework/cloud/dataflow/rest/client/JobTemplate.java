@@ -33,111 +33,103 @@ import org.springframework.web.client.RestTemplate;
  */
 public class JobTemplate implements JobOperations {
 
-    private static final String EXECUTIONS_RELATION = "jobs/executions";
+	private static final String EXECUTIONS_RELATION = "jobs/executions";
 
-    private static final String EXECUTION_RELATION = "jobs/executions/execution";
+	private static final String EXECUTION_RELATION = "jobs/executions/execution";
 
-    private static final String EXECUTION_RELATION_BY_NAME = "jobs/executions/name";
+	private static final String EXECUTION_RELATION_BY_NAME = "jobs/executions/name";
 
-    private static final String INSTANCE_RELATION = "jobs/instances/instance";
+	private static final String INSTANCE_RELATION = "jobs/instances/instance";
 
-    private static final String INSTANCE_RELATION_BY_NAME = "jobs/instances/name";
+	private static final String INSTANCE_RELATION_BY_NAME = "jobs/instances/name";
 
-    private static final String STEP_EXECUTION_RELATION_BY_ID = "jobs/executions/execution/steps";
+	private static final String STEP_EXECUTION_RELATION_BY_ID = "jobs/executions/execution/steps";
 
-    private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID =
-            "jobs/executions/execution/steps/step/progress";
+	private static final String STEP_EXECUTION_PROGRESS_RELATION_BY_ID = "jobs/executions/execution/steps/step/progress";
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    private final Link executionsLink;
+	private final Link executionsLink;
 
-    private final Link executionLink;
+	private final Link executionLink;
 
-    private final Link executionByNameLink;
+	private final Link executionByNameLink;
 
-    private final Link instanceLink;
+	private final Link instanceLink;
 
-    private final Link instanceByNameLink;
+	private final Link instanceByNameLink;
 
-    private final Link stepExecutionsLink;
+	private final Link stepExecutionsLink;
 
-    private final Link stepExecutionProgressLink;
+	private final Link stepExecutionProgressLink;
 
-    private final Link stepExecutionLink;
+	private final Link stepExecutionLink;
 
+	JobTemplate(RestTemplate restTemplate, ResourceSupport resources) {
+		Assert.notNull(resources, "URI Resources must not be be null");
+		Assert.notNull(restTemplate, "RestTemplate must not be null");
+		Assert.notNull(resources.getLink(EXECUTIONS_RELATION), "Executions relation is required");
+		Assert.notNull(resources.getLink(EXECUTION_RELATION), "Execution relation is required");
+		Assert.notNull(resources.getLink(EXECUTION_RELATION_BY_NAME), "Execution by name relation is required");
+		Assert.notNull(resources.getLink(INSTANCE_RELATION), "Instance relation is required");
+		Assert.notNull(resources.getLink(INSTANCE_RELATION_BY_NAME), "Instance by name relation is required");
+		Assert.notNull(resources.getLink(STEP_EXECUTION_RELATION_BY_ID), "Step Execution by id relation is required");
+		Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID),
+				"Step Execution Progress by id " + "relation is required");
+		Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID),
+				"Step Execution View by id relation" + " is required");
 
-    JobTemplate(RestTemplate restTemplate, ResourceSupport resources) {
-        Assert.notNull(resources, "URI Resources must not be be null");
-        Assert.notNull(restTemplate, "RestTemplate must not be null");
-        Assert.notNull(resources.getLink(EXECUTIONS_RELATION), "Executions relation is required");
-        Assert.notNull(resources.getLink(EXECUTION_RELATION), "Execution relation is required");
-        Assert.notNull(resources.getLink(EXECUTION_RELATION_BY_NAME), "Execution by name relation is required");
-        Assert.notNull(resources.getLink(INSTANCE_RELATION), "Instance relation is required");
-        Assert.notNull(resources.getLink(INSTANCE_RELATION_BY_NAME), "Instance by name relation is required");
-        Assert.notNull(resources.getLink(STEP_EXECUTION_RELATION_BY_ID), "Step Execution by id relation is required");
-        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution Progress by id " +
-                "relation is required");
-        Assert.notNull(resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID), "Step Execution View by id relation" +
-                " is required");
+		this.restTemplate = restTemplate;
+		this.executionsLink = resources.getLink(EXECUTIONS_RELATION);
+		this.executionLink = resources.getLink(EXECUTION_RELATION);
+		this.executionByNameLink = resources.getLink(EXECUTION_RELATION_BY_NAME);
+		this.instanceLink = resources.getLink(INSTANCE_RELATION);
+		this.instanceByNameLink = resources.getLink(INSTANCE_RELATION_BY_NAME);
+		this.stepExecutionsLink = resources.getLink(STEP_EXECUTION_RELATION_BY_ID);
+		this.stepExecutionProgressLink = resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID);
+		this.stepExecutionLink = resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID);
 
+	}
 
-        this.restTemplate = restTemplate;
-        this.executionsLink = resources.getLink(EXECUTIONS_RELATION);
-        this.executionLink = resources.getLink(EXECUTION_RELATION);
-        this.executionByNameLink = resources.getLink(EXECUTION_RELATION_BY_NAME);
-        this.instanceLink = resources.getLink(INSTANCE_RELATION);
-        this.instanceByNameLink = resources.getLink(INSTANCE_RELATION_BY_NAME);
-        this.stepExecutionsLink = resources.getLink(STEP_EXECUTION_RELATION_BY_ID);
-        this.stepExecutionProgressLink = resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID);
-        this.stepExecutionLink = resources.getLink(STEP_EXECUTION_PROGRESS_RELATION_BY_ID);
+	@Override
+	public PagedResources<JobExecutionResource> executionList() {
+		String uriTemplate = executionsLink.getHref().toString();
+		uriTemplate = uriTemplate + "?size=2000";
 
-    }
+		return restTemplate.getForObject(uriTemplate, JobExecutionResource.Page.class);
+	}
 
+	@Override
+	public PagedResources<JobInstanceResource> instanceList(String jobName) {
+		return restTemplate.getForObject(instanceByNameLink.expand(jobName).getHref(), JobInstanceResource.Page.class);
+	}
 
-    @Override
-    public PagedResources<JobExecutionResource> executionList() {
-        String uriTemplate = executionsLink.getHref().toString();
-        uriTemplate = uriTemplate + "?size=2000";
+	@Override
+	public PagedResources<JobExecutionResource> executionListByJobName(String jobName) {
+		return restTemplate.getForObject(executionByNameLink.expand(jobName).getHref(),
+				JobExecutionResource.Page.class);
+	}
 
-        return restTemplate.getForObject(uriTemplate, JobExecutionResource.Page.class);
-    }
+	@Override
+	public JobExecutionResource jobExecution(long id) {
+		return restTemplate.getForObject(executionLink.expand(id).getHref(), JobExecutionResource.class);
+	}
 
-    @Override
-    public PagedResources<JobInstanceResource> instanceList(String jobName) {
-        return restTemplate.getForObject(instanceByNameLink.expand(jobName).getHref(),
-                JobInstanceResource.Page.class);
-    }
+	@Override
+	public JobInstanceResource jobInstance(long id) {
+		return restTemplate.getForObject(instanceLink.expand(id).getHref(), JobInstanceResource.class);
+	}
 
-    @Override
-    public PagedResources<JobExecutionResource> executionListByJobName(String jobName) {
-        return restTemplate.getForObject(executionByNameLink.expand(jobName).getHref(),
-                JobExecutionResource.Page.class);
-    }
+	@Override
+	public PagedResources<StepExecutionResource> stepExecutionList(long jobExecutionId) {
+		return restTemplate.getForObject(stepExecutionsLink.expand(jobExecutionId).getHref(),
+				StepExecutionResource.Page.class);
+	}
 
-    @Override
-    public JobExecutionResource jobExecution(long id) {
-        return restTemplate.getForObject(executionLink.expand(id).getHref(),
-                JobExecutionResource.class);
-    }
-
-    @Override
-    public JobInstanceResource jobInstance(long id) {
-        return restTemplate.getForObject(instanceLink.expand(id).getHref(),
-                JobInstanceResource.class);
-    }
-
-    @Override
-    public PagedResources<StepExecutionResource> stepExecutionList(long jobExecutionId) {
-        return restTemplate.getForObject(stepExecutionsLink.expand(jobExecutionId).getHref(),
-                StepExecutionResource.Page.class);
-    }
-
-    @Override
-    public StepExecutionProgressInfoResource stepExecutionProgress(long jobExecutionId, long stepExecutionId) {
-        return restTemplate.getForObject(stepExecutionProgressLink.expand(jobExecutionId, stepExecutionId).getHref(),
-                StepExecutionProgressInfoResource.class);
-    }
-
+	@Override
+	public StepExecutionProgressInfoResource stepExecutionProgress(long jobExecutionId, long stepExecutionId) {
+		return restTemplate.getForObject(stepExecutionProgressLink.expand(jobExecutionId, stepExecutionId).getHref(),
+				StepExecutionProgressInfoResource.class);
+	}
 
 }

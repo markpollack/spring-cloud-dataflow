@@ -27,25 +27,25 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface FieldValueCounterOperations {
 
-    /**
-     * Retrieve information about the given named counter.
-     *
-     * @param name the name of the field value counter
-     * @return the field value counter
-     */
-    FieldValueCounterResource retrieve(String name);
+	/**
+	 * Retrieve information about the given named counter.
+	 *
+	 * @param name the name of the field value counter
+	 * @return the field value counter
+	 */
+	FieldValueCounterResource retrieve(String name);
 
-    /**
-     * Retrieve basic information (i.e. names) for existing counters.
-     *
-     * @return a pages list of field value counters
-     */
-    PagedResources<MetricResource> list();
+	/**
+	 * Retrieve basic information (i.e. names) for existing counters.
+	 *
+	 * @return a pages list of field value counters
+	 */
+	PagedResources<MetricResource> list();
 
-    /**
-     * Delete the counter with given name.
-     *
-     * @param name the name of the field value counter
-     */
-    void reset(String name);
+	/**
+	 * Delete the counter with given name.
+	 *
+	 * @param name the name of the field value counter
+	 */
+	void reset(String name);
 }

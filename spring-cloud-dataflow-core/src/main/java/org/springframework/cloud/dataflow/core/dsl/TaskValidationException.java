@@ -19,41 +19,40 @@ package org.springframework.cloud.dataflow.core.dsl;
 import java.util.List;
 
 /**
- * If a parsed task AST is validated, if there are any validation errors
- * this exception will be thrown, it contains a list of the validation errors
- * found.
+ * If a parsed task AST is validated, if there are any validation errors this exception
+ * will be thrown, it contains a list of the validation errors found.
  *
  * @author Andy Clement
  */
 @SuppressWarnings("serial")
 public class TaskValidationException extends RuntimeException {
 
-    private TaskNode taskNode;
+	private TaskNode taskNode;
 
-    private List<TaskValidationProblem> validationProblems;
+	private List<TaskValidationProblem> validationProblems;
 
-    public TaskValidationException(TaskNode taskNode, List<TaskValidationProblem> validationProblems) {
-        this.taskNode = taskNode;
-        this.validationProblems = validationProblems;
-    }
+	public TaskValidationException(TaskNode taskNode, List<TaskValidationProblem> validationProblems) {
+		this.taskNode = taskNode;
+		this.validationProblems = validationProblems;
+	}
 
-    public List<TaskValidationProblem> getValidationProblems() {
-        return validationProblems;
-    }
+	public List<TaskValidationProblem> getValidationProblems() {
+		return validationProblems;
+	}
 
-    public TaskNode getTaskNode() {
-        return taskNode;
-    }
+	public TaskNode getTaskNode() {
+		return taskNode;
+	}
 
-    /**
-     * @return a formatted message with inserts applied
-     */
-    @Override
-    public String getMessage() {
-        StringBuilder s = new StringBuilder();
-        s.append("Problems found when validating '").append(taskNode.getTaskText()).append("': ");
-        s.append(validationProblems);
-        return s.toString();
-    }
+	/**
+	 * @return a formatted message with inserts applied
+	 */
+	@Override
+	public String getMessage() {
+		StringBuilder s = new StringBuilder();
+		s.append("Problems found when validating '").append(taskNode.getTaskText()).append("': ");
+		s.append(validationProblems);
+		return s.toString();
+	}
 
 }

@@ -31,31 +31,31 @@ import org.springframework.util.Assert;
  */
 public class TaskExplorerFactoryBean implements FactoryBean<TaskExplorer> {
 
-    private DataSource dataSource;
+	private DataSource dataSource;
 
-    private TaskExplorer taskExplorer;
+	private TaskExplorer taskExplorer;
 
-    public TaskExplorerFactoryBean(DataSource dataSource) {
-        Assert.notNull(dataSource, "dataSource must not be null");
-        this.dataSource = dataSource;
-    }
+	public TaskExplorerFactoryBean(DataSource dataSource) {
+		Assert.notNull(dataSource, "dataSource must not be null");
+		this.dataSource = dataSource;
+	}
 
-    @Override
-    public TaskExplorer getObject() throws Exception {
-        if (taskExplorer == null) {
-            taskExplorer = new SimpleTaskExplorer(new TaskExecutionDaoFactoryBean(dataSource));
-        }
-        return taskExplorer;
-    }
+	@Override
+	public TaskExplorer getObject() throws Exception {
+		if (taskExplorer == null) {
+			taskExplorer = new SimpleTaskExplorer(new TaskExecutionDaoFactoryBean(dataSource));
+		}
+		return taskExplorer;
+	}
 
-    @Override
-    public Class<?> getObjectType() {
-        return TaskExplorer.class;
-    }
+	@Override
+	public Class<?> getObjectType() {
+		return TaskExplorer.class;
+	}
 
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
+	@Override
+	public boolean isSingleton() {
+		return true;
+	}
 
 }

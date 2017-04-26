@@ -22,35 +22,35 @@ import org.springframework.hateoas.UriTemplate;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of {@link CompletionOperations} that uses a {@link RestTemplate} to issue commands to the Data Flow
- * server.
+ * Implementation of {@link CompletionOperations} that uses a {@link RestTemplate} to
+ * issue commands to the Data Flow server.
  *
  * @author Eric Bottard
  */
 public class CompletionTemplate implements CompletionOperations {
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    private final UriTemplate streamCompletionUriTemplate;
+	private final UriTemplate streamCompletionUriTemplate;
 
-    private final UriTemplate taskCompletionUriTemplate;
+	private final UriTemplate taskCompletionUriTemplate;
 
-    public CompletionTemplate(RestTemplate restTemplate, Link streamLink, Link taskLink) {
-        this.restTemplate = restTemplate;
-        this.streamCompletionUriTemplate = new UriTemplate(streamLink.getHref());
-        this.taskCompletionUriTemplate = new UriTemplate(taskLink.getHref());
-    }
+	public CompletionTemplate(RestTemplate restTemplate, Link streamLink, Link taskLink) {
+		this.restTemplate = restTemplate;
+		this.streamCompletionUriTemplate = new UriTemplate(streamLink.getHref());
+		this.taskCompletionUriTemplate = new UriTemplate(taskLink.getHref());
+	}
 
-    @Override
-    public CompletionProposalsResource streamCompletions(String prefix, int levelOfDetail) {
-        return restTemplate.getForObject(streamCompletionUriTemplate.expand(prefix, levelOfDetail),
-                CompletionProposalsResource.class);
-    }
+	@Override
+	public CompletionProposalsResource streamCompletions(String prefix, int levelOfDetail) {
+		return restTemplate.getForObject(streamCompletionUriTemplate.expand(prefix, levelOfDetail),
+				CompletionProposalsResource.class);
+	}
 
-    @Override
-    public CompletionProposalsResource taskCompletions(String prefix, int levelOfDetail) {
-        return restTemplate.getForObject(taskCompletionUriTemplate.expand(prefix, levelOfDetail),
-                CompletionProposalsResource.class);
-    }
+	@Override
+	public CompletionProposalsResource taskCompletions(String prefix, int levelOfDetail) {
+		return restTemplate.getForObject(taskCompletionUriTemplate.expand(prefix, levelOfDetail),
+				CompletionProposalsResource.class);
+	}
 
 }

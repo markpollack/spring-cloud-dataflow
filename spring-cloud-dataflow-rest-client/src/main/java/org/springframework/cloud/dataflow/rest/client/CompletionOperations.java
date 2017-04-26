@@ -25,21 +25,23 @@ import org.springframework.cloud.dataflow.rest.resource.CompletionProposalsResou
  */
 public interface CompletionOperations {
 
-    /**
-     * Return the list of streamCompletions that are compatible with the given DSL prefix.
-     *
-     * @param prefix        the provided prefix value from DSL
-     * @param levelOfDetail integer value that specifies the level of detail user wants in stream completions
-     * @return the stream completion proposals for the given DSL prefix
-     */
-    CompletionProposalsResource streamCompletions(String prefix, int levelOfDetail);
+	/**
+	 * Return the list of streamCompletions that are compatible with the given DSL prefix.
+	 *
+	 * @param prefix the provided prefix value from DSL
+	 * @param levelOfDetail integer value that specifies the level of detail user wants in
+	 * stream completions
+	 * @return the stream completion proposals for the given DSL prefix
+	 */
+	CompletionProposalsResource streamCompletions(String prefix, int levelOfDetail);
 
-    /**
-     * Return the list of taskCompletions that are compatible with the given DSL prefix.
-     *
-     * @param prefix        the provided prefix value from DSL
-     * @param levelOfDetail integer value that specifies the level of detail user wants in task completions
-     * @return the task completion proposals for the given DSL prefix
-     */
-    CompletionProposalsResource taskCompletions(String prefix, int levelOfDetail);
+	/**
+	 * Return the list of taskCompletions that are compatible with the given DSL prefix.
+	 *
+	 * @param prefix the provided prefix value from DSL
+	 * @param levelOfDetail integer value that specifies the level of detail user wants in
+	 * task completions
+	 * @return the task completion proposals for the given DSL prefix
+	 */
+	CompletionProposalsResource taskCompletions(String prefix, int levelOfDetail);
 }

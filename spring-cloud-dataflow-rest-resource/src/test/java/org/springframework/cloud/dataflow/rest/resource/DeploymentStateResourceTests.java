@@ -30,20 +30,20 @@ import static org.junit.Assert.assertThat;
  */
 public class DeploymentStateResourceTests {
 
-    @Test
-    public void testSerializationOfSingleStepExecution() throws JsonProcessingException {
+	@Test
+	public void testSerializationOfSingleStepExecution() throws JsonProcessingException {
 
-        final ObjectMapper objectMapper = new ObjectMapper();
+		final ObjectMapper objectMapper = new ObjectMapper();
 
-        final DeploymentStateResource deploymentStateResource = DeploymentStateResource.DEPLOYED;
-        final String result = objectMapper.writeValueAsString(deploymentStateResource);
+		final DeploymentStateResource deploymentStateResource = DeploymentStateResource.DEPLOYED;
+		final String result = objectMapper.writeValueAsString(deploymentStateResource);
 
-        final DocumentContext documentContext = JsonPath.parse(result);
+		final DocumentContext documentContext = JsonPath.parse(result);
 
-        assertThat(documentContext.read("$.key"), is("deployed"));
-        assertThat(documentContext.read("$.displayName"), is("Deployed"));
-        assertThat(documentContext.read("$.description"), is("All apps have been successfully deployed"));
+		assertThat(documentContext.read("$.key"), is("deployed"));
+		assertThat(documentContext.read("$.displayName"), is("Deployed"));
+		assertThat(documentContext.read("$.description"), is("All apps have been successfully deployed"));
 
-    }
+	}
 
 }

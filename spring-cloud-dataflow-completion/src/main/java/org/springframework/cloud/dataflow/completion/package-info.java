@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * Contains classes related to code-completion of stream definitions expressed
- * in the Spring Cloud Dataflow DSL.
+ * Contains classes related to code-completion of stream definitions expressed in the
+ * Spring Cloud Dataflow DSL.
  *
  * @author Eric Bottard
  */

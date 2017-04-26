@@ -17,20 +17,20 @@
 package org.springframework.cloud.dataflow.server.repository;
 
 /**
- * Thrown to indicate that the creation of a stream failed
- * because a stream with the given name already exists.
+ * Thrown to indicate that the creation of a stream failed because a stream with the given
+ * name already exists.
  *
  * @author Mark Fisher
  */
 public class DuplicateStreamDefinitionException extends RuntimeException {
 
-    private static final long serialVersionUID = -3073129756296341192L;
+	private static final long serialVersionUID = -3073129756296341192L;
 
-    public DuplicateStreamDefinitionException() {
-        super();
-    }
+	public DuplicateStreamDefinitionException() {
+		super();
+	}
 
-    public DuplicateStreamDefinitionException(String message) {
-        super(message);
-    }
+	public DuplicateStreamDefinitionException(String message) {
+		super(message);
+	}
 }

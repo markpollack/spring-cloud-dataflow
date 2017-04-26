@@ -20,69 +20,74 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The AST node representing a flow. A flow is a series of things to execute sequentially. Those things
- * can themselves be individual task applications or splits. In DSL form a flow is expressed like this:
- * <pre><tt>aa && bb</tt></pre>.
+ * The AST node representing a flow. A flow is a series of things to execute sequentially.
+ * Those things can themselves be individual task applications or splits. In DSL form a
+ * flow is expressed like this:
+ *
+ * <pre>
+ * <tt>aa && bb</tt>
+ * </pre>
+ *
+ * .
  *
  * @author Andy Clement
  */
 public class FlowNode extends LabelledTaskNode {
 
-    private List<LabelledTaskNode> series;
+	private List<LabelledTaskNode> series;
 
-    FlowNode(List<LabelledTaskNode> nodes) {
-        super(nodes.get(0).getStartPos(),
-                nodes.get(nodes.size() - 1).getEndPos());
-        this.series = Collections.unmodifiableList(nodes);
-    }
+	FlowNode(List<LabelledTaskNode> nodes) {
+		super(nodes.get(0).getStartPos(), nodes.get(nodes.size() - 1).getEndPos());
+		this.series = Collections.unmodifiableList(nodes);
+	}
 
-    @Override
-    public String stringify(boolean includePositionInfo) {
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < series.size(); i++) {
-            if (i > 0) {
-                s.append(" ").append(TokenKind.ANDAND.tokenChars).append(" ");
-            }
-            s.append(series.get(i).stringify(includePositionInfo));
-        }
-        return s.toString();
-    }
+	@Override
+	public String stringify(boolean includePositionInfo) {
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < series.size(); i++) {
+			if (i > 0) {
+				s.append(" ").append(TokenKind.ANDAND.tokenChars).append(" ");
+			}
+			s.append(series.get(i).stringify(includePositionInfo));
+		}
+		return s.toString();
+	}
 
-    @Override
-    public int getSeriesLength() {
-        return series.size();
-    }
+	@Override
+	public int getSeriesLength() {
+		return series.size();
+	}
 
-    @Override
-    public List<LabelledTaskNode> getSeries() {
-        return series;
-    }
+	@Override
+	public List<LabelledTaskNode> getSeries() {
+		return series;
+	}
 
-    @Override
-    public LabelledTaskNode getSeriesElement(int index) {
-        return series.get(index);
-    }
+	@Override
+	public LabelledTaskNode getSeriesElement(int index) {
+		return series.get(index);
+	}
 
-    @Override
-    public boolean isFlow() {
-        return true;
-    }
+	@Override
+	public boolean isFlow() {
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "[Flow:" + stringify(true) + "]";
-    }
+	@Override
+	public String toString() {
+		return "[Flow:" + stringify(true) + "]";
+	}
 
-    @Override
-    public void accept(TaskVisitor visitor) {
-        boolean cont = visitor.preVisit(this);
-        if (!cont) {
-            return;
-        }
-        visitor.visit(this);
-        for (LabelledTaskNode labelledTaskNode : series) {
-            labelledTaskNode.accept(visitor);
-        }
-        visitor.postVisit(this);
-    }
+	@Override
+	public void accept(TaskVisitor visitor) {
+		boolean cont = visitor.preVisit(this);
+		if (!cont) {
+			return;
+		}
+		visitor.visit(this);
+		for (LabelledTaskNode labelledTaskNode : series) {
+			labelledTaskNode.accept(visitor);
+		}
+		visitor.postVisit(this);
+	}
 }

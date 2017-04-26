@@ -23,8 +23,8 @@ package org.springframework.cloud.dataflow.core;
  */
 public class TaskPropertyKeys {
 
-    static final String PREFIX = "spring.cloud.task.";
+	static final String PREFIX = "spring.cloud.task.";
 
-    public static final String TASK_NAME = PREFIX + "name";
+	public static final String TASK_NAME = PREFIX + "name";
 
 }

@@ -25,10 +25,7 @@ public class StreamPropertyKeys {
 
     // @formatter:off
     static final String PREFIX = "spring.cloud.stream.";
-    /**
-     * Instance Count property key.
-     */
-    public static final String INSTANCE_COUNT = PREFIX + "instanceCount";
+
     /**
      * Prefix for Spring Cloud Stream Metrics.
      */
@@ -42,6 +39,12 @@ public class StreamPropertyKeys {
      * METRICS properties property key.
      */
     public static final String METRICS_PROPERTIES = METRICS_PREFIX + "properties";
+
+    /**
+     * Instance Count property key.
+     */
+    public static final String INSTANCE_COUNT = PREFIX + "instanceCount";
+
 
     // @formatter:on
 }

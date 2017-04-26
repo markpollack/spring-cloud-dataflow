@@ -35,37 +35,37 @@ import static org.springframework.cloud.dataflow.core.ApplicationType.sink;
  */
 public class PipeIntoOtherAppsExpansionStrategy implements ExpansionStrategy {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    public PipeIntoOtherAppsExpansionStrategy(AppRegistry appRegistry) {
-        this.appRegistry = appRegistry;
-    }
+	public PipeIntoOtherAppsExpansionStrategy(AppRegistry appRegistry) {
+		this.appRegistry = appRegistry;
+	}
 
-    @Override
-    public boolean addProposals(String text, StreamDefinition parseResult, int detailLevel,
-                                List<CompletionProposal> collector) {
-        if (text.isEmpty() || !text.endsWith(" ")) {
-            return false;
-        }
-        StreamAppDefinition lastApp = parseResult.getDeploymentOrderIterator().next();
-        // Consider "bar | foo". If there is indeed a sink named foo in the registry,
-        // "foo" may also be a processor, in which case we can continue
-        boolean couldBeASink = appRegistry.find(lastApp.getName(), sink) != null;
-        if (couldBeASink) {
-            boolean couldBeAProcessor = appRegistry.find(lastApp.getName(), processor) != null;
-            if (!couldBeAProcessor) {
-                return false;
-            }
-        }
+	@Override
+	public boolean addProposals(String text, StreamDefinition parseResult, int detailLevel,
+			List<CompletionProposal> collector) {
+		if (text.isEmpty() || !text.endsWith(" ")) {
+			return false;
+		}
+		StreamAppDefinition lastApp = parseResult.getDeploymentOrderIterator().next();
+		// Consider "bar | foo". If there is indeed a sink named foo in the registry,
+		// "foo" may also be a processor, in which case we can continue
+		boolean couldBeASink = appRegistry.find(lastApp.getName(), sink) != null;
+		if (couldBeASink) {
+			boolean couldBeAProcessor = appRegistry.find(lastApp.getName(), processor) != null;
+			if (!couldBeAProcessor) {
+				return false;
+			}
+		}
 
-        CompletionProposal.Factory proposals = CompletionProposal.expanding(text);
-        for (AppRegistration appRegistration : appRegistry.findAll()) {
-            if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
-                String expansion = CompletionUtils.maybeQualifyWithLabel(appRegistration.getName(), parseResult);
-                collector.add(proposals.withSeparateTokens("| " + expansion,
-                        "Continue stream definition with a " + appRegistration.getType()));
-            }
-        }
-        return false;
-    }
+		CompletionProposal.Factory proposals = CompletionProposal.expanding(text);
+		for (AppRegistration appRegistration : appRegistry.findAll()) {
+			if (appRegistration.getType() == processor || appRegistration.getType() == sink) {
+				String expansion = CompletionUtils.maybeQualifyWithLabel(appRegistration.getName(), parseResult);
+				collector.add(proposals.withSeparateTokens("| " + expansion,
+						"Continue stream definition with a " + appRegistration.getType()));
+			}
+		}
+		return false;
+	}
 }

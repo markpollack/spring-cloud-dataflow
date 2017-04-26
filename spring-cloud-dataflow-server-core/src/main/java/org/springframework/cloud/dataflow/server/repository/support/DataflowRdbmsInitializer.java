@@ -45,94 +45,93 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 
 public final class DataflowRdbmsInitializer implements InitializingBean {
 
-    private static final Log logger = LogFactory.getLog(DataflowRdbmsInitializer.class);
+	private static final Log logger = LogFactory.getLog(DataflowRdbmsInitializer.class);
 
-    private static final String DEFAULT_SCHEMA_LOCATION = "classpath:schema-@@platform@@-@@suffix@@.sql";
+	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:schema-@@platform@@-@@suffix@@.sql";
 
-    private static final String COMMON_SCHEMA_SUFFIX = "common";
+	private static final String COMMON_SCHEMA_SUFFIX = "common";
 
-    private static final String STREAMS_SCHEMA_SUFFIX = "streams";
+	private static final String STREAMS_SCHEMA_SUFFIX = "streams";
 
-    private static final String TASKS_SCHEMA_SUFFIX = "tasks";
+	private static final String TASKS_SCHEMA_SUFFIX = "tasks";
 
-    private static final String DEPLOYMENT_SCHEMA_SUFFIX = "deployment";
+	private static final String DEPLOYMENT_SCHEMA_SUFFIX = "deployment";
 
-    /**
-     * Path to the SQL file to use to initialize the database schema.
-     */
-    private static String schema = DEFAULT_SCHEMA_LOCATION;
-    private final FeaturesProperties featuresProperties;
-    private DataSource dataSource;
-    private ResourceLoader resourceLoader;
-    @Value("${" + DataFlowPropertyKeys.PREFIX + "rdbms.initialize.enable:true}")
-    private boolean definitionInitializationEnable;
+	/**
+	 * Path to the SQL file to use to initialize the database schema.
+	 */
+	private static String schema = DEFAULT_SCHEMA_LOCATION;
+	private final FeaturesProperties featuresProperties;
+	private DataSource dataSource;
+	private ResourceLoader resourceLoader;
+	@Value("${" + DataFlowPropertyKeys.PREFIX + "rdbms.initialize.enable:true}")
+	private boolean definitionInitializationEnable;
 
-    public DataflowRdbmsInitializer(FeaturesProperties featuresProperties) {
-        this.featuresProperties = featuresProperties;
-    }
+	public DataflowRdbmsInitializer(FeaturesProperties featuresProperties) {
+		this.featuresProperties = featuresProperties;
+	}
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
-    @Autowired(required = false)
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
+	@Autowired(required = false)
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (dataSource != null && definitionInitializationEnable) {
-            String platform = getDatabaseType(dataSource);
-            if ("hsql".equals(platform)) {
-                platform = "hsqldb";
-            }
-            if ("postgres".equals(platform)) {
-                platform = "postgresql";
-            }
-            if ("oracle".equals(platform)) {
-                platform = "oracle10g";
-            }
-            ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-            String schemaLocation = schema;
-            schemaLocation = schemaLocation.replace("@@platform@@", platform);
-            String commonSchemaLocation = schemaLocation;
-            commonSchemaLocation = commonSchemaLocation.replace("@@suffix@@", COMMON_SCHEMA_SUFFIX);
-            logger.info(String.format("Adding dataflow schema %s for %s database", commonSchemaLocation,
-                    platform));
-            populator.addScript(resourceLoader.getResource(commonSchemaLocation));
-            if (featuresProperties.isStreamsEnabled()) {
-                String streamsSchemaLocation = schemaLocation;
-                streamsSchemaLocation = streamsSchemaLocation.replace("@@suffix@@", STREAMS_SCHEMA_SUFFIX);
-                logger.info(String.format("Adding dataflow schema %s for %s database", streamsSchemaLocation,
-                        platform));
-                populator.addScript(resourceLoader.getResource(streamsSchemaLocation));
-            }
-            if (featuresProperties.isTasksEnabled()) {
-                String tasksSchemaLocation = schemaLocation;
-                tasksSchemaLocation = tasksSchemaLocation.replace("@@suffix@@", TASKS_SCHEMA_SUFFIX);
-                logger.info(String.format("Adding dataflow schema %s for %s database", tasksSchemaLocation,
-                        platform));
-                populator.addScript(resourceLoader.getResource(tasksSchemaLocation));
-            }
-            if (featuresProperties.isStreamsEnabled() || featuresProperties.isTasksEnabled()) {
-                String deploymentSchemaLocation = schemaLocation;
-                deploymentSchemaLocation = deploymentSchemaLocation.replace("@@suffix@@", DEPLOYMENT_SCHEMA_SUFFIX);
-                logger.info(String.format("Adding dataflow schema %s for %s database", deploymentSchemaLocation,
-                        platform));
-                populator.addScript(resourceLoader.getResource(deploymentSchemaLocation));
-            }
-            populator.setContinueOnError(true);
-            logger.debug(String.format("Initializing dataflow schema for %s database", platform));
-            DatabasePopulatorUtils.execute(populator, dataSource);
-        }
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (dataSource != null && definitionInitializationEnable) {
+			String platform = getDatabaseType(dataSource);
+			if ("hsql".equals(platform)) {
+				platform = "hsqldb";
+			}
+			if ("postgres".equals(platform)) {
+				platform = "postgresql";
+			}
+			if ("oracle".equals(platform)) {
+				platform = "oracle10g";
+			}
+			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+			String schemaLocation = schema;
+			schemaLocation = schemaLocation.replace("@@platform@@", platform);
+			String commonSchemaLocation = schemaLocation;
+			commonSchemaLocation = commonSchemaLocation.replace("@@suffix@@", COMMON_SCHEMA_SUFFIX);
+			logger.info(String.format("Adding dataflow schema %s for %s database", commonSchemaLocation, platform));
+			populator.addScript(resourceLoader.getResource(commonSchemaLocation));
+			if (featuresProperties.isStreamsEnabled()) {
+				String streamsSchemaLocation = schemaLocation;
+				streamsSchemaLocation = streamsSchemaLocation.replace("@@suffix@@", STREAMS_SCHEMA_SUFFIX);
+				logger.info(
+						String.format("Adding dataflow schema %s for %s database", streamsSchemaLocation, platform));
+				populator.addScript(resourceLoader.getResource(streamsSchemaLocation));
+			}
+			if (featuresProperties.isTasksEnabled()) {
+				String tasksSchemaLocation = schemaLocation;
+				tasksSchemaLocation = tasksSchemaLocation.replace("@@suffix@@", TASKS_SCHEMA_SUFFIX);
+				logger.info(String.format("Adding dataflow schema %s for %s database", tasksSchemaLocation, platform));
+				populator.addScript(resourceLoader.getResource(tasksSchemaLocation));
+			}
+			if (featuresProperties.isStreamsEnabled() || featuresProperties.isTasksEnabled()) {
+				String deploymentSchemaLocation = schemaLocation;
+				deploymentSchemaLocation = deploymentSchemaLocation.replace("@@suffix@@", DEPLOYMENT_SCHEMA_SUFFIX);
+				logger.info(
+						String.format("Adding dataflow schema %s for %s database", deploymentSchemaLocation, platform));
+				populator.addScript(resourceLoader.getResource(deploymentSchemaLocation));
+			}
+			populator.setContinueOnError(true);
+			logger.debug(String.format("Initializing dataflow schema for %s database", platform));
+			DatabasePopulatorUtils.execute(populator, dataSource);
+		}
+	}
 
-    private String getDatabaseType(DataSource dataSource) {
-        try {
-            return DatabaseType.fromMetaData(dataSource).toString().toLowerCase();
-        } catch (MetaDataAccessException ex) {
-            throw new IllegalStateException("Unable to detect database type", ex);
-        }
-    }
+	private String getDatabaseType(DataSource dataSource) {
+		try {
+			return DatabaseType.fromMetaData(dataSource).toString().toLowerCase();
+		}
+		catch (MetaDataAccessException ex) {
+			throw new IllegalStateException("Unable to detect database type", ex);
+		}
+	}
 }

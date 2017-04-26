@@ -19,18 +19,18 @@ package org.springframework.cloud.dataflow.server.repository.support;
 import org.springframework.data.domain.Pageable;
 
 /**
- * HSQLDB implementation of a {@link PagingQueryProvider} using database specific features.
+ * HSQLDB implementation of a {@link PagingQueryProvider} using database specific
+ * features.
  *
  * @author Glenn Renfro
  */
 public class HsqlPagingQueryProvider extends AbstractSqlPagingQueryProvider {
 
-    @Override
-    public String getPageQuery(Pageable pageable) {
-        String topClause = new StringBuilder().append("LIMIT ")
-                .append(pageable.getOffset()).append(" ")
-                .append(pageable.getPageSize()).toString();
-        return SqlPagingQueryUtils.generateTopJumpToQuery(this, topClause);
-    }
+	@Override
+	public String getPageQuery(Pageable pageable) {
+		String topClause = new StringBuilder().append("LIMIT ").append(pageable.getOffset()).append(" ")
+				.append(pageable.getPageSize()).toString();
+		return SqlPagingQueryUtils.generateTopJumpToQuery(this, topClause);
+	}
 
 }

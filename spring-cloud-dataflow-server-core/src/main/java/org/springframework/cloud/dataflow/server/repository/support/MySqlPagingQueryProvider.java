@@ -24,12 +24,11 @@ import org.springframework.data.domain.Pageable;
  * @author Glenn Renfro
  */
 public class MySqlPagingQueryProvider extends AbstractSqlPagingQueryProvider {
-    @Override
-    public String getPageQuery(Pageable pageable) {
-        String topClause = new StringBuilder().append("LIMIT ")
-                .append(pageable.getOffset()).append(", ")
-                .append(pageable.getPageSize()).toString();
-        return SqlPagingQueryUtils.generateLimitJumpToQuery(this, topClause);
-    }
+	@Override
+	public String getPageQuery(Pageable pageable) {
+		String topClause = new StringBuilder().append("LIMIT ").append(pageable.getOffset()).append(", ")
+				.append(pageable.getPageSize()).toString();
+		return SqlPagingQueryUtils.generateLimitJumpToQuery(this, topClause);
+	}
 
 }

@@ -31,36 +31,34 @@ import org.springframework.util.Assert;
  *
  * @author Ilayaperumal Gopinathan
  */
-public class RdbmsStreamDefinitionRepository extends AbstractRdbmsKeyValueRepository<StreamDefinition> implements
-        StreamDefinitionRepository {
+public class RdbmsStreamDefinitionRepository extends AbstractRdbmsKeyValueRepository<StreamDefinition>
+		implements StreamDefinitionRepository {
 
-    public RdbmsStreamDefinitionRepository(DataSource dataSource) {
-        super(dataSource, "STREAM_", "DEFINITIONS", new RowMapper<StreamDefinition>() {
-            @Override
-            public StreamDefinition mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new StreamDefinition(
-                        resultSet.getString("DEFINITION_NAME"), resultSet.getString("DEFINITION"));
-            }
-        }, "DEFINITION_NAME", "DEFINITION");
-    }
+	public RdbmsStreamDefinitionRepository(DataSource dataSource) {
+		super(dataSource, "STREAM_", "DEFINITIONS", new RowMapper<StreamDefinition>() {
+			@Override
+			public StreamDefinition mapRow(ResultSet resultSet, int i) throws SQLException {
+				return new StreamDefinition(resultSet.getString("DEFINITION_NAME"), resultSet.getString("DEFINITION"));
+			}
+		}, "DEFINITION_NAME", "DEFINITION");
+	}
 
-    @Override
-    public StreamDefinition save(StreamDefinition definition) {
-        Assert.notNull(definition, "definition must not be null");
-        if (exists(definition.getName())) {
-            throw new DuplicateStreamDefinitionException(
-                    String.format("Cannot create stream %s because another one has already " +
-                                    "been created with the same name",
-                            definition.getName()));
-        }
-        Object[] insertParameters = new Object[]{definition.getName(), definition.getDslText()};
-        jdbcTemplate.update(saveRow, insertParameters, new int[]{Types.VARCHAR, Types.CLOB});
-        return definition;
-    }
+	@Override
+	public StreamDefinition save(StreamDefinition definition) {
+		Assert.notNull(definition, "definition must not be null");
+		if (exists(definition.getName())) {
+			throw new DuplicateStreamDefinitionException(String.format(
+					"Cannot create stream %s because another one has already " + "been created with the same name",
+					definition.getName()));
+		}
+		Object[] insertParameters = new Object[] { definition.getName(), definition.getDslText() };
+		jdbcTemplate.update(saveRow, insertParameters, new int[] { Types.VARCHAR, Types.CLOB });
+		return definition;
+	}
 
-    @Override
-    public void delete(StreamDefinition definition) {
-        Assert.notNull(definition, "definition must not null");
-        delete(definition.getName());
-    }
+	@Override
+	public void delete(StreamDefinition definition) {
+		Assert.notNull(definition, "definition must not null");
+		delete(definition.getName());
+	}
 }

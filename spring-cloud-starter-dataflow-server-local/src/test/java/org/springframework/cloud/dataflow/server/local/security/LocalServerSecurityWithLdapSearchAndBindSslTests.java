@@ -33,51 +33,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class LocalServerSecurityWithLdapSearchAndBindSslTests {
 
-    private final static LocalDataflowResource localDataflowResource =
-            new LocalDataflowResource("classpath:org/springframework/cloud/dataflow/server/local/security" +
-                    "/ldapSslSearchAndBind.yml");
+	private final static LocalDataflowResource localDataflowResource = new LocalDataflowResource(
+			"classpath:org/springframework/cloud/dataflow/server/local/security" + "/ldapSslSearchAndBind.yml");
 
-    @ClassRule
-    public static TestRule springDataflowAndLdapServer = RuleChain
-            .outerRule(new LdapServerResource(true))
-            .around(localDataflowResource);
+	@ClassRule
+	public static TestRule springDataflowAndLdapServer = RuleChain.outerRule(new LdapServerResource(true))
+			.around(localDataflowResource);
 
-    @Test
-    public void testUnauthenticatedAccessToModulesEndpointFails() throws Exception {
-        localDataflowResource.getMockMvc()
-                .perform(get("/apps"))
-                .andExpect(status().isUnauthorized());
-    }
+	@Test
+	public void testUnauthenticatedAccessToModulesEndpointFails() throws Exception {
+		localDataflowResource.getMockMvc().perform(get("/apps")).andExpect(status().isUnauthorized());
+	}
 
-    @Test
-    public void testUnauthenticatedAccessToManagementEndpointFails() throws Exception {
-        localDataflowResource.getMockMvc()
-                .perform(get("/management/metrics"))
-                .andExpect(status().isUnauthorized());
-    }
+	@Test
+	public void testUnauthenticatedAccessToManagementEndpointFails() throws Exception {
+		localDataflowResource.getMockMvc().perform(get("/management/metrics")).andExpect(status().isUnauthorized());
+	}
 
-    @Test
-    public void testAuthenticatedAccessToModulesEndpointSucceeds() throws Exception {
-        localDataflowResource.getMockMvc()
-                .perform(get("/apps").header("Authorization", basicAuthorizationHeader("joe", "joespassword")))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+	@Test
+	public void testAuthenticatedAccessToModulesEndpointSucceeds() throws Exception {
+		localDataflowResource.getMockMvc()
+				.perform(get("/apps").header("Authorization", basicAuthorizationHeader("joe", "joespassword")))
+				.andDo(print()).andExpect(status().isOk());
+	}
 
-    @Test
-    public void testUserExistsButNotFoundBySearch() throws Exception {
-        localDataflowResource.getMockMvc()
-                .perform(get("/apps").header("Authorization", basicAuthorizationHeader("bob", "bobspassword")))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
+	@Test
+	public void testUserExistsButNotFoundBySearch() throws Exception {
+		localDataflowResource.getMockMvc()
+				.perform(get("/apps").header("Authorization", basicAuthorizationHeader("bob", "bobspassword")))
+				.andDo(print()).andExpect(status().isUnauthorized());
+	}
 
-    @Test
-    public void testAuthenticatedAccessToManagementEndpointSucceeds() throws Exception {
-        localDataflowResource.getMockMvc()
-                .perform(get("/management/metrics").header("Authorization", basicAuthorizationHeader("joe",
-                        "joespassword")))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+	@Test
+	public void testAuthenticatedAccessToManagementEndpointSucceeds() throws Exception {
+		localDataflowResource.getMockMvc().perform(
+				get("/management/metrics").header("Authorization", basicAuthorizationHeader("joe", "joespassword")))
+				.andDo(print()).andExpect(status().isOk());
+	}
 }

@@ -19,37 +19,37 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.shell.SimpleShellCommandLineOptions;
 
 /**
- * Spring Boot {@link ConfigurationProperties} to specify well known Spring Shell properties.
- * The property prefix is <code>spring.shell</code>.
+ * Spring Boot {@link ConfigurationProperties} to specify well known Spring Shell
+ * properties. The property prefix is <code>spring.shell</code>.
  *
  * @author Mark Pollack
  */
 @ConfigurationProperties(prefix = "spring.shell")
 public class ShellProperties {
 
-    /**
-     * The maximum number of lines to store in the command history file.
-     */
-    private int historySize = SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE;
+	/**
+	 * The maximum number of lines to store in the command history file.
+	 */
+	private int historySize = SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE;
 
-    /**
-     * The file to read that contains shell commands
-     */
-    private String commandFile;
+	/**
+	 * The file to read that contains shell commands
+	 */
+	private String commandFile;
 
-    public int getHistorySize() {
-        return historySize;
-    }
+	public int getHistorySize() {
+		return historySize;
+	}
 
-    public void setHistorySize(int historySize) {
-        this.historySize = historySize;
-    }
+	public void setHistorySize(int historySize) {
+		this.historySize = historySize;
+	}
 
-    public String getCommandFile() {
-        return commandFile;
-    }
+	public String getCommandFile() {
+		return commandFile;
+	}
 
-    public void setCommandFile(String commandFile) {
-        this.commandFile = commandFile;
-    }
+	public void setCommandFile(String commandFile) {
+		this.commandFile = commandFile;
+	}
 }

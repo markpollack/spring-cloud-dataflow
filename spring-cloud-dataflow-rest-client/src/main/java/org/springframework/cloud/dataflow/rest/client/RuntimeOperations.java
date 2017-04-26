@@ -27,14 +27,14 @@ import org.springframework.hateoas.PagedResources;
  */
 public interface RuntimeOperations {
 
-    /**
-     * @return the runtime information about all deployed apps.
-     */
-    PagedResources<AppStatusResource> status();
+	/**
+	 * @return the runtime information about all deployed apps.
+	 */
+	PagedResources<AppStatusResource> status();
 
-    /**
-     * @param deploymentId the deployment id
-     * @return the runtime information about a single app deployment.
-     */
-    AppStatusResource status(String deploymentId);
+	/**
+	 * @param deploymentId the deployment id
+	 * @return the runtime information about a single app deployment.
+	 */
+	AppStatusResource status(String deploymentId);
 }

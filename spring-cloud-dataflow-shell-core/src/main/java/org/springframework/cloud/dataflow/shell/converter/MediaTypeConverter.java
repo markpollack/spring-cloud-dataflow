@@ -32,20 +32,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class MediaTypeConverter implements Converter<MediaType> {
 
-    @Override
-    public boolean supports(Class<?> type, String optionContext) {
-        return MediaType.class.isAssignableFrom(type);
-    }
+	@Override
+	public boolean supports(Class<?> type, String optionContext) {
+		return MediaType.class.isAssignableFrom(type);
+	}
 
-    @Override
-    public MediaType convertFromText(String value, Class<?> targetType, String optionContext) {
-        return MediaType.parseMediaType(value);
-    }
+	@Override
+	public MediaType convertFromText(String value, Class<?> targetType, String optionContext) {
+		return MediaType.parseMediaType(value);
+	}
 
-    @Override
-    public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
-                                        String optionContext, MethodTarget target) {
-        return false;
-    }
+	@Override
+	public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
+			String optionContext, MethodTarget target) {
+		return false;
+	}
 
 }

@@ -17,11 +17,11 @@
 package com.acme.common;
 
 /**
- * An enum class used in {@link ConfigProperties}. Useful to test, because this class has to be accessible
- * to the ClassLoader used to retrieve metadata.
+ * An enum class used in {@link ConfigProperties}. Useful to test, because this class has
+ * to be accessible to the ClassLoader used to retrieve metadata.
  *
  * @author Eric Bottard
  */
 public enum SomeEnum {
-    one, two, three;
+	one, two, three;
 }

@@ -36,39 +36,37 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @author Ilayaperumal Gopinathan
  */
 @Configuration
-@Import({AnalyticsConfiguration.class, StreamConfiguration.class,
-        TaskConfiguration.class})
+@Import({ AnalyticsConfiguration.class, StreamConfiguration.class, TaskConfiguration.class })
 public class FeaturesConfiguration {
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+	@Autowired
+	private RedisConnectionFactory redisConnectionFactory;
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnExpression("#{'${" + FeaturesProperties.FEATURES_PREFIX + "."
-            + FeaturesProperties.STREAMS_ENABLED + ":true}'.equalsIgnoreCase('true') || "
-            + "'${" + FeaturesProperties.FEATURES_PREFIX + "."
-            + FeaturesProperties.TASKS_ENABLED + ":true}'.equalsIgnoreCase('true') }")
-    public DeploymentIdRepository deploymentIdRepository(DataSource dataSource) {
-        return new RdbmsDeploymentIdRepository(dataSource);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnExpression("#{'${" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.STREAMS_ENABLED
+			+ ":true}'.equalsIgnoreCase('true') || " + "'${" + FeaturesProperties.FEATURES_PREFIX + "."
+			+ FeaturesProperties.TASKS_ENABLED + ":true}'.equalsIgnoreCase('true') }")
+	public DeploymentIdRepository deploymentIdRepository(DataSource dataSource) {
+		return new RdbmsDeploymentIdRepository(dataSource);
+	}
 
-    @Bean
-    @ConditionalOnExpression("#{'${" + FeaturesProperties.FEATURES_PREFIX + "."
-            + FeaturesProperties.ANALYTICS_ENABLED + ":true}'.equalsIgnoreCase('false')}")
-    public RedisHealthIndicator redisHealthIndicator() {
-        return new CustomRedisHealthIndicator(redisConnectionFactory);
-    }
+	@Bean
+	@ConditionalOnExpression("#{'${" + FeaturesProperties.FEATURES_PREFIX + "." + FeaturesProperties.ANALYTICS_ENABLED
+			+ ":true}'.equalsIgnoreCase('false')}")
+	public RedisHealthIndicator redisHealthIndicator() {
+		return new CustomRedisHealthIndicator(redisConnectionFactory);
+	}
 
-    private class CustomRedisHealthIndicator extends RedisHealthIndicator {
+	private class CustomRedisHealthIndicator extends RedisHealthIndicator {
 
-        public CustomRedisHealthIndicator(RedisConnectionFactory redisConnectionFactory) {
-            super(redisConnectionFactory);
-        }
+		public CustomRedisHealthIndicator(RedisConnectionFactory redisConnectionFactory) {
+			super(redisConnectionFactory);
+		}
 
-        @Override
-        protected void doHealthCheck(Health.Builder builder) throws Exception {
-            // do nothing - status UNKNOWN
-        }
-    }
+		@Override
+		protected void doHealthCheck(Health.Builder builder) throws Exception {
+			// do nothing - status UNKNOWN
+		}
+	}
 }

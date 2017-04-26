@@ -29,46 +29,51 @@ import org.springframework.shell.CommandLine;
 import org.springframework.shell.SimpleShellCommandLineOptions;
 
 /**
- * Parses the {@link ShellProperties} and {@link ApplicationArguments} to create an instance of the
- * Spring Shell's CommandLine class.
+ * Parses the {@link ShellProperties} and {@link ApplicationArguments} to create an
+ * instance of the Spring Shell's CommandLine class.
  * <p>
  * The behavior of this class differs from the default Spring Shell
- * {@link org.springframework.shell.SimpleShellCommandLineOptions#parseCommandLine(String[])} method in that
- * additional passed in arguments are not interpreted to be commands to execute and then quit.  Only by passing
- * in the options <code>--spring.shell.commandFile</code> can you execute commands in the shell and then quit.
+ * {@link org.springframework.shell.SimpleShellCommandLineOptions#parseCommandLine(String[])}
+ * method in that additional passed in arguments are not interpreted to be commands to
+ * execute and then quit. Only by passing in the options
+ * <code>--spring.shell.commandFile</code> can you execute commands in the shell and then
+ * quit.
  *
  * @author Mark Pollack
  */
 public class ShellCommandLineParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(ShellCommandLineParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(ShellCommandLineParser.class);
 
-    /**
-     * Parse {@link ShellProperties} and {@link ApplicationArguments} to create an instance of the
-     *
-     * @param shellProperties      the shell properties
-     * @param applicationArguments the raw unprocessed arguments that were passed to the application.
-     * @return a new {@link CommandLine} instance.
-     */
-    public CommandLine parse(ShellProperties shellProperties, String[] applicationArguments) {
-        List<String> commands = new ArrayList<String>();
-        if (shellProperties.getCommandFile() != null) {
-            File f = new File(shellProperties.getCommandFile());
-            try {
-                commands.addAll(FileUtils.readLines(f));
-            } catch (IOException e) {
-                logger.error("Unable to read from " + f.toString(), e);
-            }
-        }
-        String[] commandsToExecute = (commands.size() > 0) ? commands.toArray(new String[commands.size()]) : null;
+	/**
+	 * Parse {@link ShellProperties} and {@link ApplicationArguments} to create an
+	 * instance of the
+	 *
+	 * @param shellProperties the shell properties
+	 * @param applicationArguments the raw unprocessed arguments that were passed to the
+	 * application.
+	 * @return a new {@link CommandLine} instance.
+	 */
+	public CommandLine parse(ShellProperties shellProperties, String[] applicationArguments) {
+		List<String> commands = new ArrayList<String>();
+		if (shellProperties.getCommandFile() != null) {
+			File f = new File(shellProperties.getCommandFile());
+			try {
+				commands.addAll(FileUtils.readLines(f));
+			}
+			catch (IOException e) {
+				logger.error("Unable to read from " + f.toString(), e);
+			}
+		}
+		String[] commandsToExecute = (commands.size() > 0) ? commands.toArray(new String[commands.size()]) : null;
 
-        int historySize = shellProperties.getHistorySize();
-        if (historySize < 0) {
-            logger.warn("historySize option must be > 0, using default value of " +
-                    SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE);
-            historySize = SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE;
-        }
+		int historySize = shellProperties.getHistorySize();
+		if (historySize < 0) {
+			logger.warn("historySize option must be > 0, using default value of "
+					+ SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE);
+			historySize = SimpleShellCommandLineOptions.DEFAULT_HISTORY_SIZE;
+		}
 
-        return new CommandLine(applicationArguments, historySize, commandsToExecute);
-    }
+		return new CommandLine(applicationArguments, historySize, commandsToExecute);
+	}
 }

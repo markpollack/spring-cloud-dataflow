@@ -26,7 +26,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller that provides features that are enabled/disabled on the dataflow server.
+ * REST controller that provides features that are enabled/disabled on the dataflow
+ * server.
  *
  * @author Ilayaperumal Gopinathan
  * @author Gunnar Hillert
@@ -37,23 +38,23 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(FeaturesInfoResource.class)
 public class FeaturesController {
 
-    private final FeaturesProperties featuresProperties;
+	private final FeaturesProperties featuresProperties;
 
-    public FeaturesController(FeaturesProperties featuresProperties) {
-        this.featuresProperties = featuresProperties;
-    }
+	public FeaturesController(FeaturesProperties featuresProperties) {
+		this.featuresProperties = featuresProperties;
+	}
 
-    /**
-     * @return the features that are enabled/disabled on the dataflow server.
-     */
-    @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public FeaturesInfoResource getSecurityInfo() {
-        FeaturesInfoResource featuresInfoResource = new FeaturesInfoResource();
-        featuresInfoResource.setAnalyticsEnabled(featuresProperties.isAnalyticsEnabled());
-        featuresInfoResource.setStreamsEnabled(featuresProperties.isStreamsEnabled());
-        featuresInfoResource.setTasksEnabled(featuresProperties.isTasksEnabled());
-        return featuresInfoResource;
-    }
+	/**
+	 * @return the features that are enabled/disabled on the dataflow server.
+	 */
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public FeaturesInfoResource getSecurityInfo() {
+		FeaturesInfoResource featuresInfoResource = new FeaturesInfoResource();
+		featuresInfoResource.setAnalyticsEnabled(featuresProperties.isAnalyticsEnabled());
+		featuresInfoResource.setStreamsEnabled(featuresProperties.isStreamsEnabled());
+		featuresInfoResource.setTasksEnabled(featuresProperties.isTasksEnabled());
+		return featuresInfoResource;
+	}
 }

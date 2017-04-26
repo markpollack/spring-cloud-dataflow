@@ -23,38 +23,39 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation for {@link FieldValueCounterOperations} that interacts with the Spring Cloud Data Flow REST API.
+ * Implementation for {@link FieldValueCounterOperations} that interacts with the Spring
+ * Cloud Data Flow REST API.
  *
  * @author Eric Bottard
  */
 public class FieldValueCounterTemplate implements FieldValueCounterOperations {
 
-    public static final String FVC_COLLECTION_RELATION = "field-value-counters";
+	public static final String FVC_COLLECTION_RELATION = "field-value-counters";
 
-    public static final String FVC_RELATION = "field-value-counters/counter";
+	public static final String FVC_RELATION = "field-value-counters/counter";
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    private final ResourceSupport links;
+	private final ResourceSupport links;
 
-    public FieldValueCounterTemplate(RestTemplate restTemplate, ResourceSupport resources) {
-        this.restTemplate = restTemplate;
-        links = resources;
-    }
+	public FieldValueCounterTemplate(RestTemplate restTemplate, ResourceSupport resources) {
+		this.restTemplate = restTemplate;
+		links = resources;
+	}
 
-    @Override
-    public FieldValueCounterResource retrieve(String name) {
-        return restTemplate.getForObject(links.getLink(FVC_RELATION).expand(name).getHref(),
-                FieldValueCounterResource.class);
-    }
+	@Override
+	public FieldValueCounterResource retrieve(String name) {
+		return restTemplate.getForObject(links.getLink(FVC_RELATION).expand(name).getHref(),
+				FieldValueCounterResource.class);
+	}
 
-    @Override
-    public PagedResources<MetricResource> list() {
-        return restTemplate.getForObject(links.getLink(FVC_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
-    }
+	@Override
+	public PagedResources<MetricResource> list() {
+		return restTemplate.getForObject(links.getLink(FVC_COLLECTION_RELATION).getHref(), MetricResource.Page.class);
+	}
 
-    @Override
-    public void reset(String name) {
-        restTemplate.delete(links.getLink(FVC_RELATION).expand(name).getHref());
-    }
+	@Override
+	public void reset(String name) {
+		restTemplate.delete(links.getLink(FVC_RELATION).expand(name).getHref());
+	}
 }

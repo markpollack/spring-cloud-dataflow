@@ -24,13 +24,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("boot14")
 public class MyConfigProperties14 {
 
-    private AnotherEnumClass14 level;
+	private AnotherEnumClass14 level;
 
-    public AnotherEnumClass14 getLevel() {
-        return level;
-    }
+	public AnotherEnumClass14 getLevel() {
+		return level;
+	}
 
-    public void setLevel(AnotherEnumClass14 level) {
-        this.level = level;
-    }
+	public void setLevel(AnotherEnumClass14 level) {
+		this.level = level;
+	}
 }

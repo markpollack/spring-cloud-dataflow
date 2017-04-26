@@ -30,6 +30,6 @@ import org.springframework.batch.core.JobParameters;
 @JsonIgnoreProperties("empty")
 public abstract class JobParametersJacksonMixIn {
 
-    @JsonProperty
-    abstract boolean isEmpty();
+	@JsonProperty
+	abstract boolean isEmpty();
 }

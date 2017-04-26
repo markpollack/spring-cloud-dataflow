@@ -26,53 +26,53 @@ package org.springframework.cloud.dataflow.rest.client;
  */
 public interface DataFlowOperations {
 
-    /**
-     * @return Stream related operations.
-     */
-    StreamOperations streamOperations();
+	/**
+	 * @return Stream related operations.
+	 */
+	StreamOperations streamOperations();
 
-    /**
-     * @return Counter related operations.
-     */
-    CounterOperations counterOperations();
+	/**
+	 * @return Counter related operations.
+	 */
+	CounterOperations counterOperations();
 
-    /**
-     * @return Field Value Counter related operations.
-     */
-    FieldValueCounterOperations fieldValueCounterOperations();
+	/**
+	 * @return Field Value Counter related operations.
+	 */
+	FieldValueCounterOperations fieldValueCounterOperations();
 
-    /**
-     * @return Aggregate Counter related operations.
-     */
-    AggregateCounterOperations aggregateCounterOperations();
+	/**
+	 * @return Aggregate Counter related operations.
+	 */
+	AggregateCounterOperations aggregateCounterOperations();
 
-    /**
-     * @return Task related operations.
-     */
-    TaskOperations taskOperations();
+	/**
+	 * @return Task related operations.
+	 */
+	TaskOperations taskOperations();
 
-    /**
-     * @return Job related operations.
-     */
-    JobOperations jobOperations();
+	/**
+	 * @return Job related operations.
+	 */
+	JobOperations jobOperations();
 
-    /**
-     * @return Application registry related operations.
-     */
-    AppRegistryOperations appRegistryOperations();
+	/**
+	 * @return Application registry related operations.
+	 */
+	AppRegistryOperations appRegistryOperations();
 
-    /**
-     * @return DSL Completion related operations.
-     */
-    CompletionOperations completionOperations();
+	/**
+	 * @return DSL Completion related operations.
+	 */
+	CompletionOperations completionOperations();
 
-    /**
-     * @return Runtime related operations.
-     */
-    RuntimeOperations runtimeOperations();
+	/**
+	 * @return Runtime related operations.
+	 */
+	RuntimeOperations runtimeOperations();
 
-    /**
-     * @return "About" related operations.
-     */
-    AboutOperations aboutOperation();
+	/**
+	 * @return "About" related operations.
+	 */
+	AboutOperations aboutOperation();
 }

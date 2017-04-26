@@ -31,20 +31,20 @@ import org.springframework.core.io.ClassPathResource;
  */
 public class StreamCommandTests extends AbstractShellIntegrationTest {
 
-    private static final String APPS_URI = "META-INF/test-stream-apps.properties";
+	private static final String APPS_URI = "META-INF/test-stream-apps.properties";
 
-    private static final Logger logger = LoggerFactory.getLogger(StreamCommandTests.class);
+	private static final Logger logger = LoggerFactory.getLogger(StreamCommandTests.class);
 
-    @Before
-    public void registerApps() {
-        AppRegistry registry = applicationContext.getBean(AppRegistry.class);
-        registry.importAll(true, new ClassPathResource(APPS_URI));
-    }
+	@Before
+	public void registerApps() {
+		AppRegistry registry = applicationContext.getBean(AppRegistry.class);
+		registry.importAll(true, new ClassPathResource(APPS_URI));
+	}
 
-    @Test
-    public void testStreamLifecycleForTickTock() throws InterruptedException {
-        logger.info("Starting Stream Test for TickTock");
-        String streamName = generateUniqueName();
-        stream().create(streamName, "time | log");
-    }
+	@Test
+	public void testStreamLifecycleForTickTock() throws InterruptedException {
+		logger.info("Starting Stream Test for TickTock");
+		String streamName = generateUniqueName();
+		stream().create(streamName, "time | log");
+	}
 }

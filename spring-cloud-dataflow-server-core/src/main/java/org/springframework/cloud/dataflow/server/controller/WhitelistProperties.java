@@ -30,75 +30,77 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Knows how to expand app properties into their full form if whitelist properties
- * (short hand form) have been used.
+ * Knows how to expand app properties into their full form if whitelist properties (short
+ * hand form) have been used.
  *
  * @author Eric Bottard
  */
 public class WhitelistProperties {
 
-    /**
-     * Used to expand short form of whitelisted properties to their long form.
-     */
-    private final ApplicationConfigurationMetadataResolver metadataResolver;
+	/**
+	 * Used to expand short form of whitelisted properties to their long form.
+	 */
+	private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-    public WhitelistProperties(ApplicationConfigurationMetadataResolver metadataResolver) {
-        this.metadataResolver = metadataResolver;
-    }
+	public WhitelistProperties(ApplicationConfigurationMetadataResolver metadataResolver) {
+		this.metadataResolver = metadataResolver;
+	}
 
-    /**
-     * Return a copy of app properties where shorthand form have been expanded to their long form
-     * (amongst the whitelisted supported properties of the app) if applicable.
-     *
-     * @param properties       the application properties in shorthand form
-     * @param metadataResource the metadata that can be used to expand shorthand property names to long form names
-     * @return the application properties with expanded long form property names
-     */
-    public Map<String, String> qualifyProperties(Map<String, String> properties, Resource metadataResource) {
-        MultiValueMap<String, ConfigurationMetadataProperty> whiteList = new LinkedMultiValueMap<>();
-        Set<String> allProps = new HashSet<>();
+	/**
+	 * Return a copy of app properties where shorthand form have been expanded to their
+	 * long form (amongst the whitelisted supported properties of the app) if applicable.
+	 *
+	 * @param properties the application properties in shorthand form
+	 * @param metadataResource the metadata that can be used to expand shorthand property
+	 * names to long form names
+	 * @return the application properties with expanded long form property names
+	 */
+	public Map<String, String> qualifyProperties(Map<String, String> properties, Resource metadataResource) {
+		MultiValueMap<String, ConfigurationMetadataProperty> whiteList = new LinkedMultiValueMap<>();
+		Set<String> allProps = new HashSet<>();
 
-        for (ConfigurationMetadataProperty property : this.metadataResolver.listProperties(metadataResource, false)) {
-            whiteList.add(property.getName(), property);// Use names here
-        }
-        for (ConfigurationMetadataProperty property : this.metadataResolver.listProperties(metadataResource, true)) {
-            allProps.add(property.getId()); // But full ids here
-        }
+		for (ConfigurationMetadataProperty property : this.metadataResolver.listProperties(metadataResource, false)) {
+			whiteList.add(property.getName(), property);// Use names here
+		}
+		for (ConfigurationMetadataProperty property : this.metadataResolver.listProperties(metadataResource, true)) {
+			allProps.add(property.getId()); // But full ids here
+		}
 
-        Map<String, String> mutatedProps = new HashMap<>(properties.size());
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            String provided = entry.getKey();
-            if (!allProps.contains(provided)) {
-                List<ConfigurationMetadataProperty> longForms = null;
-                for (String relaxed : new RelaxedNames(provided)) {
-                    longForms = whiteList.get(relaxed);
-                    if (longForms != null) {
-                        break;
-                    }
-                }
-                if (longForms != null) {
-                    assertNoAmbiguity(longForms);
-                    mutatedProps.put(longForms.iterator().next().getId(), entry.getValue());
-                } else {
-                    mutatedProps.put(provided, entry.getValue());
-                }
-            } else {
-                mutatedProps.put(provided, entry.getValue());
-            }
-        }
-        return mutatedProps;
-    }
+		Map<String, String> mutatedProps = new HashMap<>(properties.size());
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			String provided = entry.getKey();
+			if (!allProps.contains(provided)) {
+				List<ConfigurationMetadataProperty> longForms = null;
+				for (String relaxed : new RelaxedNames(provided)) {
+					longForms = whiteList.get(relaxed);
+					if (longForms != null) {
+						break;
+					}
+				}
+				if (longForms != null) {
+					assertNoAmbiguity(longForms);
+					mutatedProps.put(longForms.iterator().next().getId(), entry.getValue());
+				}
+				else {
+					mutatedProps.put(provided, entry.getValue());
+				}
+			}
+			else {
+				mutatedProps.put(provided, entry.getValue());
+			}
+		}
+		return mutatedProps;
+	}
 
-    private void assertNoAmbiguity(List<ConfigurationMetadataProperty> longForms) {
-        if (longForms.size() > 1) {
-            Set<String> ids = new HashSet<>(longForms.size());
-            for (ConfigurationMetadataProperty pty : longForms) {
-                ids.add(pty.getId());
-            }
-            throw new IllegalArgumentException(String.format("Ambiguous short form property '%s' could mean any of %s",
-                    longForms.iterator().next().getName(), ids));
-        }
-    }
-
+	private void assertNoAmbiguity(List<ConfigurationMetadataProperty> longForms) {
+		if (longForms.size() > 1) {
+			Set<String> ids = new HashSet<>(longForms.size());
+			for (ConfigurationMetadataProperty pty : longForms) {
+				ids.add(pty.getId());
+			}
+			throw new IllegalArgumentException(String.format("Ambiguous short form property '%s' could mean any of %s",
+					longForms.iterator().next().getName(), ids));
+		}
+	}
 
 }

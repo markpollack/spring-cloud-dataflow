@@ -16,16 +16,15 @@
 package org.springframework.cloud.dataflow.server.controller.support;
 
 /**
- * Thrown by controller classes to indicate issues with the provided stream
- * definition.
+ * Thrown by controller classes to indicate issues with the provided stream definition.
  *
  * @author Gunnar Hillert
  */
 public class InvalidStreamDefinitionException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public InvalidStreamDefinitionException(String message) {
-        super(message);
-    }
+	public InvalidStreamDefinitionException(String message) {
+		super(message);
+	}
 }

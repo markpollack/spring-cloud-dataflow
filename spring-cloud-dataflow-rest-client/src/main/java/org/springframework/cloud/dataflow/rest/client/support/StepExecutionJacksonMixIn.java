@@ -28,11 +28,11 @@ import org.springframework.batch.core.StepExecution;
  * @author Gunnar Hillert
  * @since 1.0
  */
-@JsonIgnoreProperties({"jobParameters", "jobExecutionId", "skipCount", "summary"})
+@JsonIgnoreProperties({ "jobParameters", "jobExecutionId", "skipCount", "summary" })
 public abstract class StepExecutionJacksonMixIn {
 
-    @JsonCreator()
-    StepExecutionJacksonMixIn(@JsonProperty("stepName") String stepName) {
-    }
+	@JsonCreator()
+	StepExecutionJacksonMixIn(@JsonProperty("stepName") String stepName) {
+	}
 
 }

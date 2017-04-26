@@ -20,109 +20,109 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provides security related meta-information. E.g. is security enabled, username,
- * roles etc.
+ * Provides security related meta-information. E.g. is security enabled, username, roles
+ * etc.
  *
  * @author Gunnar Hillert
  */
 public class SecurityInfo {
 
-    private boolean authenticationEnabled;
+	private boolean authenticationEnabled;
 
-    private boolean authorizationEnabled;
+	private boolean authorizationEnabled;
 
-    private boolean formLogin;
+	private boolean formLogin;
 
-    private boolean authenticated;
+	private boolean authenticated;
 
-    private String username;
+	private String username;
 
-    private List<String> roles = new ArrayList<>(0);
+	private List<String> roles = new ArrayList<>(0);
 
-    /**
-     * Default constructor for serialization frameworks.
-     */
-    public SecurityInfo() {
-    }
+	/**
+	 * Default constructor for serialization frameworks.
+	 */
+	public SecurityInfo() {
+	}
 
-    /**
-     * @return true if the authentication feature is enabled, false otherwise
-     */
-    public boolean isAuthenticationEnabled() {
-        return authenticationEnabled;
-    }
+	/**
+	 * @return true if the authentication feature is enabled, false otherwise
+	 */
+	public boolean isAuthenticationEnabled() {
+		return authenticationEnabled;
+	}
 
-    public void setAuthenticationEnabled(boolean authenticationEnabled) {
-        this.authenticationEnabled = authenticationEnabled;
-    }
+	public void setAuthenticationEnabled(boolean authenticationEnabled) {
+		this.authenticationEnabled = authenticationEnabled;
+	}
 
-    /**
-     * @return true if the authorization feature is enabled, false otherwise.
-     */
-    public boolean isAuthorizationEnabled() {
-        return authorizationEnabled;
-    }
+	/**
+	 * @return true if the authorization feature is enabled, false otherwise.
+	 */
+	public boolean isAuthorizationEnabled() {
+		return authorizationEnabled;
+	}
 
-    public void setAuthorizationEnabled(boolean authorizationEnabled) {
-        this.authorizationEnabled = authorizationEnabled;
-    }
+	public void setAuthorizationEnabled(boolean authorizationEnabled) {
+		this.authorizationEnabled = authorizationEnabled;
+	}
 
-    /**
-     * @return True if the user is authenticated
-     */
-    public boolean isAuthenticated() {
-        return authenticated;
-    }
+	/**
+	 * @return True if the user is authenticated
+	 */
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
 
-    public void setAuthenticated(boolean authenticated) {
-        this.authenticated = authenticated;
-    }
+	public void setAuthenticated(boolean authenticated) {
+		this.authenticated = authenticated;
+	}
 
-    /**
-     * @return The username of the authenticated user, null otherwise.
-     */
-    public String getUsername() {
-        return username;
-    }
+	/**
+	 * @return The username of the authenticated user, null otherwise.
+	 */
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    /**
-     * Will only contain values if {@link #isAuthorizationEnabled()} is {@code true}.
-     *
-     * @return List of Roles, if no roles are associated, an empty collection is returned.
-     */
-    public List<String> getRoles() {
-        return roles;
-    }
+	/**
+	 * Will only contain values if {@link #isAuthorizationEnabled()} is {@code true}.
+	 *
+	 * @return List of Roles, if no roles are associated, an empty collection is returned.
+	 */
+	public List<String> getRoles() {
+		return roles;
+	}
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
 
-    /**
-     * @param role Adds the role to {@link #roles}
-     * @return the security related meta-information
-     */
-    public SecurityInfo addRole(String role) {
-        this.roles.add(role);
-        return this;
-    }
+	/**
+	 * @param role Adds the role to {@link #roles}
+	 * @return the security related meta-information
+	 */
+	public SecurityInfo addRole(String role) {
+		this.roles.add(role);
+		return this;
+	}
 
-    /**
-     * Returns {@code true} if form-login is used. In case of OAuth2 authentication,
-     * {@code false} is returned.
-     *
-     * @return True if form-login is, false if OAuth2 authentication is used
-     */
-    public boolean isFormLogin() {
-        return formLogin;
-    }
+	/**
+	 * Returns {@code true} if form-login is used. In case of OAuth2 authentication,
+	 * {@code false} is returned.
+	 *
+	 * @return True if form-login is, false if OAuth2 authentication is used
+	 */
+	public boolean isFormLogin() {
+		return formLogin;
+	}
 
-    public void setFormLogin(boolean formLogin) {
-        this.formLogin = formLogin;
-    }
+	public void setFormLogin(boolean formLogin) {
+		this.formLogin = formLogin;
+	}
 
 }

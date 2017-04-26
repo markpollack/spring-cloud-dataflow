@@ -22,27 +22,27 @@ package org.springframework.cloud.dataflow.server.config.security.support;
  */
 public class SecurityStateBean {
 
-    private boolean authenticationEnabled;
-    private boolean authorizationEnabled;
+	private boolean authenticationEnabled;
+	private boolean authorizationEnabled;
 
-    public SecurityStateBean() {
-        super();
-    }
+	public SecurityStateBean() {
+		super();
+	}
 
-    public boolean isAuthenticationEnabled() {
-        return authenticationEnabled;
-    }
+	public boolean isAuthenticationEnabled() {
+		return authenticationEnabled;
+	}
 
-    public void setAuthenticationEnabled(boolean authenticationEnabled) {
-        this.authenticationEnabled = authenticationEnabled;
-    }
+	public void setAuthenticationEnabled(boolean authenticationEnabled) {
+		this.authenticationEnabled = authenticationEnabled;
+	}
 
-    public boolean isAuthorizationEnabled() {
-        return authorizationEnabled;
-    }
+	public boolean isAuthorizationEnabled() {
+		return authorizationEnabled;
+	}
 
-    public void setAuthorizationEnabled(boolean authorizationEnabled) {
-        this.authorizationEnabled = authorizationEnabled;
-    }
+	public void setAuthorizationEnabled(boolean authorizationEnabled) {
+		this.authorizationEnabled = authorizationEnabled;
+	}
 
 }

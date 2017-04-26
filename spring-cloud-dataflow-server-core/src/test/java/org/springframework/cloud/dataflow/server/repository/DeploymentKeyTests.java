@@ -31,35 +31,35 @@ import static org.junit.Assert.assertThat;
  */
 public class DeploymentKeyTests {
 
-    @Test
-    public void testStreamAppDeploymentKeyEquals() {
-        StreamDefinition streamDefinition1 = new StreamDefinition("myStream1", "time | log");
-        StreamAppDefinition[] appDefinitions1 = streamDefinition1.getAppDefinitions().toArray(new
-                StreamAppDefinition[0]);
-        StreamDefinition streamDefinition2 = new StreamDefinition("myStream1", "time | log");
-        StreamAppDefinition[] appDefinitions2 = streamDefinition2.getAppDefinitions().toArray(new
-                StreamAppDefinition[0]);
-        String appDeploymentKey1 = DeploymentKey.forStreamAppDefinition(appDefinitions1[0]);
-        String appDeploymentKey2 = DeploymentKey.forStreamAppDefinition(appDefinitions1[1]);
-        String appDeploymentKey3 = DeploymentKey.forStreamAppDefinition(appDefinitions2[0]);
-        String appDeploymentKey4 = DeploymentKey.forStreamAppDefinition(appDefinitions2[1]);
+	@Test
+	public void testStreamAppDeploymentKeyEquals() {
+		StreamDefinition streamDefinition1 = new StreamDefinition("myStream1", "time | log");
+		StreamAppDefinition[] appDefinitions1 = streamDefinition1.getAppDefinitions()
+				.toArray(new StreamAppDefinition[0]);
+		StreamDefinition streamDefinition2 = new StreamDefinition("myStream1", "time | log");
+		StreamAppDefinition[] appDefinitions2 = streamDefinition2.getAppDefinitions()
+				.toArray(new StreamAppDefinition[0]);
+		String appDeploymentKey1 = DeploymentKey.forStreamAppDefinition(appDefinitions1[0]);
+		String appDeploymentKey2 = DeploymentKey.forStreamAppDefinition(appDefinitions1[1]);
+		String appDeploymentKey3 = DeploymentKey.forStreamAppDefinition(appDefinitions2[0]);
+		String appDeploymentKey4 = DeploymentKey.forStreamAppDefinition(appDefinitions2[1]);
 
-        assertThat(streamDefinition1.equals(streamDefinition2), is(true));
-        assertThat(appDeploymentKey1.equals(appDeploymentKey3), is(true));
-        assertThat(appDeploymentKey2.equals(appDeploymentKey4), is(true));
-    }
+		assertThat(streamDefinition1.equals(streamDefinition2), is(true));
+		assertThat(appDeploymentKey1.equals(appDeploymentKey3), is(true));
+		assertThat(appDeploymentKey2.equals(appDeploymentKey4), is(true));
+	}
 
-    @Test
-    public void testTaskAppDeploymentKeyEquals() {
-        TaskDefinition taskDefinition1 = new TaskDefinition("myTask1", "testTask");
-        TaskDefinition taskDefinition2 = new TaskDefinition("myTask1", "testTask");
-        String appDeploymentKey1 = DeploymentKey.forTaskDefinition(taskDefinition1);
-        String appDeploymentKey2 = DeploymentKey.forTaskDefinition(taskDefinition1);
-        String appDeploymentKey3 = DeploymentKey.forTaskDefinition(taskDefinition2);
-        String appDeploymentKey4 = DeploymentKey.forTaskDefinition(taskDefinition2);
+	@Test
+	public void testTaskAppDeploymentKeyEquals() {
+		TaskDefinition taskDefinition1 = new TaskDefinition("myTask1", "testTask");
+		TaskDefinition taskDefinition2 = new TaskDefinition("myTask1", "testTask");
+		String appDeploymentKey1 = DeploymentKey.forTaskDefinition(taskDefinition1);
+		String appDeploymentKey2 = DeploymentKey.forTaskDefinition(taskDefinition1);
+		String appDeploymentKey3 = DeploymentKey.forTaskDefinition(taskDefinition2);
+		String appDeploymentKey4 = DeploymentKey.forTaskDefinition(taskDefinition2);
 
-        assertThat(taskDefinition1.equals(taskDefinition2), is(true));
-        assertThat(appDeploymentKey1.equals(appDeploymentKey3), is(true));
-        assertThat(appDeploymentKey2.equals(appDeploymentKey4), is(true));
-    }
+		assertThat(taskDefinition1.equals(taskDefinition2), is(true));
+		assertThat(appDeploymentKey1.equals(appDeploymentKey3), is(true));
+		assertThat(appDeploymentKey2.equals(appDeploymentKey4), is(true));
+	}
 }

@@ -37,106 +37,111 @@ import org.springframework.core.io.Resource;
 import static org.springframework.cloud.dataflow.completion.CompletionProposal.expanding;
 
 /**
- * Attempts to fill in possible values after a {@literal --foo=} dangling construct in the DSL.
+ * Attempts to fill in possible values after a {@literal --foo=} dangling construct in the
+ * DSL.
  *
  * @author Eric Bottard
  * @author Mark Fisher
  */
-public class ConfigurationPropertyValueHintRecoveryStrategy extends
-        StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
+public class ConfigurationPropertyValueHintRecoveryStrategy
+		extends StacktraceFingerprintingRecoveryStrategy<CheckPointedParseException> {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    private final ApplicationConfigurationMetadataResolver metadataResolver;
+	private final ApplicationConfigurationMetadataResolver metadataResolver;
 
-    @Autowired
-    private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
+	@Autowired
+	private ValueHintProvider[] valueHintProviders = new ValueHintProvider[0];
 
-    ConfigurationPropertyValueHintRecoveryStrategy(AppRegistry appRegistry, ApplicationConfigurationMetadataResolver
-            metadataResolver) {
-        super(CheckPointedParseException.class, "foo --bar=", "foo | wizz --bar=");
-        this.appRegistry = appRegistry;
-        this.metadataResolver = metadataResolver;
-    }
+	ConfigurationPropertyValueHintRecoveryStrategy(AppRegistry appRegistry,
+			ApplicationConfigurationMetadataResolver metadataResolver) {
+		super(CheckPointedParseException.class, "foo --bar=", "foo | wizz --bar=");
+		this.appRegistry = appRegistry;
+		this.metadataResolver = metadataResolver;
+	}
 
-    @Override
-    public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
-                             List<CompletionProposal> collector) {
+	@Override
+	public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
+			List<CompletionProposal> collector) {
 
-        String propertyName = recoverPropertyName(exception);
+		String propertyName = recoverPropertyName(exception);
 
-        AppRegistration lastAppRegistration = lookupLastApp(exception);
+		AppRegistration lastAppRegistration = lookupLastApp(exception);
 
-        if (lastAppRegistration == null) {
-            // Not a valid app name, do nothing
-            return;
-        }
-        Resource metadataResource = lastAppRegistration.getMetadataResource();
+		if (lastAppRegistration == null) {
+			// Not a valid app name, do nothing
+			return;
+		}
+		Resource metadataResource = lastAppRegistration.getMetadataResource();
 
-        CompletionProposal.Factory proposals = expanding(dsl);
+		CompletionProposal.Factory proposals = expanding(dsl);
 
-        List<ConfigurationMetadataProperty> whiteList = metadataResolver.listProperties(metadataResource);
+		List<ConfigurationMetadataProperty> whiteList = metadataResolver.listProperties(metadataResource);
 
-        URLClassLoader classLoader = null;
-        try {
-            for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
-                if (CompletionUtils.isMatchingProperty(propertyName, property, whiteList)) {
-                    if (classLoader == null) {
-                        classLoader = metadataResolver.createAppClassLoader(metadataResource);
-                    }
-                    for (ValueHintProvider valueHintProvider : valueHintProviders) {
-                        for (ValueHint valueHint : valueHintProvider.generateValueHints(property, classLoader)) {
-                            collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()), valueHint
-                                    .getShortDescription()));
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (classLoader != null) {
-                try {
-                    classLoader.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        }
-    }
+		URLClassLoader classLoader = null;
+		try {
+			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
+				if (CompletionUtils.isMatchingProperty(propertyName, property, whiteList)) {
+					if (classLoader == null) {
+						classLoader = metadataResolver.createAppClassLoader(metadataResource);
+					}
+					for (ValueHintProvider valueHintProvider : valueHintProviders) {
+						for (ValueHint valueHint : valueHintProvider.generateValueHints(property, classLoader)) {
+							collector.add(proposals.withSuffix(String.valueOf(valueHint.getValue()),
+									valueHint.getShortDescription()));
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			if (classLoader != null) {
+				try {
+					classLoader.close();
+				}
+				catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+	}
 
-    private AppRegistration lookupLastApp(CheckPointedParseException exception) {
-        String safe = exception.getExpressionStringUntilCheckpoint();
-        StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
-        StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
+	private AppRegistration lookupLastApp(CheckPointedParseException exception) {
+		String safe = exception.getExpressionStringUntilCheckpoint();
+		StreamDefinition streamDefinition = new StreamDefinition("__dummy", safe);
+		StreamAppDefinition lastApp = streamDefinition.getDeploymentOrderIterator().next();
 
-        String lastAppName = lastApp.getName();
-        AppRegistration lastAppRegistration = null;
-        for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
-            lastAppRegistration = this.appRegistry.find(lastAppName, appType);
-            if (lastAppRegistration != null) {
-                break;
-            }
-        }
-        return lastAppRegistration;
-    }
+		String lastAppName = lastApp.getName();
+		AppRegistration lastAppRegistration = null;
+		for (ApplicationType appType : CompletionUtils.determinePotentialTypes(lastApp)) {
+			lastAppRegistration = this.appRegistry.find(lastAppName, appType);
+			if (lastAppRegistration != null) {
+				break;
+			}
+		}
+		return lastAppRegistration;
+	}
 
-    private String recoverPropertyName(CheckPointedParseException exception) {
-        List<Token> tokens = exception.getTokens();
-        int tokenPointer = tokens.size() - 1;
-        while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
-            tokenPointer--;
-        }
-        StringBuilder builder;
-        final int equalSignPointer = tokens.size() - 1;
-        for (builder = new StringBuilder(); tokenPointer < equalSignPointer; tokenPointer++) {
-            Token t = tokens.get(tokenPointer);
-            if (t.isIdentifier()) {
-                builder.append(t.stringValue());
-            } else {
-                builder.append(t.getKind().getTokenChars());
-            }
-        }
-        return builder.toString();
-    }
+	private String recoverPropertyName(CheckPointedParseException exception) {
+		List<Token> tokens = exception.getTokens();
+		int tokenPointer = tokens.size() - 1;
+		while (!tokens.get(tokenPointer - 1).isKind(TokenKind.DOUBLE_MINUS)) {
+			tokenPointer--;
+		}
+		StringBuilder builder;
+		final int equalSignPointer = tokens.size() - 1;
+		for (builder = new StringBuilder(); tokenPointer < equalSignPointer; tokenPointer++) {
+			Token t = tokens.get(tokenPointer);
+			if (t.isIdentifier()) {
+				builder.append(t.stringValue());
+			}
+			else {
+				builder.append(t.getKind().getTokenChars());
+			}
+		}
+		return builder.toString();
+	}
 }

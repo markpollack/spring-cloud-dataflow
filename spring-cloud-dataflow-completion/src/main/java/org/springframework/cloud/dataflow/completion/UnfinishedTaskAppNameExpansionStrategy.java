@@ -27,8 +27,8 @@ import org.springframework.cloud.dataflow.registry.AppRegistration;
 import org.springframework.cloud.dataflow.registry.AppRegistry;
 
 /**
- * Provides completions by finding apps whose name starts with a
- * prefix (which was assumed to be a correct app name, but wasn't).
+ * Provides completions by finding apps whose name starts with a prefix (which was assumed
+ * to be a correct app name, but wasn't).
  *
  * @author Eric Bottard
  * @author Mark Fisher
@@ -36,40 +36,40 @@ import org.springframework.cloud.dataflow.registry.AppRegistry;
  */
 public class UnfinishedTaskAppNameExpansionStrategy implements TaskExpansionStrategy {
 
-    private final AppRegistry appRegistry;
+	private final AppRegistry appRegistry;
 
-    UnfinishedTaskAppNameExpansionStrategy(AppRegistry appRegistry) {
-        this.appRegistry = appRegistry;
-    }
+	UnfinishedTaskAppNameExpansionStrategy(AppRegistry appRegistry) {
+		this.appRegistry = appRegistry;
+	}
 
-    @Override
-    public boolean addProposals(String text, TaskDefinition taskDefinition,
-                                int detailLevel, List<CompletionProposal> collector) {
+	@Override
+	public boolean addProposals(String text, TaskDefinition taskDefinition, int detailLevel,
+			List<CompletionProposal> collector) {
 
-        Set<String> parameterNames = new HashSet<>(taskDefinition.getProperties().keySet());
-        parameterNames.removeAll(CompletionUtils.IMPLICIT_TASK_PARAMETER_NAMES);
-        if (!parameterNames.isEmpty() || !text.endsWith(taskDefinition.getRegisteredAppName())) {
-            return false;
-        }
+		Set<String> parameterNames = new HashSet<>(taskDefinition.getProperties().keySet());
+		parameterNames.removeAll(CompletionUtils.IMPLICIT_TASK_PARAMETER_NAMES);
+		if (!parameterNames.isEmpty() || !text.endsWith(taskDefinition.getRegisteredAppName())) {
+			return false;
+		}
 
-        // Actually add completions
+		// Actually add completions
 
-        String alreadyTyped = taskDefinition.getRegisteredAppName();
-        CompletionProposal.Factory proposals = CompletionProposal.expanding(text);
+		String alreadyTyped = taskDefinition.getRegisteredAppName();
+		CompletionProposal.Factory proposals = CompletionProposal.expanding(text);
 
-        List<ApplicationType> validTypesAtThisPosition = Arrays.asList(ApplicationType.task);
+		List<ApplicationType> validTypesAtThisPosition = Arrays.asList(ApplicationType.task);
 
-        for (AppRegistration appRegistration : appRegistry.findAll()) {
-            String candidateName = appRegistration.getName();
-            if (validTypesAtThisPosition.contains(appRegistration.getType())
-                    && !alreadyTyped.equals(candidateName) && candidateName.startsWith(alreadyTyped)) {
-                String expansion = appRegistration.getName();//CompletionUtils.maybeQualifyWithLabel(appRegistration
-                // .getName(), taskDefinition);
+		for (AppRegistration appRegistration : appRegistry.findAll()) {
+			String candidateName = appRegistration.getName();
+			if (validTypesAtThisPosition.contains(appRegistration.getType()) && !alreadyTyped.equals(candidateName)
+					&& candidateName.startsWith(alreadyTyped)) {
+				String expansion = appRegistration.getName();// CompletionUtils.maybeQualifyWithLabel(appRegistration
+				// .getName(), taskDefinition);
 
-                collector.add(proposals.withSuffix(expansion.substring(alreadyTyped.length())));
-            }
-        }
-        return false;
+				collector.add(proposals.withSuffix(expansion.substring(alreadyTyped.length())));
+			}
+		}
+		return false;
 
-    }
+	}
 }

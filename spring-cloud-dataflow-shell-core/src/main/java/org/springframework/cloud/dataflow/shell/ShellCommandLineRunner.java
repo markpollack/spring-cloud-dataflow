@@ -34,100 +34,105 @@ import org.springframework.shell.support.util.FileUtils;
 import org.springframework.util.StopWatch;
 
 /**
- * This does basically the same thing as {@link org.springframework.shell.Bootstrap} in Spring Shell,
- * but using Spring Boot's {@link CommandLineRunner} as a callback hook for initialization, instead
- * of squatting on the application's one {@code main(String[] args)} method.
+ * This does basically the same thing as {@link org.springframework.shell.Bootstrap} in
+ * Spring Shell, but using Spring Boot's {@link CommandLineRunner} as a callback hook for
+ * initialization, instead of squatting on the application's one
+ * {@code main(String[] args)} method.
  * <p>
  * This configuration also uses Spring Boot to parse command line arguments instead of
- * {@link org.springframework.shell.SimpleShellCommandLineOptions#parseCommandLine(String[])}.  This means that
- * command line arguments use a different syntax than in Spring Shell.  Key value pairs for arguments need to be
- * passed with an equal sign as the separator rather than a space.
+ * {@link org.springframework.shell.SimpleShellCommandLineOptions#parseCommandLine(String[])}.
+ * This means that command line arguments use a different syntax than in Spring Shell. Key
+ * value pairs for arguments need to be passed with an equal sign as the separator rather
+ * than a space.
  *
  * @author Josh Long
  * @author Mark Pollack
  */
 public class ShellCommandLineRunner implements CommandLineRunner, ApplicationContextAware {
 
-    private StopWatch stopWatch = new StopWatch("Spring Shell");
-    private Logger logger = Logger.getLogger(getClass().getName());
-    private ApplicationContext applicationContext;
+	private StopWatch stopWatch = new StopWatch("Spring Shell");
+	private Logger logger = Logger.getLogger(getClass().getName());
+	private ApplicationContext applicationContext;
 
-    @Autowired
-    private JLineShellComponent lineShellComponent;
+	@Autowired
+	private JLineShellComponent lineShellComponent;
 
-    @Autowired
-    private CommandLine commandLine;
+	@Autowired
+	private CommandLine commandLine;
 
-    @Autowired
-    private ApplicationArguments applicationArguments;
+	@Autowired
+	private ApplicationArguments applicationArguments;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
-    @Override
-    public void run(String... args) throws Exception {
-        SpringApplication.exit(this.applicationContext, new ShellExitCodeGenerator(this.doRun()));
-    }
+	@Override
+	public void run(String... args) throws Exception {
+		SpringApplication.exit(this.applicationContext, new ShellExitCodeGenerator(this.doRun()));
+	}
 
-    private ExitShellRequest doRun() {
-        this.stopWatch.start();
-        try {
+	private ExitShellRequest doRun() {
+		this.stopWatch.start();
+		try {
 
-            String[] commandsToExecuteAndThenQuit = this.commandLine.getShellCommandsToExecute();
-            ExitShellRequest exitShellRequest;
-            if (null != commandsToExecuteAndThenQuit) {
+			String[] commandsToExecuteAndThenQuit = this.commandLine.getShellCommandsToExecute();
+			ExitShellRequest exitShellRequest;
+			if (null != commandsToExecuteAndThenQuit) {
 
-                boolean successful = false;
-                exitShellRequest = ExitShellRequest.FATAL_EXIT;
+				boolean successful = false;
+				exitShellRequest = ExitShellRequest.FATAL_EXIT;
 
-                for (String cmd : commandsToExecuteAndThenQuit) {
-                    if (!(successful = this.lineShellComponent.executeCommand(cmd).isSuccess()))
-                        break;
-                }
+				for (String cmd : commandsToExecuteAndThenQuit) {
+					if (!(successful = this.lineShellComponent.executeCommand(cmd).isSuccess()))
+						break;
+				}
 
-                if (successful) {
-                    exitShellRequest = ExitShellRequest.NORMAL_EXIT;
-                }
-            } else if (this.applicationArguments.containsOption("help")) {
-                System.out.println(FileUtils.readBanner(ShellCommandLineRunner.class, "/usage.txt"));
-                exitShellRequest = ExitShellRequest.NORMAL_EXIT;
-            } else {
-                this.lineShellComponent.start();
-                this.lineShellComponent.promptLoop();
-                exitShellRequest = this.lineShellComponent.getExitShellRequest();
-                if (exitShellRequest == null) {
-                    exitShellRequest = ExitShellRequest.NORMAL_EXIT;
-                }
-                this.lineShellComponent.waitForComplete();
-            }
+				if (successful) {
+					exitShellRequest = ExitShellRequest.NORMAL_EXIT;
+				}
+			}
+			else if (this.applicationArguments.containsOption("help")) {
+				System.out.println(FileUtils.readBanner(ShellCommandLineRunner.class, "/usage.txt"));
+				exitShellRequest = ExitShellRequest.NORMAL_EXIT;
+			}
+			else {
+				this.lineShellComponent.start();
+				this.lineShellComponent.promptLoop();
+				exitShellRequest = this.lineShellComponent.getExitShellRequest();
+				if (exitShellRequest == null) {
+					exitShellRequest = ExitShellRequest.NORMAL_EXIT;
+				}
+				this.lineShellComponent.waitForComplete();
+			}
 
-            if (this.lineShellComponent.isDevelopmentMode()) {
-                System.out.println("Total execution time: " + this.stopWatch
-                        .getLastTaskTimeMillis() + " ms");
-            }
+			if (this.lineShellComponent.isDevelopmentMode()) {
+				System.out.println("Total execution time: " + this.stopWatch.getLastTaskTimeMillis() + " ms");
+			}
 
-            return exitShellRequest;
-        } catch (Exception ex) {
-            throw new ShellException(ex.getMessage(), ex);
-        } finally {
-            HandlerUtils.flushAllHandlers(this.logger);
-            this.stopWatch.stop();
-        }
-    }
+			return exitShellRequest;
+		}
+		catch (Exception ex) {
+			throw new ShellException(ex.getMessage(), ex);
+		}
+		finally {
+			HandlerUtils.flushAllHandlers(this.logger);
+			this.stopWatch.stop();
+		}
+	}
 
-    private static class ShellExitCodeGenerator implements ExitCodeGenerator {
+	private static class ShellExitCodeGenerator implements ExitCodeGenerator {
 
-        private final ExitShellRequest exitShellRequest;
+		private final ExitShellRequest exitShellRequest;
 
-        public ShellExitCodeGenerator(ExitShellRequest exitShellRequest) {
-            this.exitShellRequest = exitShellRequest;
-        }
+		public ShellExitCodeGenerator(ExitShellRequest exitShellRequest) {
+			this.exitShellRequest = exitShellRequest;
+		}
 
-        @Override
-        public int getExitCode() {
-            return this.exitShellRequest.getExitCode();
-        }
-    }
+		@Override
+		public int getExitCode() {
+			return this.exitShellRequest.getExitCode();
+		}
+	}
 }

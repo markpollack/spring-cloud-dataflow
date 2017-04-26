@@ -26,47 +26,46 @@ import org.springframework.util.Assert;
  */
 public enum CoreSecurityRoles {
 
-    VIEW("VIEW", "view role"),
-    CREATE("CREATE", "role for create operations"),
-    MANAGE("MANAGE", "role for the boot management endpoints");
+	VIEW("VIEW", "view role"), CREATE("CREATE", "role for create operations"), MANAGE("MANAGE",
+			"role for the boot management endpoints");
 
-    private String key;
-    private String name;
+	private String key;
+	private String name;
 
-    CoreSecurityRoles(final String key, final String name) {
-        this.key = key;
-        this.name = name;
-    }
+	CoreSecurityRoles(final String key, final String name) {
+		this.key = key;
+		this.name = name;
+	}
 
-    public static CoreSecurityRoles fromKey(String role) {
+	public static CoreSecurityRoles fromKey(String role) {
 
-        Assert.hasText(role, "Parameter role must not be null or empty.");
+		Assert.hasText(role, "Parameter role must not be null or empty.");
 
-        for (CoreSecurityRoles roleType : CoreSecurityRoles.values()) {
-            if (roleType.getKey().equals(role)) {
-                return roleType;
-            }
-        }
+		for (CoreSecurityRoles roleType : CoreSecurityRoles.values()) {
+			if (roleType.getKey().equals(role)) {
+				return roleType;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * Helper class that will return all role names as a string array.
-     *
-     * @return Never null
-     */
-    public static String[] getAllRolesAsStringArray() {
-        return Arrays.stream(CoreSecurityRoles.values())
-                .map(CoreSecurityRoles::getKey).toArray(size -> new String[size]);
-    }
+	/**
+	 * Helper class that will return all role names as a string array.
+	 *
+	 * @return Never null
+	 */
+	public static String[] getAllRolesAsStringArray() {
+		return Arrays.stream(CoreSecurityRoles.values()).map(CoreSecurityRoles::getKey)
+				.toArray(size -> new String[size]);
+	}
 
-    public String getKey() {
-        return key;
-    }
+	public String getKey() {
+		return key;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
 }

@@ -38,64 +38,64 @@ import static org.junit.Assert.assertThat;
  */
 public class StepExecutionJacksonMixInTests {
 
-    /**
-     * Assert that without using the {@link ExecutionContextJacksonMixIn} Jackson does not render the Step Execution
-     * Context correctly (Missing values).
-     *
-     * @throws JsonProcessingException if a Json generation error occurs.
-     */
-    @Test(expected = JsonMappingException.class)
-    public void testSerializationOfSingleStepExecutionWithoutMixin() throws JsonProcessingException {
+	/**
+	 * Assert that without using the {@link ExecutionContextJacksonMixIn} Jackson does not
+	 * render the Step Execution Context correctly (Missing values).
+	 *
+	 * @throws JsonProcessingException if a Json generation error occurs.
+	 */
+	@Test(expected = JsonMappingException.class)
+	public void testSerializationOfSingleStepExecutionWithoutMixin() throws JsonProcessingException {
 
-        final ObjectMapper objectMapper = new ObjectMapper();
+		final ObjectMapper objectMapper = new ObjectMapper();
 
-        final StepExecution stepExecution = getStepExecution();
-        final String result = objectMapper.writeValueAsString(stepExecution);
+		final StepExecution stepExecution = getStepExecution();
+		final String result = objectMapper.writeValueAsString(stepExecution);
 
-        assertThat(result, containsString("\"executionContext\":{\"dirty\":true,\"empty\":false}"));
-    }
+		assertThat(result, containsString("\"executionContext\":{\"dirty\":true,\"empty\":false}"));
+	}
 
-    /**
-     * Assert that by using the {@link ExecutionContextJacksonMixIn} Jackson renders the Step Execution Context
-     * correctly.
-     *
-     * @throws JsonProcessingException if a Json generation error occurs.
-     */
-    @Test
-    public void testSerializationOfSingleStepExecution() throws JsonProcessingException {
+	/**
+	 * Assert that by using the {@link ExecutionContextJacksonMixIn} Jackson renders the
+	 * Step Execution Context correctly.
+	 *
+	 * @throws JsonProcessingException if a Json generation error occurs.
+	 */
+	@Test
+	public void testSerializationOfSingleStepExecution() throws JsonProcessingException {
 
-        final ObjectMapper objectMapper = new ObjectMapper();
+		final ObjectMapper objectMapper = new ObjectMapper();
 
-        objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
-        objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
+		objectMapper.addMixIn(StepExecution.class, StepExecutionJacksonMixIn.class);
+		objectMapper.addMixIn(ExecutionContext.class, ExecutionContextJacksonMixIn.class);
 
-        final StepExecution stepExecution = getStepExecution();
-        final String result = objectMapper.writeValueAsString(stepExecution);
+		final StepExecution stepExecution = getStepExecution();
+		final String result = objectMapper.writeValueAsString(stepExecution);
 
-        assertThat(result, not(containsString("\"executionContext\":{\"dirty\":true,\"empty\":false}")));
-        assertThat(result, containsString("\"executionContext\":{\"dirty\":true,\"empty\":false,\"values\":[{"));
+		assertThat(result, not(containsString("\"executionContext\":{\"dirty\":true,\"empty\":false}")));
+		assertThat(result, containsString("\"executionContext\":{\"dirty\":true,\"empty\":false,\"values\":[{"));
 
-        assertThat(result, containsString("{\"counter\":1234}"));
-        assertThat(result, containsString("{\"myDouble\":1.123456}"));
-        assertThat(result, containsString("{\"Josh\":4444444444}"));
-        assertThat(result, containsString("{\"awesomeString\":\"Yep\"}"));
-        assertThat(result, containsString("{\"hello\":\"world\""));
-        assertThat(result, containsString("{\"counter2\":9999}"));
-    }
+		assertThat(result, containsString("{\"counter\":1234}"));
+		assertThat(result, containsString("{\"myDouble\":1.123456}"));
+		assertThat(result, containsString("{\"Josh\":4444444444}"));
+		assertThat(result, containsString("{\"awesomeString\":\"Yep\"}"));
+		assertThat(result, containsString("{\"hello\":\"world\""));
+		assertThat(result, containsString("{\"counter2\":9999}"));
+	}
 
-    private StepExecution getStepExecution() {
-        JobExecution jobExecution = new JobExecution(1L, null, "hi");
-        final StepExecution stepExecution = new StepExecution("step1", jobExecution);
-        jobExecution.createStepExecution("step1");
-        final ExecutionContext executionContext = stepExecution.getExecutionContext();
+	private StepExecution getStepExecution() {
+		JobExecution jobExecution = new JobExecution(1L, null, "hi");
+		final StepExecution stepExecution = new StepExecution("step1", jobExecution);
+		jobExecution.createStepExecution("step1");
+		final ExecutionContext executionContext = stepExecution.getExecutionContext();
 
-        executionContext.putInt("counter", 1234);
-        executionContext.putDouble("myDouble", 1.123456d);
-        executionContext.putLong("Josh", 4444444444L);
-        executionContext.putString("awesomeString", "Yep");
-        executionContext.put("hello", "world");
-        executionContext.put("counter2", 9999);
+		executionContext.putInt("counter", 1234);
+		executionContext.putDouble("myDouble", 1.123456d);
+		executionContext.putLong("Josh", 4444444444L);
+		executionContext.putString("awesomeString", "Yep");
+		executionContext.put("hello", "world");
+		executionContext.put("counter2", 9999);
 
-        return stepExecution;
-    }
+		return stepExecution;
+	}
 }

@@ -30,33 +30,33 @@ import org.springframework.web.client.RestTemplate;
  */
 public class RuntimeTemplate implements RuntimeOperations {
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    /**
-     * Uri template for accessing status of all apps.
-     */
-    private final Link appStatusesUriTemplate;
+	/**
+	 * Uri template for accessing status of all apps.
+	 */
+	private final Link appStatusesUriTemplate;
 
-    /**
-     * Uri template for accessing status of a single app.
-     */
-    private final Link appStatusUriTemplate;
+	/**
+	 * Uri template for accessing status of a single app.
+	 */
+	private final Link appStatusUriTemplate;
 
-    RuntimeTemplate(RestTemplate restTemplate, ResourceSupport resources) {
-        this.restTemplate = restTemplate;
-        this.appStatusesUriTemplate = resources.getLink("runtime/apps");
-        this.appStatusUriTemplate = resources.getLink("runtime/apps/app");
-    }
+	RuntimeTemplate(RestTemplate restTemplate, ResourceSupport resources) {
+		this.restTemplate = restTemplate;
+		this.appStatusesUriTemplate = resources.getLink("runtime/apps");
+		this.appStatusUriTemplate = resources.getLink("runtime/apps/app");
+	}
 
-    @Override
-    public PagedResources<AppStatusResource> status() {
-        String uriTemplate = appStatusesUriTemplate.expand().getHref();
-        uriTemplate = uriTemplate + "?size=2000";
-        return restTemplate.getForObject(uriTemplate, AppStatusResource.Page.class);
-    }
+	@Override
+	public PagedResources<AppStatusResource> status() {
+		String uriTemplate = appStatusesUriTemplate.expand().getHref();
+		uriTemplate = uriTemplate + "?size=2000";
+		return restTemplate.getForObject(uriTemplate, AppStatusResource.Page.class);
+	}
 
-    @Override
-    public AppStatusResource status(String deploymentId) {
-        return restTemplate.getForObject(appStatusUriTemplate.expand(deploymentId).getHref(), AppStatusResource.class);
-    }
+	@Override
+	public AppStatusResource status(String deploymentId) {
+		return restTemplate.getForObject(appStatusUriTemplate.expand(deploymentId).getHref(), AppStatusResource.class);
+	}
 }

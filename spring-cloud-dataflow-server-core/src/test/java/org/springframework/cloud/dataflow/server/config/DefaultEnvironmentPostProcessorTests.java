@@ -41,59 +41,59 @@ import static org.mockito.Mockito.mock;
  */
 public class DefaultEnvironmentPostProcessorTests {
 
-    private static final String MANAGEMENT_CONTEXT_PATH = "management.contextPath";
+	private static final String MANAGEMENT_CONTEXT_PATH = "management.contextPath";
 
-    private static final String CONTRIBUTED_PATH = "/bar";
+	private static final String CONTRIBUTED_PATH = "/bar";
 
-    @Test
-    public void testDefaultsBeingContributedByServerModule() throws Exception {
-        try (ConfigurableApplicationContext ctx = SpringApplication.run(EmptyDefaultApp.class, "--server.port=0")) {
-            String cp = ctx.getEnvironment().getProperty(MANAGEMENT_CONTEXT_PATH);
-            assertEquals(CONTRIBUTED_PATH, cp);
-        }
-    }
+	@Test
+	public void testDefaultsBeingContributedByServerModule() throws Exception {
+		try (ConfigurableApplicationContext ctx = SpringApplication.run(EmptyDefaultApp.class, "--server.port=0")) {
+			String cp = ctx.getEnvironment().getProperty(MANAGEMENT_CONTEXT_PATH);
+			assertEquals(CONTRIBUTED_PATH, cp);
+		}
+	}
 
-    @Test
-    public void testOverridingDefaultsWithAConfigFile() {
-        try (ConfigurableApplicationContext ctx = SpringApplication.run(EmptyDefaultApp.class,
-                "--spring.config.name=test", "--server.port=0")) {
-            String cp = ctx.getEnvironment().getProperty(MANAGEMENT_CONTEXT_PATH);
-            assertEquals(cp, "/foo");
-        }
-    }
+	@Test
+	public void testOverridingDefaultsWithAConfigFile() {
+		try (ConfigurableApplicationContext ctx = SpringApplication.run(EmptyDefaultApp.class,
+				"--spring.config.name=test", "--server.port=0")) {
+			String cp = ctx.getEnvironment().getProperty(MANAGEMENT_CONTEXT_PATH);
+			assertEquals(cp, "/foo");
+		}
+	}
 
-    @Configuration
-    @Import(TestConfiguration.class)
-    @EnableAutoConfiguration(exclude = SessionAutoConfiguration.class)
-    @EnableDataFlowServer
-    public static class EmptyDefaultApp {
-    }
+	@Configuration
+	@Import(TestConfiguration.class)
+	@EnableAutoConfiguration(exclude = SessionAutoConfiguration.class)
+	@EnableDataFlowServer
+	public static class EmptyDefaultApp {
+	}
 
-    private static class TestConfiguration {
+	private static class TestConfiguration {
 
-        @Bean
-        public AppDeployer appDeployer() {
-            return mock(AppDeployer.class);
-        }
+		@Bean
+		public AppDeployer appDeployer() {
+			return mock(AppDeployer.class);
+		}
 
-        @Bean
-        public TaskLauncher taskLauncher() {
-            return mock(TaskLauncher.class);
-        }
+		@Bean
+		public TaskLauncher taskLauncher() {
+			return mock(TaskLauncher.class);
+		}
 
-        @Bean
-        public AuthenticationManager authenticationManager() {
-            return mock(AuthenticationManager.class);
-        }
+		@Bean
+		public AuthenticationManager authenticationManager() {
+			return mock(AuthenticationManager.class);
+		}
 
-        @Bean
-        public TaskService taskService() {
-            return mock(DefaultTaskService.class);
-        }
+		@Bean
+		public TaskService taskService() {
+			return mock(DefaultTaskService.class);
+		}
 
-        @Bean
-        public TaskRepository taskRepository() {
-            return mock(TaskRepository.class);
-        }
-    }
+		@Bean
+		public TaskRepository taskRepository() {
+			return mock(TaskRepository.class);
+		}
+	}
 }

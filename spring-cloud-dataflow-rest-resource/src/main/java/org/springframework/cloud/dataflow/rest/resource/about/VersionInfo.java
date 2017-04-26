@@ -23,37 +23,37 @@ package org.springframework.cloud.dataflow.rest.resource.about;
  */
 public class VersionInfo {
 
-    private Dependency implementation = new Dependency();
-    private Dependency core = new Dependency();
-    private Dependency dashboard = new Dependency();
+	private Dependency implementation = new Dependency();
+	private Dependency core = new Dependency();
+	private Dependency dashboard = new Dependency();
 
-    /**
-     * Default constructor for serialization frameworks.
-     */
-    public VersionInfo() {
-    }
+	/**
+	 * Default constructor for serialization frameworks.
+	 */
+	public VersionInfo() {
+	}
 
-    public Dependency getCore() {
-        return core;
-    }
+	public Dependency getCore() {
+		return core;
+	}
 
-    public void setCore(Dependency core) {
-        this.core = core;
-    }
+	public void setCore(Dependency core) {
+		this.core = core;
+	}
 
-    public Dependency getImplementation() {
-        return implementation;
-    }
+	public Dependency getImplementation() {
+		return implementation;
+	}
 
-    public void setImplementation(Dependency implementation) {
-        this.implementation = implementation;
-    }
+	public void setImplementation(Dependency implementation) {
+		this.implementation = implementation;
+	}
 
-    public Dependency getDashboard() {
-        return dashboard;
-    }
+	public Dependency getDashboard() {
+		return dashboard;
+	}
 
-    public void setDashboard(Dependency dashboard) {
-        this.dashboard = dashboard;
-    }
+	public void setDashboard(Dependency dashboard) {
+		this.dashboard = dashboard;
+	}
 }

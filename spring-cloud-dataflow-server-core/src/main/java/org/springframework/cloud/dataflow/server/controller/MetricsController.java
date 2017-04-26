@@ -34,19 +34,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/metrics/streams")
 public class MetricsController {
 
-    private final MetricStore metricStore;
+	private final MetricStore metricStore;
 
-    /**
-     * Instantiates a new metrics controller.
-     *
-     * @param metricStore the metric store
-     */
-    public MetricsController(MetricStore metricStore) {
-        this.metricStore = metricStore;
-    }
+	/**
+	 * Instantiates a new metrics controller.
+	 *
+	 * @param metricStore the metric store
+	 */
+	public MetricsController(MetricStore metricStore) {
+		this.metricStore = metricStore;
+	}
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<ApplicationsMetrics> list() throws ExecutionException, InterruptedException {
-        return metricStore.getMetrics();
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	public List<ApplicationsMetrics> list() throws ExecutionException, InterruptedException {
+		return metricStore.getMetrics();
+	}
 }

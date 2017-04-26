@@ -58,66 +58,66 @@ import static org.mockito.Mockito.when;
  */
 public class ConfigCommandTests {
 
-    private ConfigCommands configCommands = new ConfigCommands();
+	private ConfigCommands configCommands = new ConfigCommands();
 
-    private DataFlowShell dataFlowShell = new DataFlowShell();
+	private DataFlowShell dataFlowShell = new DataFlowShell();
 
-    @Mock
-    private RestTemplate restTemplate;
+	@Mock
+	private RestTemplate restTemplate;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        final CommandLine commandLine = Mockito.mock(CommandLine.class);
+		final CommandLine commandLine = Mockito.mock(CommandLine.class);
 
-        when(commandLine.getArgs()).thenReturn(null);
+		when(commandLine.getArgs()).thenReturn(null);
 
-        final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-        messageConverters.add(new MappingJackson2HttpMessageConverter());
+		final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+		messageConverters.add(new MappingJackson2HttpMessageConverter());
 
-        when(restTemplate.getMessageConverters()).thenReturn(messageConverters);
+		when(restTemplate.getMessageConverters()).thenReturn(messageConverters);
 
-        TargetHolder targetHolder = new TargetHolder();
-        targetHolder.setTarget(new Target("http://localhost:9393"));
-        configCommands.setTargetHolder(targetHolder);
-        configCommands.setRestTemplate(restTemplate);
-        configCommands.setDataFlowShell(dataFlowShell);
-        configCommands.setServerUri("http://localhost:9393");
-    }
+		TargetHolder targetHolder = new TargetHolder();
+		targetHolder.setTarget(new Target("http://localhost:9393"));
+		configCommands.setTargetHolder(targetHolder);
+		configCommands.setRestTemplate(restTemplate);
+		configCommands.setDataFlowShell(dataFlowShell);
+		configCommands.setServerUri("http://localhost:9393");
+	}
 
-    @Test
-    public void testInfo() throws IOException {
-        DataFlowOperations dataFlowOperations = mock(DataFlowOperations.class);
-        AboutOperations aboutOperations = mock(AboutOperations.class);
-        when(dataFlowOperations.aboutOperation()).thenReturn(aboutOperations);
-        AboutResource aboutResource = new AboutResource();
-        when(aboutOperations.get()).thenReturn(aboutResource);
-        dataFlowShell.setDataFlowOperations(dataFlowOperations);
+	@Test
+	public void testInfo() throws IOException {
+		DataFlowOperations dataFlowOperations = mock(DataFlowOperations.class);
+		AboutOperations aboutOperations = mock(AboutOperations.class);
+		when(dataFlowOperations.aboutOperation()).thenReturn(aboutOperations);
+		AboutResource aboutResource = new AboutResource();
+		when(aboutOperations.get()).thenReturn(aboutResource);
+		dataFlowShell.setDataFlowOperations(dataFlowOperations);
 
-        aboutResource.getFeatureInfo().setTasksEnabled(false);
-        aboutResource.getVersionInfo().getCore().setName("Foo Core");
-        aboutResource.getVersionInfo().getCore().setVersion("1.2.3.BUILD-SNAPSHOT");
-        aboutResource.getSecurityInfo().setAuthenticationEnabled(true);
-        aboutResource.getRuntimeEnvironment().getAppDeployer().setJavaVersion("1.8");
-        aboutResource.getRuntimeEnvironment().getAppDeployer().getPlatformSpecificInfo().put("Some", "Stuff");
-        aboutResource.getRuntimeEnvironment().getTaskLauncher().setDeployerSpiVersion("6.4");
-        final Table infoResult = (Table) configCommands.info().get(0);
-        String expectedOutput = FileCopyUtils.copyToString(new InputStreamReader(getClass().getResourceAsStream
-                (ConfigCommandTests.class.getSimpleName() + "-testInfo.txt"), "UTF-8"));
-        assertThat(infoResult.render(80), is(expectedOutput));
-    }
+		aboutResource.getFeatureInfo().setTasksEnabled(false);
+		aboutResource.getVersionInfo().getCore().setName("Foo Core");
+		aboutResource.getVersionInfo().getCore().setVersion("1.2.3.BUILD-SNAPSHOT");
+		aboutResource.getSecurityInfo().setAuthenticationEnabled(true);
+		aboutResource.getRuntimeEnvironment().getAppDeployer().setJavaVersion("1.8");
+		aboutResource.getRuntimeEnvironment().getAppDeployer().getPlatformSpecificInfo().put("Some", "Stuff");
+		aboutResource.getRuntimeEnvironment().getTaskLauncher().setDeployerSpiVersion("6.4");
+		final Table infoResult = (Table) configCommands.info().get(0);
+		String expectedOutput = FileCopyUtils.copyToString(new InputStreamReader(
+				getClass().getResourceAsStream(ConfigCommandTests.class.getSimpleName() + "-testInfo.txt"), "UTF-8"));
+		assertThat(infoResult.render(80), is(expectedOutput));
+	}
 
-    @Test
-    public void testApiRevisionMismatch() {
-        RootResource value = new RootResource(-12);
-        value.add(new Link("http://localhost:9393/dashboard", "dashboard"));
-        when(restTemplate.getForObject(Mockito.any(URI.class), Mockito.eq(RootResource.class))).thenReturn(value);
+	@Test
+	public void testApiRevisionMismatch() {
+		RootResource value = new RootResource(-12);
+		value.add(new Link("http://localhost:9393/dashboard", "dashboard"));
+		when(restTemplate.getForObject(Mockito.any(URI.class), Mockito.eq(RootResource.class))).thenReturn(value);
 
-        configCommands.onApplicationEvent(null);
+		configCommands.onApplicationEvent(null);
 
-        final String targetResult = configCommands.target("http://localhost:9393", null, null, false);
-        assertThat(targetResult, containsString("Incompatible version of Data Flow server detected"));
-    }
+		final String targetResult = configCommands.target("http://localhost:9393", null, null, false);
+		assertThat(targetResult, containsString("Incompatible version of Data Flow server detected"));
+	}
 
 }

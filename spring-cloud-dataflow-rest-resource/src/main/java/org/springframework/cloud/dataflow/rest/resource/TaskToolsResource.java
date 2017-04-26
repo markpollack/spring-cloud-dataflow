@@ -31,38 +31,38 @@ import org.springframework.hateoas.ResourceSupport;
  */
 public class TaskToolsResource extends ResourceSupport {
 
-    private Graph graph;
+	private Graph graph;
 
-    private String dsl;
+	private String dsl;
 
-    // A list of errors, each entry is a map with keys for position and message text
-    private List<Map<String, Object>> errors;
+	// A list of errors, each entry is a map with keys for position and message text
+	private List<Map<String, Object>> errors;
 
-    public TaskToolsResource() {
-    }
+	public TaskToolsResource() {
+	}
 
-    public TaskToolsResource(Graph graph, List<Map<String, Object>> errors) {
-        this.graph = graph;
-        this.dsl = null;
-        this.errors = errors;
-    }
+	public TaskToolsResource(Graph graph, List<Map<String, Object>> errors) {
+		this.graph = graph;
+		this.dsl = null;
+		this.errors = errors;
+	}
 
-    public TaskToolsResource(String dsl, List<Map<String, Object>> errors) {
-        this.graph = null;
-        this.dsl = dsl;
-        this.errors = errors;
-    }
+	public TaskToolsResource(String dsl, List<Map<String, Object>> errors) {
+		this.graph = null;
+		this.dsl = dsl;
+		this.errors = errors;
+	}
 
-    public Graph getGraph() {
-        return graph;
-    }
+	public Graph getGraph() {
+		return graph;
+	}
 
-    public String getDsl() {
-        return dsl;
-    }
+	public String getDsl() {
+		return dsl;
+	}
 
-    public List<Map<String, Object>> getErrors() {
-        return errors;
-    }
+	public List<Map<String, Object>> getErrors() {
+		return errors;
+	}
 
 }

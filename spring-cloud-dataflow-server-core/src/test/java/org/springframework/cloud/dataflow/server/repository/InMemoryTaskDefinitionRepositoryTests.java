@@ -25,10 +25,9 @@ import org.junit.Before;
  */
 public class InMemoryTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTests {
 
-
-    @Before
-    public void setUp() throws Exception {
-        repository = new InMemoryTaskDefinitionRepository();
-    }
+	@Before
+	public void setUp() throws Exception {
+		repository = new InMemoryTaskDefinitionRepository();
+	}
 
 }

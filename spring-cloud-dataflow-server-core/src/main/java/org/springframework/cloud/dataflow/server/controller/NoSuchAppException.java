@@ -20,9 +20,9 @@ package org.springframework.cloud.dataflow.server.controller;
  */
 public class NoSuchAppException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public NoSuchAppException(String appId) {
-        super(String.format("The '%s' application could not be found.", appId));
-    }
+	public NoSuchAppException(String appId) {
+		super(String.format("The '%s' application could not be found.", appId));
+	}
 }

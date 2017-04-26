@@ -45,110 +45,113 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(TaskToolsResource.class)
 public class ToolsController {
 
-    private final static String TASK_NAME = "name";
+	private final static String TASK_NAME = "name";
 
-    private final static String TASK_DEFINITION = "dsl";
+	private final static String TASK_DEFINITION = "dsl";
 
-    private TaskToolsAssembler taskGraphAssembler = new TaskToolsAssembler();
+	private TaskToolsAssembler taskGraphAssembler = new TaskToolsAssembler();
 
-    private TaskDslAssembler taskDslAssembler = new TaskDslAssembler();
+	private TaskDslAssembler taskDslAssembler = new TaskDslAssembler();
 
-    /**
-     * Parse a task definition into a graph structure. The definition map is expected to have
-     * a 'dsl' key containing the composed task DSL and a 'name'
-     * key indicating the name of the composed task.
-     *
-     * @param definition the map containing the task definition DSL and task name
-     * @return a resource with the graph property set
-     */
-    @RequestMapping(value = "/parseTaskTextToGraph", method = RequestMethod.POST)
-    public TaskToolsResource parseTaskTextToGraph(@RequestBody Map<String, String> definition) {
-        Graph graph = null;
-        List<Map<String, Object>> errors = new ArrayList<>();
-        try {
-            TaskParser taskParser = new TaskParser(definition.get(TASK_NAME), definition.get(TASK_DEFINITION), true,
-                    true);
-            graph = taskParser.parse().toGraph();
-        } catch (ParseException pe) {
-            errors.add(pe.toExceptionDescriptor());
-        } catch (TaskValidationException tve) {
-            for (TaskValidationProblem problem : tve.getValidationProblems()) {
-                errors.add(problem.toExceptionDescriptor());
-            }
-        }
-        return taskGraphAssembler.toResource(new ParsedGraphOutput(graph, errors));
-    }
+	/**
+	 * Parse a task definition into a graph structure. The definition map is expected to
+	 * have a 'dsl' key containing the composed task DSL and a 'name' key indicating the
+	 * name of the composed task.
+	 *
+	 * @param definition the map containing the task definition DSL and task name
+	 * @return a resource with the graph property set
+	 */
+	@RequestMapping(value = "/parseTaskTextToGraph", method = RequestMethod.POST)
+	public TaskToolsResource parseTaskTextToGraph(@RequestBody Map<String, String> definition) {
+		Graph graph = null;
+		List<Map<String, Object>> errors = new ArrayList<>();
+		try {
+			TaskParser taskParser = new TaskParser(definition.get(TASK_NAME), definition.get(TASK_DEFINITION), true,
+					true);
+			graph = taskParser.parse().toGraph();
+		}
+		catch (ParseException pe) {
+			errors.add(pe.toExceptionDescriptor());
+		}
+		catch (TaskValidationException tve) {
+			for (TaskValidationProblem problem : tve.getValidationProblems()) {
+				errors.add(problem.toExceptionDescriptor());
+			}
+		}
+		return taskGraphAssembler.toResource(new ParsedGraphOutput(graph, errors));
+	}
 
-    /**
-     * Convert a graph format into DSL text format.
-     *
-     * @param graph the Flo Graph
-     * @return a resource with the dsl property set
-     */
-    @RequestMapping(value = "/convertTaskGraphToText", method = RequestMethod.POST)
-    public TaskToolsResource convertTaskGraphToText(@RequestBody Graph graph) {
-        String dsl = null;
-        List<Map<String, Object>> errors = new ArrayList<>();
-        try {
-            dsl = graph.toDSLText();
-        } catch (ParseException pe) {
-            errors.add(pe.toExceptionDescriptor());
-        }
-        return taskDslAssembler.toResource(new GraphToDslOutput(dsl, errors));
-    }
+	/**
+	 * Convert a graph format into DSL text format.
+	 *
+	 * @param graph the Flo Graph
+	 * @return a resource with the dsl property set
+	 */
+	@RequestMapping(value = "/convertTaskGraphToText", method = RequestMethod.POST)
+	public TaskToolsResource convertTaskGraphToText(@RequestBody Graph graph) {
+		String dsl = null;
+		List<Map<String, Object>> errors = new ArrayList<>();
+		try {
+			dsl = graph.toDSLText();
+		}
+		catch (ParseException pe) {
+			errors.add(pe.toExceptionDescriptor());
+		}
+		return taskDslAssembler.toResource(new GraphToDslOutput(dsl, errors));
+	}
 
-    private static class ParsedGraphOutput {
-        final Graph graph;
+	private static class ParsedGraphOutput {
+		final Graph graph;
 
-        final List<Map<String, Object>> errors;
+		final List<Map<String, Object>> errors;
 
-        public ParsedGraphOutput(Graph graph, List<Map<String, Object>> errors) {
-            this.graph = graph;
-            this.errors = errors;
-        }
-    }
+		public ParsedGraphOutput(Graph graph, List<Map<String, Object>> errors) {
+			this.graph = graph;
+			this.errors = errors;
+		}
+	}
 
-    private static class GraphToDslOutput {
-        final String dsl;
+	private static class GraphToDslOutput {
+		final String dsl;
 
-        final List<Map<String, Object>> errors;
+		final List<Map<String, Object>> errors;
 
-        public GraphToDslOutput(String dsl, List<Map<String, Object>> errors) {
-            this.dsl = dsl;
-            this.errors = errors;
-        }
-    }
+		public GraphToDslOutput(String dsl, List<Map<String, Object>> errors) {
+			this.dsl = dsl;
+			this.errors = errors;
+		}
+	}
 
-    /**
-     * {@link org.springframework.hateoas.ResourceAssembler} implementation
-     * that converts a {@link ParsedGraphOutput} to a {@link TaskToolsResource}.
-     */
-    static class TaskToolsAssembler extends ResourceAssemblerSupport<ParsedGraphOutput, TaskToolsResource> {
+	/**
+	 * {@link org.springframework.hateoas.ResourceAssembler} implementation that converts
+	 * a {@link ParsedGraphOutput} to a {@link TaskToolsResource}.
+	 */
+	static class TaskToolsAssembler extends ResourceAssemblerSupport<ParsedGraphOutput, TaskToolsResource> {
 
-        public TaskToolsAssembler() {
-            super(ToolsController.class, TaskToolsResource.class);
-        }
+		public TaskToolsAssembler() {
+			super(ToolsController.class, TaskToolsResource.class);
+		}
 
-        @Override
-        public TaskToolsResource toResource(ParsedGraphOutput graph) {
-            return new TaskToolsResource(graph.graph, graph.errors);
-        }
-    }
+		@Override
+		public TaskToolsResource toResource(ParsedGraphOutput graph) {
+			return new TaskToolsResource(graph.graph, graph.errors);
+		}
+	}
 
-    /**
-     * {@link org.springframework.hateoas.ResourceAssembler} implementation
-     * that converts a {@link GraphToDslOutput} to a {@link TaskToolsResource}.
-     */
-    static class TaskDslAssembler extends ResourceAssemblerSupport<GraphToDslOutput, TaskToolsResource> {
+	/**
+	 * {@link org.springframework.hateoas.ResourceAssembler} implementation that converts
+	 * a {@link GraphToDslOutput} to a {@link TaskToolsResource}.
+	 */
+	static class TaskDslAssembler extends ResourceAssemblerSupport<GraphToDslOutput, TaskToolsResource> {
 
-        public TaskDslAssembler() {
-            super(ToolsController.class, TaskToolsResource.class);
-        }
+		public TaskDslAssembler() {
+			super(ToolsController.class, TaskToolsResource.class);
+		}
 
-        @Override
-        public TaskToolsResource toResource(GraphToDslOutput output) {
-            return new TaskToolsResource(output.dsl, output.errors);
-        }
-    }
+		@Override
+		public TaskToolsResource toResource(GraphToDslOutput output) {
+			return new TaskToolsResource(output.dsl, output.errors);
+		}
+	}
 
 }

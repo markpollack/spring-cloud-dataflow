@@ -22,66 +22,67 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.Assert;
 
 /**
- * Simple class that is composed of a {@link Pageable}
- * and several properties to encapsulate search queries.
+ * Simple class that is composed of a {@link Pageable} and several properties to
+ * encapsulate search queries.
  *
  * @author Gunnar Hillert
  */
 public class SearchPageable {
 
-    private final Pageable pageable;
-    private final String searchQuery;
-    private final LinkedHashSet<String> columns = new LinkedHashSet<>(0);
+	private final Pageable pageable;
+	private final String searchQuery;
+	private final LinkedHashSet<String> columns = new LinkedHashSet<>(0);
 
-    /**
-     * Initialize a {@link SearchPageable}. Must provide a {@link Pageable} and a searchQuery.
-     * Don't forget to also provide the column names for the search using {@link #addColumns(String...)}.
-     *
-     * @param pageable    Must not be null
-     * @param searchQuery Must not be empty
-     */
-    public SearchPageable(Pageable pageable, String searchQuery) {
-        super();
-        Assert.notNull(pageable, "pageable must not be null");
-        Assert.hasText(searchQuery, "searchQuery must not be empty");
+	/**
+	 * Initialize a {@link SearchPageable}. Must provide a {@link Pageable} and a
+	 * searchQuery. Don't forget to also provide the column names for the search using
+	 * {@link #addColumns(String...)}.
+	 *
+	 * @param pageable Must not be null
+	 * @param searchQuery Must not be empty
+	 */
+	public SearchPageable(Pageable pageable, String searchQuery) {
+		super();
+		Assert.notNull(pageable, "pageable must not be null");
+		Assert.hasText(searchQuery, "searchQuery must not be empty");
 
-        this.pageable = pageable;
-        this.searchQuery = searchQuery;
-    }
+		this.pageable = pageable;
+		this.searchQuery = searchQuery;
+	}
 
-    /**
-     * @return Never null
-     */
-    public Pageable getPageable() {
-        return pageable;
-    }
+	/**
+	 * @return Never null
+	 */
+	public Pageable getPageable() {
+		return pageable;
+	}
 
-    /**
-     * @return SearchQuery will never be empty.
-     */
-    public String getSearchQuery() {
-        return searchQuery;
-    }
+	/**
+	 * @return SearchQuery will never be empty.
+	 */
+	public String getSearchQuery() {
+		return searchQuery;
+	}
 
-    /**
-     * @return A set with the specified column names
-     */
-    public LinkedHashSet<String> getColumns() {
-        return columns;
-    }
+	/**
+	 * @return A set with the specified column names
+	 */
+	public LinkedHashSet<String> getColumns() {
+		return columns;
+	}
 
-    /**
-     * Allows you to add additional columns.
-     *
-     * @param columns Must not be null or empty
-     */
-    public void addColumns(String... columns) {
-        Assert.notEmpty(columns, "You must specify at least 1 column.");
+	/**
+	 * Allows you to add additional columns.
+	 *
+	 * @param columns Must not be null or empty
+	 */
+	public void addColumns(String... columns) {
+		Assert.notEmpty(columns, "You must specify at least 1 column.");
 
-        for (String column : columns) {
-            Assert.hasText(column, "Column names cannot be null or empty.");
-        }
+		for (String column : columns) {
+			Assert.hasText(column, "Column names cannot be null or empty.");
+		}
 
-        this.columns.addAll(Arrays.asList(columns));
-    }
+		this.columns.addAll(Arrays.asList(columns));
+	}
 }

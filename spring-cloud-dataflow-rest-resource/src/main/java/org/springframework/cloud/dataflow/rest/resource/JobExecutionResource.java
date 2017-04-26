@@ -42,171 +42,172 @@ import org.springframework.util.Assert;
  */
 public class JobExecutionResource extends ResourceSupport {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-    private DateFormat dateFormat = TimeUtils.getDefaultDateFormat();
+	private DateFormat dateFormat = TimeUtils.getDefaultDateFormat();
 
-    private DateFormat timeFormat = TimeUtils.getDefaultTimeFormat();
+	private DateFormat timeFormat = TimeUtils.getDefaultTimeFormat();
 
-    private DateFormat durationFormat = TimeUtils.getDefaultDurationFormat();
+	private DateFormat durationFormat = TimeUtils.getDefaultDurationFormat();
 
-    private Long executionId;
+	private Long executionId;
 
-    private int stepExecutionCount;
+	private int stepExecutionCount;
 
-    private Long jobId;
+	private Long jobId;
 
-    private Long taskExecutionId;
+	private Long taskExecutionId;
 
-    private String name;
+	private String name;
 
-    private String startDate = "";
+	private String startDate = "";
 
-    private String startTime = "";
+	private String startTime = "";
 
-    private String duration = "";
+	private String duration = "";
 
-    private JobExecution jobExecution;
+	private JobExecution jobExecution;
 
-    private Properties jobParameters;
+	private Properties jobParameters;
 
-    private String jobParametersString;
+	private String jobParametersString;
 
-    private boolean restartable = false;
+	private boolean restartable = false;
 
-    private boolean abandonable = false;
+	private boolean abandonable = false;
 
-    private boolean stoppable = false;
+	private boolean stoppable = false;
 
-    private boolean defined;
+	private boolean defined;
 
-    private JobParametersConverter converter = new DefaultJobParametersConverter();
+	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
-    private TimeZone timeZone;
+	private TimeZone timeZone;
 
-    /**
-     * Default constructor to be used by Jackson.
-     */
-    @SuppressWarnings("unused")
-    private JobExecutionResource() {
+	/**
+	 * Default constructor to be used by Jackson.
+	 */
+	@SuppressWarnings("unused")
+	private JobExecutionResource() {
 
-    }
+	}
 
-    public JobExecutionResource(TaskJobExecution taskJobExecution, TimeZone timeZone) {
-        Assert.notNull(taskJobExecution, "taskJobExecution must not be null");
-        this.taskExecutionId = taskJobExecution.getTaskId();
-        this.jobExecution = taskJobExecution.getJobExecution();
-        this.timeZone = timeZone;
-        this.executionId = jobExecution.getId();
-        this.jobId = jobExecution.getJobId();
-        this.stepExecutionCount = jobExecution.getStepExecutions().size();
-        this.jobParameters = converter.getProperties(jobExecution.getJobParameters());
-        this.jobParametersString = fromJobParameters(jobExecution.getJobParameters());
-        this.defined = taskJobExecution.isTaskDefined();
-        JobInstance jobInstance = jobExecution.getJobInstance();
-        if (jobInstance != null) {
-            this.name = jobInstance.getJobName();
-            this.restartable = JobUtils.isJobExecutionRestartable(jobExecution);
-            this.abandonable = JobUtils.isJobExecutionAbandonable(jobExecution);
-            this.stoppable = JobUtils.isJobExecutionStoppable(jobExecution);
-        } else {
-            this.name = "?";
-        }
+	public JobExecutionResource(TaskJobExecution taskJobExecution, TimeZone timeZone) {
+		Assert.notNull(taskJobExecution, "taskJobExecution must not be null");
+		this.taskExecutionId = taskJobExecution.getTaskId();
+		this.jobExecution = taskJobExecution.getJobExecution();
+		this.timeZone = timeZone;
+		this.executionId = jobExecution.getId();
+		this.jobId = jobExecution.getJobId();
+		this.stepExecutionCount = jobExecution.getStepExecutions().size();
+		this.jobParameters = converter.getProperties(jobExecution.getJobParameters());
+		this.jobParametersString = fromJobParameters(jobExecution.getJobParameters());
+		this.defined = taskJobExecution.isTaskDefined();
+		JobInstance jobInstance = jobExecution.getJobInstance();
+		if (jobInstance != null) {
+			this.name = jobInstance.getJobName();
+			this.restartable = JobUtils.isJobExecutionRestartable(jobExecution);
+			this.abandonable = JobUtils.isJobExecutionAbandonable(jobExecution);
+			this.stoppable = JobUtils.isJobExecutionStoppable(jobExecution);
+		}
+		else {
+			this.name = "?";
+		}
 
-        // Duration is always in GMT
-        durationFormat.setTimeZone(TimeUtils.getDefaultTimeZone());
-        // The others can be localized
-        timeFormat.setTimeZone(timeZone);
-        dateFormat.setTimeZone(timeZone);
-        if (jobExecution.getStartTime() != null) {
-            this.startDate = dateFormat.format(jobExecution.getStartTime());
-            this.startTime = timeFormat.format(jobExecution.getStartTime());
-            Date endTime = jobExecution.getEndTime() != null ? jobExecution.getEndTime() : new Date();
-            this.duration = durationFormat.format(new Date(endTime.getTime() - jobExecution.getStartTime().getTime()));
-        }
+		// Duration is always in GMT
+		durationFormat.setTimeZone(TimeUtils.getDefaultTimeZone());
+		// The others can be localized
+		timeFormat.setTimeZone(timeZone);
+		dateFormat.setTimeZone(timeZone);
+		if (jobExecution.getStartTime() != null) {
+			this.startDate = dateFormat.format(jobExecution.getStartTime());
+			this.startTime = timeFormat.format(jobExecution.getStartTime());
+			Date endTime = jobExecution.getEndTime() != null ? jobExecution.getEndTime() : new Date();
+			this.duration = durationFormat.format(new Date(endTime.getTime() - jobExecution.getStartTime().getTime()));
+		}
 
-    }
+	}
 
-    public TimeZone getTimeZone() {
-        return timeZone;
-    }
+	public TimeZone getTimeZone() {
+		return timeZone;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Long getExecutionId() {
-        return executionId;
-    }
+	public Long getExecutionId() {
+		return executionId;
+	}
 
-    public int getStepExecutionCount() {
-        return stepExecutionCount;
-    }
+	public int getStepExecutionCount() {
+		return stepExecutionCount;
+	}
 
-    public Long getJobId() {
-        return jobId;
-    }
+	public Long getJobId() {
+		return jobId;
+	}
 
-    public String getStartDate() {
-        return startDate;
-    }
+	public String getStartDate() {
+		return startDate;
+	}
 
-    public String getStartTime() {
-        return startTime;
-    }
+	public String getStartTime() {
+		return startTime;
+	}
 
-    public String getDuration() {
-        return duration;
-    }
+	public String getDuration() {
+		return duration;
+	}
 
-    public JobExecution getJobExecution() {
-        return jobExecution;
-    }
+	public JobExecution getJobExecution() {
+		return jobExecution;
+	}
 
-    public boolean isRestartable() {
-        return restartable;
-    }
+	public boolean isRestartable() {
+		return restartable;
+	}
 
-    public boolean isAbandonable() {
-        return abandonable;
-    }
+	public boolean isAbandonable() {
+		return abandonable;
+	}
 
-    public boolean isStoppable() {
-        return stoppable;
-    }
+	public boolean isStoppable() {
+		return stoppable;
+	}
 
-    public String getJobParametersString() {
-        return jobParametersString;
-    }
+	public String getJobParametersString() {
+		return jobParametersString;
+	}
 
-    public Properties getJobParameters() {
-        return jobParameters;
-    }
+	public Properties getJobParameters() {
+		return jobParameters;
+	}
 
-    public long getTaskExecutionId() {
-        return taskExecutionId;
-    }
+	public long getTaskExecutionId() {
+		return taskExecutionId;
+	}
 
-    public boolean isDefined() {
-        return defined;
-    }
+	public boolean isDefined() {
+		return defined;
+	}
 
-    /**
-     * @param oldParameters the latest job parameters
-     * @return a String representation for rendering the job parameters from the
-     * last instance
-     */
-    private String fromJobParameters(JobParameters oldParameters) {
+	/**
+	 * @param oldParameters the latest job parameters
+	 * @return a String representation for rendering the job parameters from the last
+	 * instance
+	 */
+	private String fromJobParameters(JobParameters oldParameters) {
 
-        String properties = PropertiesConverter.propertiesToString(converter.getProperties(oldParameters));
-        if (properties.startsWith("#")) {
-            properties = properties.substring(properties.indexOf(LINE_SEPARATOR) + LINE_SEPARATOR.length());
-        }
-        properties = properties.replace("\\:", ":");
-        return properties;
+		String properties = PropertiesConverter.propertiesToString(converter.getProperties(oldParameters));
+		if (properties.startsWith("#")) {
+			properties = properties.substring(properties.indexOf(LINE_SEPARATOR) + LINE_SEPARATOR.length());
+		}
+		properties = properties.replace("\\:", ":");
+		return properties;
 
-    }
+	}
 
-    public static class Page extends PagedResources<JobExecutionResource> {
-    }
+	public static class Page extends PagedResources<JobExecutionResource> {
+	}
 }

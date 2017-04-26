@@ -20,8 +20,8 @@ import org.springframework.cloud.dataflow.shell.command.ConfigCommands;
 import org.springframework.util.Assert;
 
 /**
- * A target holder, wrapping a {@link Target} that encapsulates not only the Target URI but
- * also success/error messages + status.
+ * A target holder, wrapping a {@link Target} that encapsulates not only the Target URI
+ * but also success/error messages + status.
  *
  * @author Gunnar Hillert
  * @see Target
@@ -29,31 +29,33 @@ import org.springframework.util.Assert;
  */
 public class TargetHolder {
 
-    private Target target;
+	private Target target;
 
-    /**
-     * Constructor.
-     */
-    public TargetHolder() {
-    }
+	/**
+	 * Constructor.
+	 */
+	public TargetHolder() {
+	}
 
-    /**
-     * Return the {@link Target} which encapsulates not only the Target URI but also success/error messages + status.
-     *
-     * @return Should never be null. Initialized by {@link ConfigCommands#afterPropertiesSet()}
-     */
-    public Target getTarget() {
-        return target;
-    }
+	/**
+	 * Return the {@link Target} which encapsulates not only the Target URI but also
+	 * success/error messages + status.
+	 *
+	 * @return Should never be null. Initialized by
+	 * {@link ConfigCommands#afterPropertiesSet()}
+	 */
+	public Target getTarget() {
+		return target;
+	}
 
-    /**
-     * Set the Dataflow Server {@link Target}.
-     *
-     * @param target Must not be null.
-     */
-    public void setTarget(Target target) {
-        Assert.notNull(target, "The provided target must not be null.");
-        this.target = target;
-    }
+	/**
+	 * Set the Dataflow Server {@link Target}.
+	 *
+	 * @param target Must not be null.
+	 */
+	public void setTarget(Target target) {
+		Assert.notNull(target, "The provided target must not be null.");
+		this.target = target;
+	}
 
 }

@@ -17,64 +17,48 @@
 package org.springframework.cloud.dataflow.core.dsl;
 
 /**
- * Enumeration of all the token types that may be found in a DSL definition stream. DSL variants
- * may use some subset of these tokens. For example stream DSL doesn't use the LT token, it is
- * used by the task DSL. The tokenizer in use will decide which subset are built
- * for a particular DSL.
+ * Enumeration of all the token types that may be found in a DSL definition stream. DSL
+ * variants may use some subset of these tokens. For example stream DSL doesn't use the LT
+ * token, it is used by the task DSL. The tokenizer in use will decide which subset are
+ * built for a particular DSL.
  *
  * @author Andy Clement
  */
 public enum TokenKind {
-    IDENTIFIER,
-    DOUBLE_MINUS("--"),
-    EQUALS("="),
-    AND("&"),
-    ANDAND("&&"),
-    OROR("||"),
-    ARROW("->"),
-    PIPE("|"),
-    OPEN_PAREN("("),
-    CLOSE_PAREN(")"),
-    NEWLINE("\n"),
-    STAR("*"),
-    COLON(":"),
-    GT(">"),
-    LT("<"),
-    SEMICOLON(";"),
-    REFERENCE("@"),
-    DOT("."),
-    LITERAL_STRING,;
+	IDENTIFIER, DOUBLE_MINUS("--"), EQUALS("="), AND("&"), ANDAND("&&"), OROR("||"), ARROW("->"), PIPE("|"), OPEN_PAREN(
+			"("), CLOSE_PAREN(")"), NEWLINE("\n"), STAR(
+					"*"), COLON(":"), GT(">"), LT("<"), SEMICOLON(";"), REFERENCE("@"), DOT("."), LITERAL_STRING,;
 
-    char[] tokenChars;
+	char[] tokenChars;
 
-    private boolean hasPayload; // is there more to this token than simply the kind
+	private boolean hasPayload; // is there more to this token than simply the kind
 
-    TokenKind(String tokenString) {
-        tokenChars = tokenString.toCharArray();
-        hasPayload = tokenChars.length == 0;
-    }
+	TokenKind(String tokenString) {
+		tokenChars = tokenString.toCharArray();
+		hasPayload = tokenChars.length == 0;
+	}
 
-    TokenKind() {
-        this("");
-    }
+	TokenKind() {
+		this("");
+	}
 
-    @Override
-    public String toString() {
-        return this.name() + (tokenChars.length != 0 ? "(" + new String(tokenChars) + ")" : "");
-    }
+	@Override
+	public String toString() {
+		return this.name() + (tokenChars.length != 0 ? "(" + new String(tokenChars) + ")" : "");
+	}
 
-    public boolean hasPayload() {
-        return hasPayload;
-    }
+	public boolean hasPayload() {
+		return hasPayload;
+	}
 
-    public int getLength() {
-        return tokenChars.length;
-    }
+	public int getLength() {
+		return tokenChars.length;
+	}
 
-    /**
-     * @return the chars representing simple fixed token (eg. : > --)
-     */
-    public char[] getTokenChars() {
-        return tokenChars;
-    }
+	/**
+	 * @return the chars representing simple fixed token (eg. : > --)
+	 */
+	public char[] getTokenChars() {
+		return tokenChars;
+	}
 }

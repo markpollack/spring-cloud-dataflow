@@ -23,12 +23,12 @@ import org.springframework.cloud.task.repository.TaskExecution;
  */
 public class NoSuchTaskExecutionException extends RuntimeException {
 
-    /**
-     * Create a new exception.
-     *
-     * @param id the id of the {@link TaskExecution} that could not be found
-     */
-    public NoSuchTaskExecutionException(long id) {
-        super("Could not find TaskExecution with id " + id);
-    }
+	/**
+	 * Create a new exception.
+	 *
+	 * @param id the id of the {@link TaskExecution} that could not be found
+	 */
+	public NoSuchTaskExecutionException(long id) {
+		super("Could not find TaskExecution with id " + id);
+	}
 }

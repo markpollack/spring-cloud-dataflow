@@ -22,14 +22,15 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 
 /**
- * Jackson MixIn for {@link StepExecution} serialization. This MixIn excludes the {@link JobExecution} from being
- * serialized. This is due to the fact that it would cause a {@link StackOverflowError} due to a circular reference.
+ * Jackson MixIn for {@link StepExecution} serialization. This MixIn excludes the
+ * {@link JobExecution} from being serialized. This is due to the fact that it would cause
+ * a {@link StackOverflowError} due to a circular reference.
  *
  * @author Gunnar Hillert
  * @since 1.0
  */
 public abstract class StepExecutionJacksonMixIn {
 
-    @JsonIgnore
-    abstract JobExecution getJobExecution();
+	@JsonIgnore
+	abstract JobExecution getJobExecution();
 }

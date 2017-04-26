@@ -16,47 +16,45 @@
 
 package org.springframework.cloud.dataflow.rest.job;
 
-
 import org.springframework.batch.core.JobExecution;
 import org.springframework.util.Assert;
 
 /**
- * The relation a {@link JobExecution} has with its associated task
- * execution id.
+ * The relation a {@link JobExecution} has with its associated task execution id.
  *
  * @author Glenn Renfro
  */
 public class TaskJobExecution {
-    private final long taskId;
-    private final boolean isTaskDefined;
-    private final JobExecution jobExecution;
+	private final long taskId;
+	private final boolean isTaskDefined;
+	private final JobExecution jobExecution;
 
-    public TaskJobExecution(long taskId, JobExecution jobExecution, boolean isTaskDefined) {
-        Assert.notNull(jobExecution, "jobExecution must not be null");
-        this.taskId = taskId;
-        this.jobExecution = jobExecution;
-        this.isTaskDefined = isTaskDefined;
-    }
+	public TaskJobExecution(long taskId, JobExecution jobExecution, boolean isTaskDefined) {
+		Assert.notNull(jobExecution, "jobExecution must not be null");
+		this.taskId = taskId;
+		this.jobExecution = jobExecution;
+		this.isTaskDefined = isTaskDefined;
+	}
 
-    /**
-     * @return the Task Id that is associated with the {@link JobExecution}.
-     */
-    public long getTaskId() {
-        return taskId;
-    }
+	/**
+	 * @return the Task Id that is associated with the {@link JobExecution}.
+	 */
+	public long getTaskId() {
+		return taskId;
+	}
 
-    /**
-     * @return the {@link JobExecution} that is associated with the task id.
-     */
-    public JobExecution getJobExecution() {
-        return jobExecution;
-    }
+	/**
+	 * @return the {@link JobExecution} that is associated with the task id.
+	 */
+	public JobExecution getJobExecution() {
+		return jobExecution;
+	}
 
-    /**
-     * @return true if the Task Definition for the task id exists in the task repository
-     * else returns false.
-     */
-    public boolean isTaskDefined() {
-        return isTaskDefined;
-    }
+	/**
+	 * @return true if the Task Definition for the task id exists in the task repository
+	 * else returns false.
+	 */
+	public boolean isTaskDefined() {
+		return isTaskDefined;
+	}
 }

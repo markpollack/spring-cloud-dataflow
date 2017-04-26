@@ -40,56 +40,56 @@ import static org.junit.Assert.assertNull;
  * @author Ilayaperumal Gopinathan
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {EmbeddedDataSourceConfiguration.class,
-        PropertyPlaceholderAutoConfiguration.class, RdbmsDeploymentIdRepositoryTests.TestConfig.class})
+@SpringBootTest(classes = { EmbeddedDataSourceConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+		RdbmsDeploymentIdRepositoryTests.TestConfig.class })
 public class RdbmsDeploymentIdRepositoryTests {
 
-    @Autowired
-    private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-    private DeploymentIdRepository repository;
+	private DeploymentIdRepository repository;
 
-    private JdbcTemplate template;
+	private JdbcTemplate template;
 
-    @Before
-    public void setup() throws Exception {
-        repository = new RdbmsDeploymentIdRepository(dataSource);
-        template = new JdbcTemplate(dataSource);
-        template.execute("DELETE FROM DEPLOYMENT_IDS");
-    }
+	@Before
+	public void setup() throws Exception {
+		repository = new RdbmsDeploymentIdRepository(dataSource);
+		template = new JdbcTemplate(dataSource);
+		template.execute("DELETE FROM DEPLOYMENT_IDS");
+	}
 
-    @Test
-    public void testFindOne() {
-        repository.save("key1", "time.1");
-        repository.save("key2", "log.0");
+	@Test
+	public void testFindOne() {
+		repository.save("key1", "time.1");
+		repository.save("key2", "log.0");
 
-        assertEquals("log.0", repository.findOne("key2"));
-    }
+		assertEquals("log.0", repository.findOne("key2"));
+	}
 
-    @Test
-    public void testDelete() {
-        repository.save("key1", "time.1");
-        repository.save("key2", "log.0");
+	@Test
+	public void testDelete() {
+		repository.save("key1", "time.1");
+		repository.save("key2", "log.0");
 
-        assertEquals("log.0", repository.findOne("key2"));
-        repository.delete("key2");
-        assertNull(repository.findOne("key2"));
-    }
+		assertEquals("log.0", repository.findOne("key2"));
+		repository.delete("key2");
+		assertNull(repository.findOne("key2"));
+	}
 
-    @Configuration
-    protected static class TestConfig {
+	@Configuration
+	protected static class TestConfig {
 
-        @Bean
-        public FeaturesProperties featuresProperties() {
-            return new FeaturesProperties();
-        }
+		@Bean
+		public FeaturesProperties featuresProperties() {
+			return new FeaturesProperties();
+		}
 
-        @Bean
-        public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
-            DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer
-                    (featuresProperties());
-            definitionRepositoryInitializer.setDataSource(dataSource);
-            return definitionRepositoryInitializer;
-        }
-    }
+		@Bean
+		public DataflowRdbmsInitializer definitionRepositoryInitializer(DataSource dataSource) {
+			DataflowRdbmsInitializer definitionRepositoryInitializer = new DataflowRdbmsInitializer(
+					featuresProperties());
+			definitionRepositoryInitializer.setDataSource(dataSource);
+			return definitionRepositoryInitializer;
+		}
+	}
 }

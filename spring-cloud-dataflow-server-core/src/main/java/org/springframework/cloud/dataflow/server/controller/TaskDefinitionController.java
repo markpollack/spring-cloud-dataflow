@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for operations on {@link TaskDefinition}.  This includes CRUD operations.
+ * Controller for operations on {@link TaskDefinition}. This includes CRUD operations.
  *
  * @author Michael Minella
  * @author Marius Bogoevici
@@ -54,141 +54,141 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(TaskDefinitionResource.class)
 public class TaskDefinitionController {
 
-    private final Assembler taskAssembler = new Assembler();
-    /**
-     * The repository this controller will use for deployment IDs.
-     */
-    private final DeploymentIdRepository deploymentIdRepository;
-    /**
-     * The app registry this controller will use to lookup apps.
-     */
-    private final AppRegistry appRegistry;
-    private TaskDefinitionRepository repository;
-    private TaskLauncher taskLauncher;
-    private TaskService taskService;
+	private final Assembler taskAssembler = new Assembler();
+	/**
+	 * The repository this controller will use for deployment IDs.
+	 */
+	private final DeploymentIdRepository deploymentIdRepository;
+	/**
+	 * The app registry this controller will use to lookup apps.
+	 */
+	private final AppRegistry appRegistry;
+	private TaskDefinitionRepository repository;
+	private TaskLauncher taskLauncher;
+	private TaskService taskService;
 
-    /**
-     * Creates a {@code TaskDefinitionController} that delegates
-     * <ul>
-     * <li>CRUD operations to the provided {@link TaskDefinitionRepository}</li>
-     * <li>task status checks to the provided {@link TaskLauncher}</li>
-     * </ul>
-     *
-     * @param repository             the repository this controller will use for task CRUD operations.
-     * @param deploymentIdRepository the repository this controller will use for deployment IDs
-     * @param taskLauncher           the TaskLauncher this controller will use to check task status.
-     * @param appRegistry            the app registry to look up registered apps.
-     * @param taskService            handles specialized behavior needed for tasks.
-     */
-    public TaskDefinitionController(TaskDefinitionRepository repository, DeploymentIdRepository deploymentIdRepository,
-                                    TaskLauncher taskLauncher, AppRegistry appRegistry, TaskService taskService) {
-        Assert.notNull(repository, "repository must not be null");
-        Assert.notNull(deploymentIdRepository, "deploymentIdRepository must not be null");
-        Assert.notNull(taskLauncher, "taskLauncher must not be null");
-        Assert.notNull(appRegistry, "appRegistry must not be null");
-        Assert.notNull(taskService, "taskService must not be null");
-        this.repository = repository;
-        this.deploymentIdRepository = deploymentIdRepository;
-        this.taskLauncher = taskLauncher;
-        this.appRegistry = appRegistry;
-        this.taskService = taskService;
-    }
+	/**
+	 * Creates a {@code TaskDefinitionController} that delegates
+	 * <ul>
+	 * <li>CRUD operations to the provided {@link TaskDefinitionRepository}</li>
+	 * <li>task status checks to the provided {@link TaskLauncher}</li>
+	 * </ul>
+	 *
+	 * @param repository the repository this controller will use for task CRUD operations.
+	 * @param deploymentIdRepository the repository this controller will use for
+	 * deployment IDs
+	 * @param taskLauncher the TaskLauncher this controller will use to check task status.
+	 * @param appRegistry the app registry to look up registered apps.
+	 * @param taskService handles specialized behavior needed for tasks.
+	 */
+	public TaskDefinitionController(TaskDefinitionRepository repository, DeploymentIdRepository deploymentIdRepository,
+			TaskLauncher taskLauncher, AppRegistry appRegistry, TaskService taskService) {
+		Assert.notNull(repository, "repository must not be null");
+		Assert.notNull(deploymentIdRepository, "deploymentIdRepository must not be null");
+		Assert.notNull(taskLauncher, "taskLauncher must not be null");
+		Assert.notNull(appRegistry, "appRegistry must not be null");
+		Assert.notNull(taskService, "taskService must not be null");
+		this.repository = repository;
+		this.deploymentIdRepository = deploymentIdRepository;
+		this.taskLauncher = taskLauncher;
+		this.appRegistry = appRegistry;
+		this.taskService = taskService;
+	}
 
-    /**
-     * Register a task definition for future execution.
-     *
-     * @param name name the name of the task
-     * @param dsl  DSL definition for the task
-     * @return the task definition
-     */
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public TaskDefinitionResource save(@RequestParam("name") String name,
-                                       @RequestParam("definition") String dsl) {
-        TaskDefinition taskDefinition = new TaskDefinition(name, dsl);
-        taskService.saveTaskDefinition(name, dsl);
-        return taskAssembler.toResource(taskDefinition);
-    }
+	/**
+	 * Register a task definition for future execution.
+	 *
+	 * @param name name the name of the task
+	 * @param dsl DSL definition for the task
+	 * @return the task definition
+	 */
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	public TaskDefinitionResource save(@RequestParam("name") String name, @RequestParam("definition") String dsl) {
+		TaskDefinition taskDefinition = new TaskDefinition(name, dsl);
+		taskService.saveTaskDefinition(name, dsl);
+		return taskAssembler.toResource(taskDefinition);
+	}
 
-    /**
-     * Delete the task from the repository so that it can no longer be executed.
-     *
-     * @param name name of the task to be deleted
-     */
-    @RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.OK)
-    public void destroyTask(@PathVariable("name") String name) {
-        taskService.deleteTaskDefinition(name);
-    }
+	/**
+	 * Delete the task from the repository so that it can no longer be executed.
+	 *
+	 * @param name name of the task to be deleted
+	 */
+	@RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.OK)
+	public void destroyTask(@PathVariable("name") String name) {
+		taskService.deleteTaskDefinition(name);
+	}
 
-    /**
-     * Return a page-able list of {@link TaskDefinitionResource} defined tasks.
-     *
-     * @param pageable  page-able collection of {@code TaskDefinitionResource}.
-     * @param assembler assembler for the {@link TaskDefinition}
-     * @param search    optional search parameter
-     * @return a list of task definitions
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public PagedResources<TaskDefinitionResource> list(Pageable pageable, @RequestParam(required = false) String search,
-                                                       PagedResourcesAssembler<TaskDefinition> assembler) {
+	/**
+	 * Return a page-able list of {@link TaskDefinitionResource} defined tasks.
+	 *
+	 * @param pageable page-able collection of {@code TaskDefinitionResource}.
+	 * @param assembler assembler for the {@link TaskDefinition}
+	 * @param search optional search parameter
+	 * @return a list of task definitions
+	 */
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public PagedResources<TaskDefinitionResource> list(Pageable pageable, @RequestParam(required = false) String search,
+			PagedResourcesAssembler<TaskDefinition> assembler) {
 
-        if (search != null) {
-            final SearchPageable searchPageable = new SearchPageable(pageable, search);
-            searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
-            return assembler.toResource(repository.search(searchPageable), taskAssembler);
-        } else {
-            return assembler.toResource(repository.findAll(pageable), taskAssembler);
-        }
-    }
+		if (search != null) {
+			final SearchPageable searchPageable = new SearchPageable(pageable, search);
+			searchPageable.addColumns("DEFINITION_NAME", "DEFINITION");
+			return assembler.toResource(repository.search(searchPageable), taskAssembler);
+		}
+		else {
+			return assembler.toResource(repository.findAll(pageable), taskAssembler);
+		}
+	}
 
-    /**
-     * Return a given task definition resource.
-     *
-     * @param name the name of an existing task definition (required)
-     * @return the task definition
-     */
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public TaskDefinitionResource display(@PathVariable("name") String name) {
-        TaskDefinition definition = repository.findOne(name);
-        if (definition == null) {
-            throw new NoSuchTaskDefinitionException(name);
-        }
-        return taskAssembler.toResource(definition);
-    }
+	/**
+	 * Return a given task definition resource.
+	 *
+	 * @param name the name of an existing task definition (required)
+	 * @return the task definition
+	 */
+	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public TaskDefinitionResource display(@PathVariable("name") String name) {
+		TaskDefinition definition = repository.findOne(name);
+		if (definition == null) {
+			throw new NoSuchTaskDefinitionException(name);
+		}
+		return taskAssembler.toResource(definition);
+	}
 
-    /**
-     * {@link org.springframework.hateoas.ResourceAssembler} implementation
-     * that converts {@link TaskDefinition}s to {@link TaskDefinitionResource}s.
-     */
-    class Assembler extends ResourceAssemblerSupport<TaskDefinition, TaskDefinitionResource> {
+	/**
+	 * {@link org.springframework.hateoas.ResourceAssembler} implementation that converts
+	 * {@link TaskDefinition}s to {@link TaskDefinitionResource}s.
+	 */
+	class Assembler extends ResourceAssemblerSupport<TaskDefinition, TaskDefinitionResource> {
 
-        public Assembler() {
-            super(TaskDefinitionController.class, TaskDefinitionResource.class);
-        }
+		public Assembler() {
+			super(TaskDefinitionController.class, TaskDefinitionResource.class);
+		}
 
-        @Override
-        public TaskDefinitionResource toResource(TaskDefinition taskDefinition) {
-            return createResourceWithId(taskDefinition.getName(), taskDefinition);
-        }
+		@Override
+		public TaskDefinitionResource toResource(TaskDefinition taskDefinition) {
+			return createResourceWithId(taskDefinition.getName(), taskDefinition);
+		}
 
-        @Override
-        public TaskDefinitionResource instantiateResource(TaskDefinition taskDefinition) {
-            String key = DeploymentKey.forTaskDefinition(taskDefinition);
-            String id = deploymentIdRepository.findOne(key);
-            boolean composed = taskService.isComposedDefinition(taskDefinition.getDslText());
-            TaskStatus status = null;
-            if (id != null) {
-                status = taskLauncher.status(id);
-            }
-            String state = (status != null) ? status.getState().name() : "unknown";
-            TaskDefinitionResource taskDefinitionResource = new TaskDefinitionResource(
-                    taskDefinition.getName(),
-                    taskDefinition.getDslText());
-            taskDefinitionResource.setComposed(composed);
-            taskDefinitionResource.setStatus(state);
-            return taskDefinitionResource;
-        }
-    }
+		@Override
+		public TaskDefinitionResource instantiateResource(TaskDefinition taskDefinition) {
+			String key = DeploymentKey.forTaskDefinition(taskDefinition);
+			String id = deploymentIdRepository.findOne(key);
+			boolean composed = taskService.isComposedDefinition(taskDefinition.getDslText());
+			TaskStatus status = null;
+			if (id != null) {
+				status = taskLauncher.status(id);
+			}
+			String state = (status != null) ? status.getState().name() : "unknown";
+			TaskDefinitionResource taskDefinitionResource = new TaskDefinitionResource(taskDefinition.getName(),
+					taskDefinition.getDslText());
+			taskDefinitionResource.setComposed(composed);
+			taskDefinitionResource.setStatus(state);
+			return taskDefinitionResource;
+		}
+	}
 }

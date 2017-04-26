@@ -30,24 +30,24 @@ import org.springframework.util.Assert;
  */
 public class InMemoryDeploymentIdRepository implements DeploymentIdRepository {
 
-    private final Map<String, String> deployments = new ConcurrentHashMap<String, String>();
+	private final Map<String, String> deployments = new ConcurrentHashMap<String, String>();
 
-    @Override
-    public void save(String key, String id) {
-        // we don't care if key or id already exists as
-        // repository is used to track last deployment
-        Assert.notNull(key, "key must not be null");
-        Assert.notNull(id, "id must not be null");
-        deployments.put(key, id);
-    }
+	@Override
+	public void save(String key, String id) {
+		// we don't care if key or id already exists as
+		// repository is used to track last deployment
+		Assert.notNull(key, "key must not be null");
+		Assert.notNull(id, "id must not be null");
+		deployments.put(key, id);
+	}
 
-    @Override
-    public String findOne(String key) {
-        return deployments.get(key);
-    }
+	@Override
+	public String findOne(String key) {
+		return deployments.get(key);
+	}
 
-    @Override
-    public void delete(String key) {
-        deployments.remove(key);
-    }
+	@Override
+	public void delete(String key) {
+		deployments.remove(key);
+	}
 }

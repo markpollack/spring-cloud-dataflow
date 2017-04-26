@@ -27,9 +27,9 @@ import org.springframework.batch.item.ExecutionContext;
  * @author Gunnar Hillert
  * @since 1.0
  */
-@JsonIgnoreProperties({"empty", "values"})
+@JsonIgnoreProperties({ "empty", "values" })
 public abstract class ExecutionContextJacksonMixIn {
 
-    @JsonProperty
-    abstract boolean isEmpty();
+	@JsonProperty
+	abstract boolean isEmpty();
 }

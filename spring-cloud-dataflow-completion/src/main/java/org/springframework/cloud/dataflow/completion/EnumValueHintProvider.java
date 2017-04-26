@@ -24,31 +24,31 @@ import org.springframework.boot.configurationmetadata.ValueHint;
 import org.springframework.util.ClassUtils;
 
 /**
- * A {@link ValueHintProvider} that returns possible values when the
- * property is an {@link Enum}.
+ * A {@link ValueHintProvider} that returns possible values when the property is an
+ * {@link Enum}.
  *
  * @author Eric Bottard
  */
 public class EnumValueHintProvider implements ValueHintProvider {
 
-    @Override
-    public List<ValueHint> generateValueHints(ConfigurationMetadataProperty property, ClassLoader classLoader) {
-        List<ValueHint> result = new ArrayList<>();
-        if (ClassUtils.isPresent(property.getType(), classLoader)) {
-            Class<?> clazz = ClassUtils.resolveClassName(property.getType(), classLoader);
-            if (clazz.isEnum()) {
-                for (Object o : clazz.getEnumConstants()) {
-                    ValueHint hint = new ValueHint();
-                    hint.setValue(o);
-                    result.add(hint);
-                }
-            }
-        }
-        return result;
-    }
+	@Override
+	public List<ValueHint> generateValueHints(ConfigurationMetadataProperty property, ClassLoader classLoader) {
+		List<ValueHint> result = new ArrayList<>();
+		if (ClassUtils.isPresent(property.getType(), classLoader)) {
+			Class<?> clazz = ClassUtils.resolveClassName(property.getType(), classLoader);
+			if (clazz.isEnum()) {
+				for (Object o : clazz.getEnumConstants()) {
+					ValueHint hint = new ValueHint();
+					hint.setValue(o);
+					result.add(hint);
+				}
+			}
+		}
+		return result;
+	}
 
-    @Override
-    public boolean isExclusive(ConfigurationMetadataProperty property) {
-        return true;
-    }
+	@Override
+	public boolean isExclusive(ConfigurationMetadataProperty property) {
+		return true;
+	}
 }

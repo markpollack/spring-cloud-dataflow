@@ -20,5 +20,5 @@ package com.acme.boot13;
  * An enum used in configuration properties class.
  */
 public enum AnotherEnumClass13 {
-    low, high;
+	low, high;
 }

@@ -44,53 +44,50 @@ import org.springframework.stereotype.Component;
 @Component
 public class CounterCommands extends AbstractMetricsCommands implements CommandMarker {
 
-    private static final String DISPLAY_COUNTER = "counter display";
-    private static final String LIST_COUNTERS = "counter list";
-    private static final String DELETE_COUNTER = "counter reset";
-    @Autowired
-    private DataFlowShell dataFlowShell;
+	private static final String DISPLAY_COUNTER = "counter display";
+	private static final String LIST_COUNTERS = "counter list";
+	private static final String DELETE_COUNTER = "counter reset";
+	@Autowired
+	private DataFlowShell dataFlowShell;
 
-    protected CounterCommands() {
-        super("Counter");
-    }
+	protected CounterCommands() {
+		super("Counter");
+	}
 
-    @CliAvailabilityIndicator({LIST_COUNTERS, DISPLAY_COUNTER})
-    public boolean availableWithViewRole() {
-        return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.COUNTER);
-    }
+	@CliAvailabilityIndicator({ LIST_COUNTERS, DISPLAY_COUNTER })
+	public boolean availableWithViewRole() {
+		return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.COUNTER);
+	}
 
-    @CliAvailabilityIndicator({DELETE_COUNTER})
-    public boolean availableWithCreateRole() {
-        return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.COUNTER);
-    }
+	@CliAvailabilityIndicator({ DELETE_COUNTER })
+	public boolean availableWithCreateRole() {
+		return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.COUNTER);
+	}
 
-    @CliCommand(value = DISPLAY_COUNTER, help = "Display the value of a counter")
-    public String display(
-            @CliOption(key = {"", "name"}, help = "the name of the counter to display", mandatory = true
-                    /*,optionContext = "existing-counter disable-string-converter"*/) String name,
-            @CliOption(key = "pattern", help = "the pattern used to format the value (see DecimalFormat)",
-                    mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
-        CounterResource counter = counterOperations().retrieve(name);
+	@CliCommand(value = DISPLAY_COUNTER, help = "Display the value of a counter")
+	public String display(@CliOption(key = { "", "name" }, help = "the name of the counter to display", mandatory = true
+	/* ,optionContext = "existing-counter disable-string-converter" */) String name,
+			@CliOption(key = "pattern", help = "the pattern used to format the value (see DecimalFormat)", mandatory = false, unspecifiedDefaultValue = NumberFormatConverter.DEFAULT) NumberFormat pattern) {
+		CounterResource counter = counterOperations().retrieve(name);
 
-        return pattern.format(counter.getValue());
-    }
+		return pattern.format(counter.getValue());
+	}
 
-    @CliCommand(value = LIST_COUNTERS, help = "List all available counter names")
-    public Table list() {
-        PagedResources<MetricResource> list = counterOperations().list();
-        return displayMetrics(list);
-    }
+	@CliCommand(value = LIST_COUNTERS, help = "List all available counter names")
+	public Table list() {
+		PagedResources<MetricResource> list = counterOperations().list();
+		return displayMetrics(list);
+	}
 
-    @CliCommand(value = DELETE_COUNTER, help = "Reset the counter with the given name")
-    public String reset(
-            @CliOption(mandatory = true, key = {"", "name"}, help = "the name of the counter to reset"
-                    /*, optionContext = "existing-counter disable-string-converter"*/) String name) {
-        counterOperations().reset(name);
-        return String.format("Deleted counter '%s'", name);
-    }
+	@CliCommand(value = DELETE_COUNTER, help = "Reset the counter with the given name")
+	public String reset(@CliOption(mandatory = true, key = { "", "name" }, help = "the name of the counter to reset"
+	/* , optionContext = "existing-counter disable-string-converter" */) String name) {
+		counterOperations().reset(name);
+		return String.format("Deleted counter '%s'", name);
+	}
 
-    private CounterOperations counterOperations() {
-        return dataFlowShell.getDataFlowOperations().counterOperations();
-    }
+	private CounterOperations counterOperations() {
+		return dataFlowShell.getDataFlowOperations().counterOperations();
+	}
 
 }

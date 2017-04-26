@@ -22,29 +22,29 @@ import org.springframework.cloud.dataflow.rest.Version;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * Describes the other available resource endpoints, as well as provides information about the server itself, such as
- * API revision number.
+ * Describes the other available resource endpoints, as well as provides information about
+ * the server itself, such as API revision number.
  *
  * @author Eric Bottard
  */
 public class RootResource extends ResourceSupport {
 
-    private Integer apiRevision;
+	private Integer apiRevision;
 
-    // For JSON un-marshalling
-    private RootResource() {
-    }
+	// For JSON un-marshalling
+	private RootResource() {
+	}
 
-    public RootResource(int apiRevision) {
-        this.apiRevision = apiRevision;
-    }
+	public RootResource(int apiRevision) {
+		this.apiRevision = apiRevision;
+	}
 
-    @JsonProperty(Version.REVISION_KEY)
-    public Integer getApiRevision() {
-        return apiRevision;
-    }
+	@JsonProperty(Version.REVISION_KEY)
+	public Integer getApiRevision() {
+		return apiRevision;
+	}
 
-    public void setApiRevision(int apiRevision) {
-        this.apiRevision = apiRevision;
-    }
+	public void setApiRevision(int apiRevision) {
+		this.apiRevision = apiRevision;
+	}
 }

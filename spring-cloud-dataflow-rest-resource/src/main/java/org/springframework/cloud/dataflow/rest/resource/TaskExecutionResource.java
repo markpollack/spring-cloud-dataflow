@@ -36,131 +36,132 @@ import org.springframework.util.Assert;
  */
 public class TaskExecutionResource extends ResourceSupport {
 
-    /**
-     * The unique id  associated with the task execution.
-     */
-    private long executionId;
+	/**
+	 * The unique id associated with the task execution.
+	 */
+	private long executionId;
 
-    /**
-     * The recorded exit code for the task.
-     */
-    private int exitCode;
+	/**
+	 * The recorded exit code for the task.
+	 */
+	private int exitCode;
 
-    /**
-     * User defined name for the task.
-     */
-    private String taskName;
+	/**
+	 * User defined name for the task.
+	 */
+	private String taskName;
 
-    /**
-     * Time of when the task was started.
-     */
-    private Date startTime;
+	/**
+	 * Time of when the task was started.
+	 */
+	private Date startTime;
 
-    /**
-     * Timestamp of when the task was completed/terminated.
-     */
-    private Date endTime;
+	/**
+	 * Timestamp of when the task was completed/terminated.
+	 */
+	private Date endTime;
 
-    /**
-     * Message returned from the task.
-     */
-    private String exitMessage;
+	/**
+	 * Message returned from the task.
+	 */
+	private String exitMessage;
 
-    /**
-     * The command line arguments that were used for this task execution.
-     */
-    private List<String> arguments;
+	/**
+	 * The command line arguments that were used for this task execution.
+	 */
+	private List<String> arguments;
 
-    /**
-     * List of {@link JobExecution}s that are associated with this task.
-     */
-    private List<Long> jobExecutionIds;
+	/**
+	 * List of {@link JobExecution}s that are associated with this task.
+	 */
+	private List<Long> jobExecutionIds;
 
-    /**
-     * Error Message returned from a task execution.
-     */
-    private String errorMessage;
+	/**
+	 * Error Message returned from a task execution.
+	 */
+	private String errorMessage;
 
-    /**
-     * Task Execution ID that is set from an external source.  i.e. CloudFoundry
-     * Deployment Id.
-     */
-    private String externalExecutionId;
+	/**
+	 * Task Execution ID that is set from an external source. i.e. CloudFoundry Deployment
+	 * Id.
+	 */
+	private String externalExecutionId;
 
+	public TaskExecutionResource() {
+		arguments = new ArrayList<>();
+	}
 
-    public TaskExecutionResource() {
-        arguments = new ArrayList<>();
-    }
+	/**
+	 * Constructor to initialize the TaskExecutionResource using
+	 * {@link TaskJobExecutionRel}.
+	 *
+	 * @param taskJobExecutionRel contains the {@link TaskExecution} but also a list of
+	 * the Job ExecutionIds that were associated with this task if applicable.
+	 */
+	public TaskExecutionResource(TaskJobExecutionRel taskJobExecutionRel) {
+		Assert.notNull(taskJobExecutionRel, "taskJobExecutionDTO must not be null");
+		this.executionId = taskJobExecutionRel.getTaskExecution().getExecutionId();
+		this.exitCode = taskJobExecutionRel.getTaskExecution().getExitCode();
+		this.taskName = taskJobExecutionRel.getTaskExecution().getTaskName();
+		this.exitMessage = taskJobExecutionRel.getTaskExecution().getExitMessage();
+		this.arguments = Collections.unmodifiableList(taskJobExecutionRel.getTaskExecution().getArguments());
+		this.startTime = taskJobExecutionRel.getTaskExecution().getStartTime();
+		this.endTime = taskJobExecutionRel.getTaskExecution().getEndTime();
+		this.errorMessage = taskJobExecutionRel.getTaskExecution().getErrorMessage();
+		this.externalExecutionId = taskJobExecutionRel.getTaskExecution().getExternalExecutionId();
+		if (taskJobExecutionRel.getJobExecutionIds() == null) {
+			this.jobExecutionIds = Collections.emptyList();
+		}
+		else {
+			this.jobExecutionIds = Collections
+					.unmodifiableList(new ArrayList<>(taskJobExecutionRel.getJobExecutionIds()));
+		}
+	}
 
-    /**
-     * Constructor to initialize the TaskExecutionResource using {@link TaskJobExecutionRel}.
-     *
-     * @param taskJobExecutionRel contains the {@link TaskExecution} but also a list
-     *                            of the Job ExecutionIds that were associated with this task if applicable.
-     */
-    public TaskExecutionResource(TaskJobExecutionRel taskJobExecutionRel) {
-        Assert.notNull(taskJobExecutionRel, "taskJobExecutionDTO must not be null");
-        this.executionId = taskJobExecutionRel.getTaskExecution().getExecutionId();
-        this.exitCode = taskJobExecutionRel.getTaskExecution().getExitCode();
-        this.taskName = taskJobExecutionRel.getTaskExecution().getTaskName();
-        this.exitMessage = taskJobExecutionRel.getTaskExecution().getExitMessage();
-        this.arguments = Collections.unmodifiableList(taskJobExecutionRel.getTaskExecution().getArguments());
-        this.startTime = taskJobExecutionRel.getTaskExecution().getStartTime();
-        this.endTime = taskJobExecutionRel.getTaskExecution().getEndTime();
-        this.errorMessage = taskJobExecutionRel.getTaskExecution().getErrorMessage();
-        this.externalExecutionId = taskJobExecutionRel.getTaskExecution().getExternalExecutionId();
-        if (taskJobExecutionRel.getJobExecutionIds() == null) {
-            this.jobExecutionIds = Collections.emptyList();
-        } else {
-            this.jobExecutionIds = Collections.unmodifiableList(new ArrayList<>(taskJobExecutionRel
-                    .getJobExecutionIds()));
-        }
-    }
+	public long getExecutionId() {
+		return executionId;
+	}
 
-    public long getExecutionId() {
-        return executionId;
-    }
+	/**
+	 * @return the int containing the exit code of the task application upon completion.
+	 * Default is 0.
+	 */
+	public int getExitCode() {
+		return exitCode;
+	}
 
-    /**
-     * @return the int containing the exit code of the task application upon completion.
-     * Default is 0.
-     */
-    public int getExitCode() {
-        return exitCode;
-    }
+	public String getTaskName() {
+		return taskName;
+	}
 
-    public String getTaskName() {
-        return taskName;
-    }
+	public Date getStartTime() {
+		return startTime;
+	}
 
-    public Date getStartTime() {
-        return startTime;
-    }
+	public Date getEndTime() {
+		return endTime;
+	}
 
-    public Date getEndTime() {
-        return endTime;
-    }
+	public String getExitMessage() {
+		return exitMessage;
+	}
 
-    public String getExitMessage() {
-        return exitMessage;
-    }
+	public List<String> getArguments() {
+		return arguments;
+	}
 
-    public List<String> getArguments() {
-        return arguments;
-    }
+	public List<Long> getJobExecutionIds() {
+		return jobExecutionIds;
+	}
 
-    public List<Long> getJobExecutionIds() {
-        return jobExecutionIds;
-    }
+	public String getErrorMessage() {
+		return errorMessage;
+	}
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+	public String getExternalExecutionId() {
+		return externalExecutionId;
+	}
 
-    public String getExternalExecutionId() {
-        return externalExecutionId;
-    }
-
-    public static class Page extends PagedResources<TaskExecutionResource> {
-    }
+	public static class Page extends PagedResources<TaskExecutionResource> {
+	}
 }

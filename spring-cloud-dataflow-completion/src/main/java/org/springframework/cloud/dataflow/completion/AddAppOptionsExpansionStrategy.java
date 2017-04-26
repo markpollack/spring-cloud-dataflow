@@ -77,15 +77,13 @@ class AddAppOptionsExpansionStrategy implements ExpansionStrategy {
 		for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource)) {
 			if (!alreadyPresentOptions.contains(property.getName())) {
 				collector.add(
-						proposals.withSeparateTokens("--" + property.getName() + "=",
-								property.getShortDescription()));
+						proposals.withSeparateTokens("--" + property.getName() + "=", property.getShortDescription()));
 			}
 		}
 
 		// For other properties (including WL'ed in full form), use their id
 		if (detailLevel > 1) {
-			for (ConfigurationMetadataProperty property :
-					metadataResolver.listProperties(metadataResource, true)) {
+			for (ConfigurationMetadataProperty property : metadataResolver.listProperties(metadataResource, true)) {
 				if (!alreadyPresentOptions.contains(property.getId())) {
 					collector.add(proposals.withSeparateTokens("--" + property.getId() + "=",
 							property.getShortDescription()));

@@ -31,41 +31,42 @@ import static org.junit.Assert.fail;
  */
 public class DataFlowServerUtilTests {
 
-    @Test
-    public void testDetermineApplicationType() {
-        final StreamDefinition streamDefinition = new StreamDefinition("definition-name", "foo | myProcessor | bar");
+	@Test
+	public void testDetermineApplicationType() {
+		final StreamDefinition streamDefinition = new StreamDefinition("definition-name", "foo | myProcessor | bar");
 
-        assertEquals(Integer.valueOf(3), Integer.valueOf(streamDefinition.getAppDefinitions().size()));
+		assertEquals(Integer.valueOf(3), Integer.valueOf(streamDefinition.getAppDefinitions().size()));
 
-        final StreamAppDefinition streamAppDefinitionSource = streamDefinition.getAppDefinitions().get(0);
-        final StreamAppDefinition streamAppDefinitionProcessor = streamDefinition.getAppDefinitions().get(1);
-        final StreamAppDefinition streamAppDefinitionSink = streamDefinition.getAppDefinitions().get(2);
+		final StreamAppDefinition streamAppDefinitionSource = streamDefinition.getAppDefinitions().get(0);
+		final StreamAppDefinition streamAppDefinitionProcessor = streamDefinition.getAppDefinitions().get(1);
+		final StreamAppDefinition streamAppDefinitionSink = streamDefinition.getAppDefinitions().get(2);
 
-        assertEquals(ApplicationType.source, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSource));
-        assertEquals(ApplicationType.processor, DataFlowServerUtil.determineApplicationType
-                (streamAppDefinitionProcessor));
-        assertEquals(ApplicationType.sink, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSink));
+		assertEquals(ApplicationType.source, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSource));
+		assertEquals(ApplicationType.processor,
+				DataFlowServerUtil.determineApplicationType(streamAppDefinitionProcessor));
+		assertEquals(ApplicationType.sink, DataFlowServerUtil.determineApplicationType(streamAppDefinitionSink));
 
-        assertEquals("foo", streamAppDefinitionSource.getName());
-        assertEquals("myProcessor", streamAppDefinitionProcessor.getName());
-        assertEquals("bar", streamAppDefinitionSink.getName());
-    }
+		assertEquals("foo", streamAppDefinitionSource.getName());
+		assertEquals("myProcessor", streamAppDefinitionProcessor.getName());
+		assertEquals("bar", streamAppDefinitionSink.getName());
+	}
 
-    @Test
-    public void testDetermineApplicationTypeFailure() {
-        final StreamDefinition streamDefinition = new StreamDefinition("definition-name", "foo");
+	@Test
+	public void testDetermineApplicationTypeFailure() {
+		final StreamDefinition streamDefinition = new StreamDefinition("definition-name", "foo");
 
-        assertEquals(Integer.valueOf(1), Integer.valueOf(streamDefinition.getAppDefinitions().size()));
+		assertEquals(Integer.valueOf(1), Integer.valueOf(streamDefinition.getAppDefinitions().size()));
 
-        try {
-            for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
-                DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-            }
-        } catch (CannotDetermineApplicationTypeException e) {
-            assertEquals("foo had neither input nor output set", e.getMessage());
-            return;
-        }
+		try {
+			for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
+				DataFlowServerUtil.determineApplicationType(streamAppDefinition);
+			}
+		}
+		catch (CannotDetermineApplicationTypeException e) {
+			assertEquals("foo had neither input nor output set", e.getMessage());
+			return;
+		}
 
-        fail("Expected a CannotDetermineApplicationTypeException to be thrown.");
-    }
+		fail("Expected a CannotDetermineApplicationTypeException to be thrown.");
+	}
 }

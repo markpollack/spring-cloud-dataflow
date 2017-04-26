@@ -26,18 +26,17 @@ import org.springframework.util.Assert;
  */
 public class SecurityTestUtils {
 
-    /**
-     * Returns a basic authorization header for the given username and password.
-     *
-     * @param username Must not be null
-     * @param password Must not be null
-     * @return Returns the header as String. Never returns null.
-     */
-    public static String basicAuthorizationHeader(String username, String password) {
-        Assert.notNull(username, "The username must not be null.");
-        Assert.notNull(password, "The password must not be null.");
+	/**
+	 * Returns a basic authorization header for the given username and password.
+	 *
+	 * @param username Must not be null
+	 * @param password Must not be null
+	 * @return Returns the header as String. Never returns null.
+	 */
+	public static String basicAuthorizationHeader(String username, String password) {
+		Assert.notNull(username, "The username must not be null.");
+		Assert.notNull(password, "The password must not be null.");
 
-        return "Basic " + new String(Base64.encode(
-                (username + ":" + password).getBytes(StandardCharsets.ISO_8859_1)));
-    }
+		return "Basic " + new String(Base64.encode((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1)));
+	}
 }

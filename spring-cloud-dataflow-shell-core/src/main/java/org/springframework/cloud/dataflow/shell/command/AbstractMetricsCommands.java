@@ -32,26 +32,27 @@ import org.springframework.shell.table.TableModel;
  */
 public abstract class AbstractMetricsCommands {
 
-    /**
-     * The Capitalized, singular name of the kind of metrics we're dealing with (e.g. Counter, Field Value Counter)
-     */
-    private String kind;
+	/**
+	 * The Capitalized, singular name of the kind of metrics we're dealing with (e.g.
+	 * Counter, Field Value Counter)
+	 */
+	private String kind;
 
-    protected AbstractMetricsCommands(String kind) {
-        this.kind = kind;
-    }
+	protected AbstractMetricsCommands(String kind) {
+		this.kind = kind;
+	}
 
-    /**
-     * Render a table with information about a list of metrics
-     *
-     * @param list a list of metrics
-     * @return the table to use for displaying the list of metrics
-     */
-    protected Table displayMetrics(PagedResources<MetricResource> list) {
-        LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
-        headers.put("name", String.format("%s name", kind));
-        TableModel model = new BeanListTableModel<>(list, headers);
-        return DataFlowTables.applyStyle(new TableBuilder(model)).build();
-    }
+	/**
+	 * Render a table with information about a list of metrics
+	 *
+	 * @param list a list of metrics
+	 * @return the table to use for displaying the list of metrics
+	 */
+	protected Table displayMetrics(PagedResources<MetricResource> list) {
+		LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
+		headers.put("name", String.format("%s name", kind));
+		TableModel model = new BeanListTableModel<>(list, headers);
+		return DataFlowTables.applyStyle(new TableBuilder(model)).build();
+	}
 
 }

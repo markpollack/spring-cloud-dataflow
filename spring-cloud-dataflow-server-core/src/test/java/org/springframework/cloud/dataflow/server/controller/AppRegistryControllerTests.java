@@ -55,154 +55,133 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class AppRegistryControllerTests {
 
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext wac;
+	@Autowired
+	private WebApplicationContext wac;
 
-    @Autowired
-    private AppRegistry appRegistry;
+	@Autowired
+	private AppRegistry appRegistry;
 
-    @Autowired
-    private DataFlowAppRegistryPopulator uriRegistryPopulator;
+	@Autowired
+	private DataFlowAppRegistryPopulator uriRegistryPopulator;
 
-    @Before
-    public void setupMocks() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultRequest(
-                get("/").accept(MediaType.APPLICATION_JSON)).build();
-        for (AppRegistration appRegistration : this.appRegistry.findAll()) {
-            this.appRegistry.delete(appRegistration.getName(), appRegistration.getType());
-        }
-        this.uriRegistryPopulator.afterPropertiesSet();
-    }
+	@Before
+	public void setupMocks() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+				.defaultRequest(get("/").accept(MediaType.APPLICATION_JSON)).build();
+		for (AppRegistration appRegistration : this.appRegistry.findAll()) {
+			this.appRegistry.delete(appRegistration.getName(), appRegistration.getType());
+		}
+		this.uriRegistryPopulator.afterPropertiesSet();
+	}
 
-    @Test
-    public void testRegisterApplication() throws Exception {
-        mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
-                (print())
-                .andExpect(status().isCreated());
-        assertThat(appRegistry.find("blubba", ApplicationType.processor).getUri().toString(), is("file:///foo"));
-    }
+	@Test
+	public void testRegisterApplication() throws Exception {
+		mockMvc.perform(post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		assertThat(appRegistry.find("blubba", ApplicationType.processor).getUri().toString(), is("file:///foo"));
+	}
 
-    @Test
-    public void testRegisterApplicationTwice() throws Exception {
-        mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
-                (print())
-                .andExpect(status().isCreated());
-        mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
-                (print())
-                .andExpect(status().isConflict());
-    }
+	@Test
+	public void testRegisterApplicationTwice() throws Exception {
+		mockMvc.perform(post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		mockMvc.perform(post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isConflict());
+	}
 
-    @Test
-    public void testRegisterFromPropertiesFile() throws Exception {
-        mockMvc.perform(
-                post("/apps").param("uri", "classpath:app-registry.properties").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isCreated());
-        assertThat(appRegistry.find("foo", ApplicationType.sink).getUri().toString(), is("file:///bar"));
-        assertThat(appRegistry.find("foo", ApplicationType.sink).getMetadataUri().toString(), is
-                ("file:///bar-metadata"));
-        assertThat(appRegistry.find("bar", ApplicationType.source).getUri().toString(), is("file:///foo"));
-    }
+	@Test
+	public void testRegisterFromPropertiesFile() throws Exception {
+		mockMvc.perform(
+				post("/apps").param("uri", "classpath:app-registry.properties").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		assertThat(appRegistry.find("foo", ApplicationType.sink).getUri().toString(), is("file:///bar"));
+		assertThat(appRegistry.find("foo", ApplicationType.sink).getMetadataUri().toString(),
+				is("file:///bar-metadata"));
+		assertThat(appRegistry.find("bar", ApplicationType.source).getUri().toString(), is("file:///foo"));
+	}
 
-    @Test
-    public void testRegisterAll() throws Exception {
-        mockMvc.perform(
-                post("/apps").param("apps", "sink.foo=file:///bar").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isCreated());
-        assertThat(appRegistry.find("foo", ApplicationType.sink).getUri().toString(), is("file:///bar"));
-    }
+	@Test
+	public void testRegisterAll() throws Exception {
+		mockMvc.perform(post("/apps").param("apps", "sink.foo=file:///bar").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		assertThat(appRegistry.find("foo", ApplicationType.sink).getUri().toString(), is("file:///bar"));
+	}
 
-    @Test
-    public void testRegisterAllWithoutForce() throws Exception {
-        appRegistry.importAll(false, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
-        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.stream.app:time-source-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.stream.app:filter-processor-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework" +
-                ".cloud.stream.app:log-sink-rabbit:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.task.app:timestamp-task:1.0.0.BUILD-SNAPSHOT"));
-    }
+	@Test
+	public void testRegisterAllWithoutForce() throws Exception {
+		appRegistry.importAll(false, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
+		assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.stream.app:time-source-rabbit:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.stream.app:filter-processor-rabbit:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(),
+				is("maven://org.springframework" + ".cloud.stream.app:log-sink-rabbit:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.task.app:timestamp-task:1.0.0.BUILD-SNAPSHOT"));
+	}
 
-    @Test
-    public void testRegisterAllWithForce() throws Exception {
-        appRegistry.importAll(true, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
-        assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.stream.app:time-source-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.stream.app:filter-processor-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(), is("maven://org.springframework" +
-                ".cloud.stream.app:log-sink-kafka:1.0.0.BUILD-SNAPSHOT"));
-        assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(), is("maven://org" +
-                ".springframework.cloud.task.app:timestamp-overwrite-task:1.0.0.BUILD-SNAPSHOT"));
-    }
+	@Test
+	public void testRegisterAllWithForce() throws Exception {
+		appRegistry.importAll(true, new ClassPathResource("META-INF/test-apps-overwrite.properties"));
+		assertThat(appRegistry.find("time", ApplicationType.source).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.stream.app:time-source-kafka:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("filter", ApplicationType.processor).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.stream.app:filter-processor-kafka:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("log", ApplicationType.sink).getUri().toString(),
+				is("maven://org.springframework" + ".cloud.stream.app:log-sink-kafka:1.0.0.BUILD-SNAPSHOT"));
+		assertThat(appRegistry.find("timestamp", ApplicationType.task).getUri().toString(),
+				is("maven://org" + ".springframework.cloud.task.app:timestamp-overwrite-task:1.0.0.BUILD-SNAPSHOT"));
+	}
 
-    @Test
-    public void testRegisterAllWithBadApplication() throws Exception {
-        mockMvc.perform(
-                post("/apps").param("apps", "sink-foo=file:///bar").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().is5xxServerError());
-    }
+	@Test
+	public void testRegisterAllWithBadApplication() throws Exception {
+		mockMvc.perform(post("/apps").param("apps", "sink-foo=file:///bar").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().is5xxServerError());
+	}
 
-    @Test
-    public void testListApplications() throws Exception {
-        mockMvc.perform(
-                get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk()).andExpect(jsonPath("content", hasSize(4)));
-    }
+	@Test
+	public void testListApplications() throws Exception {
+		mockMvc.perform(get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("content", hasSize(4)));
+	}
 
-    @Test
-    public void testFindNonExistentApp() throws Exception {
-        mockMvc.perform(
-                get("/apps/source/foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().is4xxClientError()).andReturn().getResponse().getContentAsString().contains
-                ("NoSuchAppRegistrationException");
-    }
+	@Test
+	public void testFindNonExistentApp() throws Exception {
+		mockMvc.perform(get("/apps/source/foo").accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().is4xxClientError()).andReturn().getResponse().getContentAsString()
+				.contains("NoSuchAppRegistrationException");
+	}
 
-    @Test
-    public void testRegisterAndListApplications() throws Exception {
-        mockMvc.perform(
-                get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk()).andExpect(jsonPath("content", hasSize(4)));
-        mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
-                (print())
-                .andExpect(status().isCreated());
-        mockMvc.perform(
-                get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk()).andExpect(jsonPath("content", hasSize(5)));
-    }
+	@Test
+	public void testRegisterAndListApplications() throws Exception {
+		mockMvc.perform(get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("content", hasSize(4)));
+		mockMvc.perform(post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		mockMvc.perform(get("/apps").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("content", hasSize(5)));
+	}
 
-    @Test
-    public void testListSingleApplication() throws Exception {
-        mockMvc.perform(
-                get("/apps/source/time").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("name", is("time")))
-                .andExpect(jsonPath("type", is("source")));
-    }
+	@Test
+	public void testListSingleApplication() throws Exception {
+		mockMvc.perform(get("/apps/source/time").accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isOk()).andExpect(jsonPath("name", is("time")))
+				.andExpect(jsonPath("type", is("source")));
+	}
 
-    @Test
-    public void testUnregisterApplication() throws Exception {
-        mockMvc.perform(
-                post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON)).andDo
-                (print())
-                .andExpect(status().isCreated());
-        mockMvc.perform(
-                delete("/apps/processor/blubba").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk());
-    }
+	@Test
+	public void testUnregisterApplication() throws Exception {
+		mockMvc.perform(post("/apps/processor/blubba").param("uri", "file:///foo").accept(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isCreated());
+		mockMvc.perform(delete("/apps/processor/blubba").accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isOk());
+	}
 
-    @Test
-    public void testUnregisterApplicationNotFound() throws Exception {
-        mockMvc.perform(
-                delete("/apps/processor/blubba").accept(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isNotFound());
-    }
+	@Test
+	public void testUnregisterApplicationNotFound() throws Exception {
+		mockMvc.perform(delete("/apps/processor/blubba").accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isNotFound());
+	}
 }

@@ -20,27 +20,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.dataflow.core.DataFlowPropertyKeys;
 
 /**
- * Properties used to define the behavior of tasks created by
- * Spring Cloud Data Flow.
+ * Properties used to define the behavior of tasks created by Spring Cloud Data Flow.
  *
  * @author Glenn Renfro
  */
 @ConfigurationProperties(prefix = TaskConfigurationProperties.COMPOSED_TASK_PREFIX)
 public class TaskConfigurationProperties {
 
-    public static final String COMPOSED_TASK_PREFIX = DataFlowPropertyKeys.PREFIX + "task";
+	public static final String COMPOSED_TASK_PREFIX = DataFlowPropertyKeys.PREFIX + "task";
 
-    /**
-     * The task application name to be used for the composed task runner.
-     */
-    private String composedTaskRunnerName = "composed-task-runner";
+	/**
+	 * The task application name to be used for the composed task runner.
+	 */
+	private String composedTaskRunnerName = "composed-task-runner";
 
-    public String getComposedTaskRunnerName() {
-        return composedTaskRunnerName;
-    }
+	public String getComposedTaskRunnerName() {
+		return composedTaskRunnerName;
+	}
 
-    public void setComposedTaskRunnerName(String taskName) {
-        this.composedTaskRunnerName = taskName;
-    }
+	public void setComposedTaskRunnerName(String taskName) {
+		this.composedTaskRunnerName = taskName;
+	}
 
 }

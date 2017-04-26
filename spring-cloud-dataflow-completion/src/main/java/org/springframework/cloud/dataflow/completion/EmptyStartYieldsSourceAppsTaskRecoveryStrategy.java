@@ -30,26 +30,25 @@ import org.springframework.cloud.dataflow.registry.AppRegistry;
  * @author Mark Fisher
  * @author Andy Clement
  */
-class EmptyStartYieldsSourceAppsTaskRecoveryStrategy extends
-        StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
+class EmptyStartYieldsSourceAppsTaskRecoveryStrategy
+		extends StacktraceFingerprintingTaskRecoveryStrategy<CheckPointedParseException> {
 
-    private final AppRegistry registry;
+	private final AppRegistry registry;
 
-    public EmptyStartYieldsSourceAppsTaskRecoveryStrategy(AppRegistry registry) {
-        super(CheckPointedParseException.class, "");
-        this.registry = registry;
-    }
+	public EmptyStartYieldsSourceAppsTaskRecoveryStrategy(AppRegistry registry) {
+		super(CheckPointedParseException.class, "");
+		this.registry = registry;
+	}
 
-    @Override
-    public void addProposals(String dsl, CheckPointedParseException exception,
-                             int detailLevel, List<CompletionProposal> proposals) {
-        CompletionProposal.Factory completionFactory = CompletionProposal.expanding(dsl);
-        for (AppRegistration app : this.registry.findAll()) {
-            if (app.getType() == ApplicationType.task) {
-                proposals.add(completionFactory.withSeparateTokens(app.getName(),
-                        "Choose a task app"));
-            }
-        }
-    }
+	@Override
+	public void addProposals(String dsl, CheckPointedParseException exception, int detailLevel,
+			List<CompletionProposal> proposals) {
+		CompletionProposal.Factory completionFactory = CompletionProposal.expanding(dsl);
+		for (AppRegistration app : this.registry.findAll()) {
+			if (app.getType() == ApplicationType.task) {
+				proposals.add(completionFactory.withSeparateTokens(app.getName(), "Choose a task app"));
+			}
+		}
+	}
 
 }

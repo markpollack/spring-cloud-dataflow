@@ -29,47 +29,47 @@ import org.springframework.cloud.dataflow.core.StreamDefinition;
  */
 public class StreamCompletionProvider {
 
-    private final List<RecoveryStrategy<?>> completionRecoveryStrategies;
+	private final List<RecoveryStrategy<?>> completionRecoveryStrategies;
 
-    private final List<ExpansionStrategy> completionExpansionStrategies;
+	private final List<ExpansionStrategy> completionExpansionStrategies;
 
-    public StreamCompletionProvider(
-            List<RecoveryStrategy<?>> completionRecoveryStrategies,
-            List<ExpansionStrategy> completionExpansionStrategies) {
-        this.completionRecoveryStrategies = new ArrayList<>(completionRecoveryStrategies);
-        this.completionExpansionStrategies = new ArrayList<>(completionExpansionStrategies);
-    }
+	public StreamCompletionProvider(List<RecoveryStrategy<?>> completionRecoveryStrategies,
+			List<ExpansionStrategy> completionExpansionStrategies) {
+		this.completionRecoveryStrategies = new ArrayList<>(completionRecoveryStrategies);
+		this.completionExpansionStrategies = new ArrayList<>(completionExpansionStrategies);
+	}
 
-    /*
-     * Attempt to parse the text the user has already typed in. This either succeeds,
-     * in which case we may propose to expand what she has typed, or it fails
-     * (most likely because this is not well formed), in which case we try to
-     * recover from the parsing failure and still add proposals.
-     */
-    @SuppressWarnings("unchecked")
-    public List<CompletionProposal> complete(String dslStart, int detailLevel) {
-        List<CompletionProposal> collector = new ArrayList<>();
+	/*
+	 * Attempt to parse the text the user has already typed in. This either succeeds, in
+	 * which case we may propose to expand what she has typed, or it fails (most likely
+	 * because this is not well formed), in which case we try to recover from the parsing
+	 * failure and still add proposals.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<CompletionProposal> complete(String dslStart, int detailLevel) {
+		List<CompletionProposal> collector = new ArrayList<>();
 
-        StreamDefinition parsed;
-        try {
-            parsed = new StreamDefinition("__dummy", dslStart);
-        } catch (Exception recoverable) {
-            for (RecoveryStrategy strategy : completionRecoveryStrategies) {
-                if (strategy.shouldTrigger(dslStart, recoverable)) {
-                    strategy.addProposals(dslStart, recoverable, detailLevel, collector);
-                }
-            }
+		StreamDefinition parsed;
+		try {
+			parsed = new StreamDefinition("__dummy", dslStart);
+		}
+		catch (Exception recoverable) {
+			for (RecoveryStrategy strategy : completionRecoveryStrategies) {
+				if (strategy.shouldTrigger(dslStart, recoverable)) {
+					strategy.addProposals(dslStart, recoverable, detailLevel, collector);
+				}
+			}
 
-            return collector;
-        }
+			return collector;
+		}
 
-        for (ExpansionStrategy strategy : completionExpansionStrategies) {
-            strategy.addProposals(dslStart, parsed, detailLevel, collector);
-        }
-        return collector;
-    }
+		for (ExpansionStrategy strategy : completionExpansionStrategies) {
+			strategy.addProposals(dslStart, parsed, detailLevel, collector);
+		}
+		return collector;
+	}
 
-    public void addCompletionRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
-        this.completionRecoveryStrategies.add(recoveryStrategy);
-    }
+	public void addCompletionRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
+		this.completionRecoveryStrategies.add(recoveryStrategy);
+	}
 }

@@ -163,8 +163,8 @@
                         <configuration>
                             <encoding>UTF-8</encoding>
                             <!--<failsOnError>true</failsOnError>-->
-			                <failOnViolation>true</failOnViolation>
-			                <violationSeverity>warning</violationSeverity>
+                            <failOnViolation>true</failOnViolation>
+                            <violationSeverity>warning</violationSeverity>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                         <goals>

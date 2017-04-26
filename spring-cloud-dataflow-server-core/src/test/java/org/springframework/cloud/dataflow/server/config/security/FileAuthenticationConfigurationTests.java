@@ -28,18 +28,18 @@ import static org.mockito.Mockito.mock;
  */
 public class FileAuthenticationConfigurationTests {
 
-    @Test
-    public void testInitAuthenticationManagerBuilder() throws Exception {
+	@Test
+	public void testInitAuthenticationManagerBuilder() throws Exception {
 
-        try {
-            final FileAuthenticationConfiguration fileAuthenticationConfiguration =
-                    new FileAuthenticationConfiguration();
-            fileAuthenticationConfiguration.init(mock(AuthenticationManagerBuilder.class));
-        } catch (IllegalArgumentException anIllegalArgumentException) {
-            assertThat(anIllegalArgumentException.getMessage(),
-                    is("No user specified. Please specify at least 1 user (e.g. "
-                            + "via 'spring.cloud.dataflow.security.authentication.file.users')"));
-        }
-    }
+		try {
+			final FileAuthenticationConfiguration fileAuthenticationConfiguration = new FileAuthenticationConfiguration();
+			fileAuthenticationConfiguration.init(mock(AuthenticationManagerBuilder.class));
+		}
+		catch (IllegalArgumentException anIllegalArgumentException) {
+			assertThat(anIllegalArgumentException.getMessage(),
+					is("No user specified. Please specify at least 1 user (e.g. "
+							+ "via 'spring.cloud.dataflow.security.authentication.file.users')"));
+		}
+	}
 
 }

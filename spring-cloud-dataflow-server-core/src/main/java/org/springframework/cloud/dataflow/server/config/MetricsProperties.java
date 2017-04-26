@@ -26,57 +26,57 @@ import org.springframework.cloud.dataflow.core.DataFlowPropertyKeys;
 @ConfigurationProperties(prefix = MetricsProperties.PREFIX)
 public class MetricsProperties {
 
-    public static final String PREFIX = DataFlowPropertyKeys.PREFIX + "metrics";
+	public static final String PREFIX = DataFlowPropertyKeys.PREFIX + "metrics";
 
-    private Collector collector = new Collector();
+	private Collector collector = new Collector();
 
-    public Collector getCollector() {
-        return collector;
-    }
+	public Collector getCollector() {
+		return collector;
+	}
 
-    public void setCollector(Collector collector) {
-        this.collector = collector;
-    }
+	public void setCollector(Collector collector) {
+		this.collector = collector;
+	}
 
-    public static class Collector {
-        private String uri;
+	public static class Collector {
+		private String uri;
 
-        private String username;
+		private String username;
 
-        private String password;
+		private String password;
 
-        private boolean skipSslValidation;
+		private boolean skipSslValidation;
 
-        public String getUri() {
-            return uri;
-        }
+		public String getUri() {
+			return uri;
+		}
 
-        public void setUri(String uri) {
-            this.uri = uri;
-        }
+		public void setUri(String uri) {
+			this.uri = uri;
+		}
 
-        public String getUsername() {
-            return username;
-        }
+		public String getUsername() {
+			return username;
+		}
 
-        public void setUsername(String username) {
-            this.username = username;
-        }
+		public void setUsername(String username) {
+			this.username = username;
+		}
 
-        public String getPassword() {
-            return password;
-        }
+		public String getPassword() {
+			return password;
+		}
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+		public void setPassword(String password) {
+			this.password = password;
+		}
 
-        public boolean isSkipSslValidation() {
-            return skipSslValidation;
-        }
+		public boolean isSkipSslValidation() {
+			return skipSslValidation;
+		}
 
-        public void setSkipSslValidation(boolean skipSslValidation) {
-            this.skipSslValidation = skipSslValidation;
-        }
-    }
+		public void setSkipSslValidation(boolean skipSslValidation) {
+			this.skipSslValidation = skipSslValidation;
+		}
+	}
 }

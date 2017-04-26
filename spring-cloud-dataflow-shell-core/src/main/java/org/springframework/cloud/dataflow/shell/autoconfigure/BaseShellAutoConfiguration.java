@@ -46,64 +46,59 @@ import org.springframework.shell.core.JLineShellComponent;
 @ImportResource("classpath*:/META-INF/spring/spring-shell-plugin.xml")
 public class BaseShellAutoConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseShellAutoConfiguration.class);
+	private static final Logger logger = LoggerFactory.getLogger(BaseShellAutoConfiguration.class);
 
-    @Autowired
-    private CommandLine commandLine;
+	@Autowired
+	private CommandLine commandLine;
 
-    @Bean
-    public TargetHolder targetHolder() {
-        return new TargetHolder();
-    }
+	@Bean
+	public TargetHolder targetHolder() {
+		return new TargetHolder();
+	}
 
-    @Bean
-    public ShellCommandLineParser shellCommandLineParser() {
-        return new ShellCommandLineParser();
-    }
+	@Bean
+	public ShellCommandLineParser shellCommandLineParser() {
+		return new ShellCommandLineParser();
+	}
 
-    @Bean
-    public ShellProperties shellProperties() {
-        return new ShellProperties();
-    }
+	@Bean
+	public ShellProperties shellProperties() {
+		return new ShellProperties();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(CommandLine.class)
-    public CommandLine commandLine(ShellCommandLineParser shellCommandLineParser,
-                                   ShellProperties shellProperties,
-                                   ApplicationArguments applicationArguments) throws Exception {
-        return shellCommandLineParser.parse(shellProperties, applicationArguments.getSourceArgs());
-    }
+	@Bean
+	@ConditionalOnMissingBean(CommandLine.class)
+	public CommandLine commandLine(ShellCommandLineParser shellCommandLineParser, ShellProperties shellProperties,
+			ApplicationArguments applicationArguments) throws Exception {
+		return shellCommandLineParser.parse(shellProperties, applicationArguments.getSourceArgs());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(JLineShell.class)
-    public JLineShellComponent shell() {
-        return new JLineShellComponent();
-    }
+	@Bean
+	@ConditionalOnMissingBean(JLineShell.class)
+	public JLineShellComponent shell() {
+		return new JLineShellComponent();
+	}
 
-    @Configuration
-    @ComponentScan({"org.springframework.shell.converters", "org.springframework.shell.plugin.support"})
-    public static class DefaultShellComponents {
+	@Configuration
+	@ComponentScan({ "org.springframework.shell.converters", "org.springframework.shell.plugin.support" })
+	public static class DefaultShellComponents {
 
-        @PostConstruct
-        public void log() {
-            logger.debug("default (o.s.shell.{converters,plugin.support})" +
-                    " Spring Shell packages are being scanned");
-        }
-    }
+		@PostConstruct
+		public void log() {
+			logger.debug(
+					"default (o.s.shell.{converters,plugin.support})" + " Spring Shell packages are being scanned");
+		}
+	}
 
-    @Configuration
-    @ComponentScan({"org.springframework.shell.commands",
-            "org.springframework.cloud.dataflow.shell.command",
-            "org.springframework.cloud.dataflow.shell.converter",
-            "org.springframework.cloud.dataflow.shell.config"})
-    public static class RegisterInternalCommands {
+	@Configuration
+	@ComponentScan({ "org.springframework.shell.commands", "org.springframework.cloud.dataflow.shell.command",
+			"org.springframework.cloud.dataflow.shell.converter", "org.springframework.cloud.dataflow.shell.config" })
+	public static class RegisterInternalCommands {
 
-        @PostConstruct
-        public void log() {
-            logger.debug("(o.s.shell.commands) Spring Shell" +
-                    " packages are being scanned");
-            logger.debug("(o.s.c.dataflow.shell.command) Spring Cloud Data Flow Shell" +
-                    " packages are being scanned");
-        }
-    }
+		@PostConstruct
+		public void log() {
+			logger.debug("(o.s.shell.commands) Spring Shell" + " packages are being scanned");
+			logger.debug("(o.s.c.dataflow.shell.command) Spring Cloud Data Flow Shell" + " packages are being scanned");
+		}
+	}
 }

@@ -25,13 +25,13 @@ import org.springframework.batch.core.Job;
  */
 public class JobNotRestartableException extends RuntimeException {
 
-    private static final long serialVersionUID = -4676402997882694943L;
+	private static final long serialVersionUID = -4676402997882694943L;
 
-    public JobNotRestartableException() {
-        super();
-    }
+	public JobNotRestartableException() {
+		super();
+	}
 
-    public JobNotRestartableException(String message) {
-        super(message);
-    }
+	public JobNotRestartableException(String message) {
+		super(message);
+	}
 }

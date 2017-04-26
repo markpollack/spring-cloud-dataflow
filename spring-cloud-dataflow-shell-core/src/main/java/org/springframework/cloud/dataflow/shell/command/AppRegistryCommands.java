@@ -50,8 +50,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
- * Commands for working with the application registry. Allows retrieval of information about
- * available applications, as well as creating and removing application registrations.
+ * Commands for working with the application registry. Allows retrieval of information
+ * about available applications, as well as creating and removing application
+ * registrations.
  *
  * @author Glenn Renfro
  * @author Eric Bottard
@@ -65,255 +66,219 @@ import org.springframework.util.Assert;
 @Component
 public class AppRegistryCommands implements CommandMarker, ResourceLoaderAware {
 
-    private final static String LIST_APPLICATIONS = "app list";
+	private final static String LIST_APPLICATIONS = "app list";
 
-    private final static String APPLICATION_INFO = "app info";
+	private final static String APPLICATION_INFO = "app info";
 
-    private final static String UNREGISTER_APPLICATION = "app unregister";
+	private final static String UNREGISTER_APPLICATION = "app unregister";
 
-    private static final String REGISTER_APPLICATION = "app register";
+	private static final String REGISTER_APPLICATION = "app register";
 
-    private static final String IMPORT_APPLICATIONS = "app import";
+	private static final String IMPORT_APPLICATIONS = "app import";
 
-    private DataFlowShell dataFlowShell;
+	private DataFlowShell dataFlowShell;
 
-    private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-    @Autowired
-    public void setDataFlowShell(DataFlowShell dataFlowShell) {
-        this.dataFlowShell = dataFlowShell;
-    }
+	@Autowired
+	public void setDataFlowShell(DataFlowShell dataFlowShell) {
+		this.dataFlowShell = dataFlowShell;
+	}
 
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        Assert.notNull(resourceLoader, "resourceLoader must not be null");
-        this.resourceLoader = resourceLoader;
-    }
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		Assert.notNull(resourceLoader, "resourceLoader must not be null");
+		this.resourceLoader = resourceLoader;
+	}
 
-    @CliAvailabilityIndicator({LIST_APPLICATIONS, APPLICATION_INFO})
-    public boolean availableWithViewRole() {
-        return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.APP_REGISTRY);
-    }
+	@CliAvailabilityIndicator({ LIST_APPLICATIONS, APPLICATION_INFO })
+	public boolean availableWithViewRole() {
+		return dataFlowShell.hasAccess(RoleType.VIEW, OpsType.APP_REGISTRY);
+	}
 
-    @CliAvailabilityIndicator({UNREGISTER_APPLICATION, REGISTER_APPLICATION, IMPORT_APPLICATIONS})
-    public boolean availableWithCreateRole() {
-        return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.APP_REGISTRY);
-    }
+	@CliAvailabilityIndicator({ UNREGISTER_APPLICATION, REGISTER_APPLICATION, IMPORT_APPLICATIONS })
+	public boolean availableWithCreateRole() {
+		return dataFlowShell.hasAccess(RoleType.CREATE, OpsType.APP_REGISTRY);
+	}
 
-    @CliCommand(value = APPLICATION_INFO, help = "Get information about an application")
-    public List<Object> info(
-            @CliOption(mandatory = true,
-                    key = {"", "id"},
-                    help = "id of the application to query in the form of 'type:name'")
-                    QualifiedApplicationName application) {
-        List<Object> result = new ArrayList<>();
-        try {
-            DetailedAppRegistrationResource info = appRegistryOperations().info(application.name, application.type);
-            if (info != null) {
-                List<ConfigurationMetadataProperty> options = info.getOptions();
-                result.add(String.format("Information about %s application '%s':", application.type, application.name));
-                result.add(String.format("Resource URI: %s", info.getUri()));
-                if (info.getShortDescription() != null) {
-                    result.add(info.getShortDescription());
-                }
-                if (options == null) {
-                    result.add("Application options metadata is not available");
-                } else {
-                    TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
-                    modelBuilder.addRow()
-                            .addValue("Option Name")
-                            .addValue("Description")
-                            .addValue("Default")
-                            .addValue("Type");
-                    for (ConfigurationMetadataProperty option : options) {
-                        modelBuilder.addRow()
-                                .addValue(option.getId())
-                                .addValue(option.getDescription() == null ? "<unknown>" : option.getDescription())
-                                .addValue(prettyPrintDefaultValue(option))
-                                .addValue(option.getType() == null ? "<unknown>" : option.getType());
-                    }
-                    TableBuilder builder = DataFlowTables.applyStyle(new TableBuilder(modelBuilder.build()))
-                            .on(CellMatchers.table()).addSizer(new AbsoluteWidthSizeConstraints(30))
-                            .and();
-                    result.add(builder.build());
-                }
-            } else {
-                result.add(String.format("Application info is not available for %s:%s", application.type, application
-                        .name));
-            }
-        } catch (Exception e) {
-            result.add(String.format("Application info is not available for %s:%s", application.type, application
-                    .name));
-        }
-        return result;
-    }
+	@CliCommand(value = APPLICATION_INFO, help = "Get information about an application")
+	public List<Object> info(@CliOption(mandatory = true, key = { "",
+			"id" }, help = "id of the application to query in the form of 'type:name'") QualifiedApplicationName application) {
+		List<Object> result = new ArrayList<>();
+		try {
+			DetailedAppRegistrationResource info = appRegistryOperations().info(application.name, application.type);
+			if (info != null) {
+				List<ConfigurationMetadataProperty> options = info.getOptions();
+				result.add(String.format("Information about %s application '%s':", application.type, application.name));
+				result.add(String.format("Resource URI: %s", info.getUri()));
+				if (info.getShortDescription() != null) {
+					result.add(info.getShortDescription());
+				}
+				if (options == null) {
+					result.add("Application options metadata is not available");
+				}
+				else {
+					TableModelBuilder<Object> modelBuilder = new TableModelBuilder<>();
+					modelBuilder.addRow().addValue("Option Name").addValue("Description").addValue("Default")
+							.addValue("Type");
+					for (ConfigurationMetadataProperty option : options) {
+						modelBuilder.addRow().addValue(option.getId())
+								.addValue(option.getDescription() == null ? "<unknown>" : option.getDescription())
+								.addValue(prettyPrintDefaultValue(option))
+								.addValue(option.getType() == null ? "<unknown>" : option.getType());
+					}
+					TableBuilder builder = DataFlowTables.applyStyle(new TableBuilder(modelBuilder.build()))
+							.on(CellMatchers.table()).addSizer(new AbsoluteWidthSizeConstraints(30)).and();
+					result.add(builder.build());
+				}
+			}
+			else {
+				result.add(String.format("Application info is not available for %s:%s", application.type,
+						application.name));
+			}
+		}
+		catch (Exception e) {
+			result.add(
+					String.format("Application info is not available for %s:%s", application.type, application.name));
+		}
+		return result;
+	}
 
-    @CliCommand(value = REGISTER_APPLICATION, help = "Register a new application")
-    public String register(
-            @CliOption(mandatory = true,
-                    key = {"", "name"},
-                    help = "the name for the registered application")
-                    String name,
-            @CliOption(mandatory = true,
-                    key = {"type"},
-                    help = "the type for the registered application")
-                    ApplicationType type,
-            @CliOption(mandatory = true,
-                    key = {"uri"},
-                    help = "URI for the application artifact")
-                    String uri,
-            @CliOption(
-                    key = {"metadata-uri"},
-                    help = "Metadata URI for the application artifact")
-                    String metadataUri,
-            @CliOption(key = "force",
-                    help = "force update if application is already registered (only if not in use)",
-                    specifiedDefaultValue = "true",
-                    unspecifiedDefaultValue = "false")
-                    boolean force) {
-        appRegistryOperations().register(name, type, uri, metadataUri, force);
-        return String.format(("Successfully registered application '%s:%s'"), type, name);
-    }
+	@CliCommand(value = REGISTER_APPLICATION, help = "Register a new application")
+	public String register(
+			@CliOption(mandatory = true, key = { "",
+					"name" }, help = "the name for the registered application") String name,
+			@CliOption(mandatory = true, key = {
+					"type" }, help = "the type for the registered application") ApplicationType type,
+			@CliOption(mandatory = true, key = { "uri" }, help = "URI for the application artifact") String uri,
+			@CliOption(key = { "metadata-uri" }, help = "Metadata URI for the application artifact") String metadataUri,
+			@CliOption(key = "force", help = "force update if application is already registered (only if not in use)", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") boolean force) {
+		appRegistryOperations().register(name, type, uri, metadataUri, force);
+		return String.format(("Successfully registered application '%s:%s'"), type, name);
+	}
 
-    @CliCommand(value = UNREGISTER_APPLICATION, help = "Unregister an application")
-    public String unregister(
-            @CliOption(mandatory = true,
-                    key = {"", "name"},
-                    help = "name of the application to unregister")
-                    String name,
-            @CliOption(mandatory = true,
-                    key = {"type"},
-                    help = "type of the application to unregister")
-                    ApplicationType type) {
+	@CliCommand(value = UNREGISTER_APPLICATION, help = "Unregister an application")
+	public String unregister(
+			@CliOption(mandatory = true, key = { "",
+					"name" }, help = "name of the application to unregister") String name,
+			@CliOption(mandatory = true, key = {
+					"type" }, help = "type of the application to unregister") ApplicationType type) {
 
-        appRegistryOperations().unregister(name, type);
-        return String.format(("Successfully unregistered application '%s' with type %s"),
-                name, type);
-    }
+		appRegistryOperations().unregister(name, type);
+		return String.format(("Successfully unregistered application '%s' with type %s"), name, type);
+	}
 
-    @CliCommand(value = LIST_APPLICATIONS, help = "List all registered applications")
-    public Object list() {
-        PagedResources<AppRegistrationResource> appRegistrations = appRegistryOperations().list();
-        final LinkedHashMap<String, List<String>> mappings = new LinkedHashMap<>();
-        for (ApplicationType type : ApplicationType.values()) {
-            mappings.put(type.name(), new ArrayList<String>());
-        }
-        int max = 0;
-        for (AppRegistrationResource appRegistration : appRegistrations) {
-            List<String> column = mappings.get(appRegistration.getType());
-            column.add(appRegistration.getName());
-            max = Math.max(max, column.size());
-        }
-        if (max == 0) {
-            return String.format("No registered apps.%n" +
-                    "You can register new apps with the '%s' and '%s' commands.", REGISTER_APPLICATION,
-                    IMPORT_APPLICATIONS);
-        }
+	@CliCommand(value = LIST_APPLICATIONS, help = "List all registered applications")
+	public Object list() {
+		PagedResources<AppRegistrationResource> appRegistrations = appRegistryOperations().list();
+		final LinkedHashMap<String, List<String>> mappings = new LinkedHashMap<>();
+		for (ApplicationType type : ApplicationType.values()) {
+			mappings.put(type.name(), new ArrayList<String>());
+		}
+		int max = 0;
+		for (AppRegistrationResource appRegistration : appRegistrations) {
+			List<String> column = mappings.get(appRegistration.getType());
+			column.add(appRegistration.getName());
+			max = Math.max(max, column.size());
+		}
+		if (max == 0) {
+			return String.format("No registered apps.%n" + "You can register new apps with the '%s' and '%s' commands.",
+					REGISTER_APPLICATION, IMPORT_APPLICATIONS);
+		}
 
+		final List<String> keys = new ArrayList<>(mappings.keySet());
+		final int rows = max + 1;
+		final TableModel model = new TableModel() {
 
-        final List<String> keys = new ArrayList<>(mappings.keySet());
-        final int rows = max + 1;
-        final TableModel model = new TableModel() {
+			@Override
+			public int getRowCount() {
+				return rows;
+			}
 
-            @Override
-            public int getRowCount() {
-                return rows;
-            }
+			@Override
+			public int getColumnCount() {
+				return keys.size();
+			}
 
-            @Override
-            public int getColumnCount() {
-                return keys.size();
-            }
+			@Override
+			public Object getValue(int row, int column) {
+				String key = keys.get(column);
+				if (row == 0) {
+					return key;
+				}
+				int currentRow = row - 1;
+				if (mappings.get(key).size() > currentRow) {
+					return mappings.get(key).get(currentRow);
+				}
+				else {
+					return null;
+				}
+			}
+		};
+		return DataFlowTables.applyStyle(new TableBuilder(model)).build();
+	}
 
-            @Override
-            public Object getValue(int row, int column) {
-                String key = keys.get(column);
-                if (row == 0) {
-                    return key;
-                }
-                int currentRow = row - 1;
-                if (mappings.get(key).size() > currentRow) {
-                    return mappings.get(key).get(currentRow);
-                } else {
-                    return null;
-                }
-            }
-        };
-        return DataFlowTables.applyStyle(new TableBuilder(model)).build();
-    }
+	@CliCommand(value = IMPORT_APPLICATIONS, help = "Register all applications listed in a properties file")
+	public String importFromResource(
+			@CliOption(mandatory = true, key = { "", "uri" }, help = "URI for the properties file") String uri,
+			@CliOption(key = "local", help = "whether to resolve the URI locally (as opposed to on the server)", specifiedDefaultValue = "true", unspecifiedDefaultValue = "true") boolean local,
+			@CliOption(key = "force", help = "force update if any module already exists (only if not in use)", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") boolean force) {
+		if (local) {
+			try {
+				Resource resource = this.resourceLoader.getResource(uri);
+				Properties applications = PropertiesLoaderUtils.loadProperties(resource);
+				PagedResources<AppRegistrationResource> registered = null;
+				try {
+					registered = appRegistryOperations().registerAll(applications, force);
+				}
+				catch (Exception e) {
+					return "Error when registering applications from " + uri + ": " + e.getMessage();
+				}
+				long numRegistered = registered.getMetadata().getTotalElements();
+				return (applications.keySet().size() == numRegistered)
+						? String.format("Successfully registered applications: %s", applications.keySet())
+						: String.format("Successfully registered %d applications from %s", numRegistered,
+								applications.keySet());
+			}
+			catch (IOException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		else {
+			PagedResources<AppRegistrationResource> registered = appRegistryOperations().importFromResource(uri, force);
+			return String.format("Successfully registered %d applications from '%s'",
+					registered.getMetadata().getTotalElements(), uri);
+		}
+	}
 
-    @CliCommand(value = IMPORT_APPLICATIONS, help = "Register all applications listed in a properties file")
-    public String importFromResource(
-            @CliOption(mandatory = true,
-                    key = {"", "uri"},
-                    help = "URI for the properties file")
-                    String uri,
-            @CliOption(key = "local",
-                    help = "whether to resolve the URI locally (as opposed to on the server)",
-                    specifiedDefaultValue = "true",
-                    unspecifiedDefaultValue = "true")
-                    boolean local,
-            @CliOption(key = "force",
-                    help = "force update if any module already exists (only if not in use)",
-                    specifiedDefaultValue = "true",
-                    unspecifiedDefaultValue = "false")
-                    boolean force) {
-        if (local) {
-            try {
-                Resource resource = this.resourceLoader.getResource(uri);
-                Properties applications = PropertiesLoaderUtils.loadProperties(resource);
-                PagedResources<AppRegistrationResource> registered = null;
-                try {
-                    registered = appRegistryOperations().registerAll(applications, force);
-                } catch (Exception e) {
-                    return "Error when registering applications from " + uri + ": " + e.getMessage();
-                }
-                long numRegistered = registered.getMetadata().getTotalElements();
-                return (applications.keySet().size() == numRegistered)
-                        ? String.format("Successfully registered applications: %s", applications.keySet())
-                        : String.format("Successfully registered %d applications from %s", numRegistered,
-                        applications.keySet());
-            } catch (IOException e) {
-                throw new IllegalArgumentException(e);
-            }
-        } else {
-            PagedResources<AppRegistrationResource> registered = appRegistryOperations().importFromResource(uri, force);
-            return String.format("Successfully registered %d applications from '%s'", registered.getMetadata()
-                    .getTotalElements(), uri);
-        }
-    }
+	/**
+	 * Escapes some special values so that they don't disturb console rendering and are
+	 * easier to read.
+	 */
+	private String prettyPrintDefaultValue(ConfigurationMetadataProperty o) {
+		if (o.getDefaultValue() == null) {
+			return "<none>";
+		}
+		return o.getDefaultValue().toString().replace("\n", "\\n").replace("\t", "\\t").replace("\f", "\\f");
+	}
 
-    /**
-     * Escapes some special values so that they don't disturb console
-     * rendering and are easier to read.
-     */
-    private String prettyPrintDefaultValue(ConfigurationMetadataProperty o) {
-        if (o.getDefaultValue() == null) {
-            return "<none>";
-        }
-        return o.getDefaultValue().toString()
-                .replace("\n", "\\n")
-                .replace("\t", "\\t")
-                .replace("\f", "\\f");
-    }
+	private AppRegistryOperations appRegistryOperations() {
+		return dataFlowShell.getDataFlowOperations().appRegistryOperations();
+	}
 
-    private AppRegistryOperations appRegistryOperations() {
-        return dataFlowShell.getDataFlowOperations().appRegistryOperations();
-    }
+	/**
+	 * Unique identifier for an application, including the name and type.
+	 */
+	public static class QualifiedApplicationName {
 
-    /**
-     * Unique identifier for an application, including the name and type.
-     */
-    public static class QualifiedApplicationName {
+		public ApplicationType type;
 
-        public ApplicationType type;
+		public String name;
 
-        public String name;
-
-        public QualifiedApplicationName(String name, ApplicationType type) {
-            this.name = name;
-            this.type = type;
-        }
-    }
+		public QualifiedApplicationName(String name, ApplicationType type) {
+			this.name = name;
+			this.type = type;
+		}
+	}
 
 }

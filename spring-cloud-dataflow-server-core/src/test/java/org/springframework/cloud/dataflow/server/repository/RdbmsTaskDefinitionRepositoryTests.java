@@ -45,152 +45,151 @@ import static org.junit.Assert.assertFalse;
  * @author Gunnar Hillert
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {TaskDependencies.class,
-        EmbeddedDataSourceConfiguration.class,
-        PropertyPlaceholderAutoConfiguration.class})
+@SpringBootTest(classes = { TaskDependencies.class, EmbeddedDataSourceConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 public class RdbmsTaskDefinitionRepositoryTests extends AbstractTaskDefinitionTests {
 
-    @Autowired
-    private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-    @Autowired
-    private TaskDefinitionRepository rdbmsRepository;
+	@Autowired
+	private TaskDefinitionRepository rdbmsRepository;
 
-    private JdbcTemplate template;
+	private JdbcTemplate template;
 
-    @Before
-    public void setup() throws Exception {
-        template = new JdbcTemplate(dataSource);
-        template.execute("DELETE FROM TASK_DEFINITIONS");
-        repository = rdbmsRepository;
-    }
+	@Before
+	public void setup() throws Exception {
+		template = new JdbcTemplate(dataSource);
+		template.execute("DELETE FROM TASK_DEFINITIONS");
+		repository = rdbmsRepository;
+	}
 
-    @Test
-    public void findAllSortTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .ASC, "DEFINITION"));
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllSort(sort, names);
-    }
+	@Test
+	public void findAllSortTestASC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllSort(sort, names);
+	}
 
-    @Test
-    public void findAllPageableTestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .ASC, "DEFINITION"));
-        Pageable pageable = new PageRequest(0, 10, sort);
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllPageable(pageable, names);
-    }
+	@Test
+	public void findAllPageableTestASC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+		Pageable pageable = new PageRequest(0, 10, sort);
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllSortTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .DESC, "DEFINITION"));
-        String[] names = new String[]{"task3", "task2", "task1"};
-        findAllSort(sort, names);
-    }
+	@Test
+	public void findAllSortTestDESC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		String[] names = new String[] { "task3", "task2", "task1" };
+		findAllSort(sort, names);
+	}
 
-    @Test
-    public void findAllPageableTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .DESC, "DEFINITION"));
-        Pageable pageable = new PageRequest(0, 10, sort);
+	@Test
+	public void findAllPageableTestDESC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		Pageable pageable = new PageRequest(0, 10, sort);
 
-        String[] names = new String[]{"task3", "task2", "task1"};
-        findAllPageable(pageable, names);
-    }
+		String[] names = new String[] { "task3", "task2", "task1" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllSortTestASCNameOnly() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllSort(sort, names);
-    }
+	@Test
+	public void findAllSortTestASCNameOnly() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllSort(sort, names);
+	}
 
-    @Test
-    public void findAllPageableTestASCNameOnly() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
-        Pageable pageable = new PageRequest(0, 10, sort);
+	@Test
+	public void findAllPageableTestASCNameOnly() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"));
+		Pageable pageable = new PageRequest(0, 10, sort);
 
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllPageable(pageable, names);
-    }
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllSortTestASCDefinitionOnly() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllSort(sort, names);
-    }
+	@Test
+	public void findAllSortTestASCDefinitionOnly() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllSort(sort, names);
+	}
 
-    @Test
-    public void findAllPageableTestDESCDefinitionOnly() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-        Pageable pageable = new PageRequest(0, 10, sort);
+	@Test
+	public void findAllPageableTestDESCDefinitionOnly() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		Pageable pageable = new PageRequest(0, 10, sort);
 
-        String[] names = new String[]{"task1", "task2", "task3"};
-        findAllPageable(pageable, names);
-    }
+		String[] names = new String[] { "task1", "task2", "task3" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllPageablePage2TestASC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .ASC, "DEFINITION"));
-        Pageable pageable = new PageRequest(1, 2, sort);
-        String[] names = new String[]{"task3"};
-        findAllPageable(pageable, names);
-    }
+	@Test
+	public void findAllPageablePage2TestASC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.ASC, "DEFINITION"));
+		Pageable pageable = new PageRequest(1, 2, sort);
+		String[] names = new String[] { "task3" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllPageablePage2TestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"), new Sort.Order(Sort.Direction
-                .DESC, "DEFINITION"));
-        Pageable pageable = new PageRequest(1, 2, sort);
-        String[] names = new String[]{"task1"};
-        findAllPageable(pageable, names);
-    }
+	@Test
+	public void findAllPageablePage2TestDESC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION_NAME"),
+				new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		Pageable pageable = new PageRequest(1, 2, sort);
+		String[] names = new String[] { "task1" };
+		findAllPageable(pageable, names);
+	}
 
-    @Test
-    public void findAllPageableDefinitionStringTestDESC() {
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
-        Pageable pageable = new PageRequest(1, 2, sort);
-        String[] names = new String[]{"task3"};
-        findAllPageable(pageable, names);
-    }
+	@Test
+	public void findAllPageableDefinitionStringTestDESC() {
+		Sort sort = new Sort(new Sort.Order(Sort.Direction.DESC, "DEFINITION"));
+		Pageable pageable = new PageRequest(1, 2, sort);
+		String[] names = new String[] { "task3" };
+		findAllPageable(pageable, names);
+	}
 
-    private void findAllPageable(Pageable pageable, String[] expectedOrder) {
+	private void findAllPageable(Pageable pageable, String[] expectedOrder) {
 
-        assertFalse(repository.findAll().iterator().hasNext());
-        initializeRepositoryNotInOrder();
+		assertFalse(repository.findAll().iterator().hasNext());
+		initializeRepositoryNotInOrder();
 
-        final Iterable<TaskDefinition> items = repository.findAll(pageable);
+		final Iterable<TaskDefinition> items = repository.findAll(pageable);
 
-        makeSortAssertions(items, expectedOrder);
+		makeSortAssertions(items, expectedOrder);
 
-    }
+	}
 
-    private void findAllSort(Sort sort, String[] expectedOrder) {
-        assertFalse(repository.findAll().iterator().hasNext());
-        initializeRepositoryNotInOrder();
+	private void findAllSort(Sort sort, String[] expectedOrder) {
+		assertFalse(repository.findAll().iterator().hasNext());
+		initializeRepositoryNotInOrder();
 
-        final Iterable<TaskDefinition> items = repository.findAll(sort);
+		final Iterable<TaskDefinition> items = repository.findAll(sort);
 
-        makeSortAssertions(items, expectedOrder);
-    }
+		makeSortAssertions(items, expectedOrder);
+	}
 
-    private void makeSortAssertions(Iterable<TaskDefinition> items, String[] expectedOrder) {
-        int count = 0;
-        List<TaskDefinition> definitions = new ArrayList<>();
-        for (TaskDefinition item : items) {
-            definitions.add(item);
-            count++;
-        }
+	private void makeSortAssertions(Iterable<TaskDefinition> items, String[] expectedOrder) {
+		int count = 0;
+		List<TaskDefinition> definitions = new ArrayList<>();
+		for (TaskDefinition item : items) {
+			definitions.add(item);
+			count++;
+		}
 
-        assertEquals(expectedOrder.length, count);
-        int currentDefinitionOffset = 0;
-        for (String name : expectedOrder) {
-            assertEquals("definition name retrieved was not in the order expected", name,
-                    definitions.get(currentDefinitionOffset++).getName());
-        }
-    }
+		assertEquals(expectedOrder.length, count);
+		int currentDefinitionOffset = 0;
+		for (String name : expectedOrder) {
+			assertEquals("definition name retrieved was not in the order expected", name,
+					definitions.get(currentDefinitionOffset++).getName());
+		}
+	}
 }

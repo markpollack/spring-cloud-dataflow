@@ -22,57 +22,57 @@ import java.util.List;
 import org.springframework.cloud.dataflow.shell.command.support.RoleType;
 
 /**
- * Encapsulates the credentials to the Data Flow Server Target, such as
- * {@link #username} and {@link #password}. Maybe also, depending on security settings,
- * include a list of {@link #roles}s that are associated with the user account.
+ * Encapsulates the credentials to the Data Flow Server Target, such as {@link #username}
+ * and {@link #password}. Maybe also, depending on security settings, include a list of
+ * {@link #roles}s that are associated with the user account.
  *
  * @author Gunnar Hillert
  * @since 1.0
  */
 public class TargetCredentials {
 
-    final List<RoleType> roles = new ArrayList<>(0);
-    private final String username;
-    private final String password;
+	final List<RoleType> roles = new ArrayList<>(0);
+	private final String username;
+	private final String password;
 
-    public TargetCredentials(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+	public TargetCredentials(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getDisplayableContents() {
-        return "[username='" + username + "', password='********']";
-    }
+	public String getDisplayableContents() {
+		return "[username='" + username + "', password='********']";
+	}
 
-    public List<RoleType> getRoles() {
-        return roles;
-    }
+	public List<RoleType> getRoles() {
+		return roles;
+	}
 
-    public void setRoles(List<String> roles) {
-        this.roles.clear();
-        for (String roleAsString : roles) {
-            this.roles.add(RoleType.fromKey(roleAsString));
-        }
-    }
+	public void setRoles(List<String> roles) {
+		this.roles.clear();
+		for (String roleAsString : roles) {
+			this.roles.add(RoleType.fromKey(roleAsString));
+		}
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Credentials [username=");
-        builder.append(username);
-        builder.append(", password=");
-        builder.append("*********");
-        builder.append(", roles=");
-        builder.append(roles);
-        builder.append("]");
-        return builder.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Credentials [username=");
+		builder.append(username);
+		builder.append(", password=");
+		builder.append("*********");
+		builder.append(", roles=");
+		builder.append(roles);
+		builder.append("]");
+		return builder.toString();
+	}
 }

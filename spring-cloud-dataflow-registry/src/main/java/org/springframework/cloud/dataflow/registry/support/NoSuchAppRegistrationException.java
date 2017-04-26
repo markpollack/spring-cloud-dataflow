@@ -19,16 +19,16 @@ import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.registry.AppRegistration;
 
 /**
- * Thrown when an {@link AppRegistration} of a given name and {@link ApplicationType}
- * was expected but did not exist.
+ * Thrown when an {@link AppRegistration} of a given name and {@link ApplicationType} was
+ * expected but did not exist.
  *
  * @author Gunnar Hillert
  */
 public class NoSuchAppRegistrationException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public NoSuchAppRegistrationException(String name, ApplicationType type) {
-        super(String.format("The '%s:%s' application could not be found.", type, name));
-    }
+	public NoSuchAppRegistrationException(String name, ApplicationType type) {
+		super(String.format("The '%s:%s' application could not be found.", type, name));
+	}
 }

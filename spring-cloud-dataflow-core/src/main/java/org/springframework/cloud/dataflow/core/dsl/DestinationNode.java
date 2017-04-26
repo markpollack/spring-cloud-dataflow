@@ -26,56 +26,56 @@ import java.util.List;
  */
 public class DestinationNode extends AstNode {
 
-    private List<String> nameComponents;
+	private List<String> nameComponents;
 
-    private ArgumentNode[] arguments;
+	private ArgumentNode[] arguments;
 
-    public DestinationNode(int startPos, int endPos, List<String> nameComponents, ArgumentNode[] arguments) {
-        super(startPos, endPos);
-        this.nameComponents = nameComponents;
-        this.arguments = arguments;
-    }
+	public DestinationNode(int startPos, int endPos, List<String> nameComponents, ArgumentNode[] arguments) {
+		super(startPos, endPos);
+		this.nameComponents = nameComponents;
+		this.arguments = arguments;
+	}
 
-    @Override
-    public String stringify(boolean includePositionalInfo) {
-        StringBuilder s = new StringBuilder();
-        s.append("(");
-        s.append(getDestinationName());
-        if (includePositionalInfo) {
-            s.append(":");
-            s.append(getStartPos()).append(">").append(getEndPos());
-        }
-        if (arguments != null) {
-            for (ArgumentNode argumentNode : arguments) {
-                s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
-            }
-        }
-        s.append(")");
-        return s.toString();
-    }
+	@Override
+	public String stringify(boolean includePositionalInfo) {
+		StringBuilder s = new StringBuilder();
+		s.append("(");
+		s.append(getDestinationName());
+		if (includePositionalInfo) {
+			s.append(":");
+			s.append(getStartPos()).append(">").append(getEndPos());
+		}
+		if (arguments != null) {
+			for (ArgumentNode argumentNode : arguments) {
+				s.append(" --").append(argumentNode.getName()).append("=").append(argumentNode.getValue());
+			}
+		}
+		s.append(")");
+		return s.toString();
+	}
 
-    @Override
-    public String toString() {
-        return getDestinationName();
-    }
+	@Override
+	public String toString() {
+		return getDestinationName();
+	}
 
-    String getDestinationName() {
-        StringBuilder s = new StringBuilder();
-        for (int t = 0, max = nameComponents.size(); t < max; t++) {
-            if (t != 0) {
-                s.append(".");
-            }
-            s.append(nameComponents.get(t));
-        }
-        return s.toString();
-    }
+	String getDestinationName() {
+		StringBuilder s = new StringBuilder();
+		for (int t = 0, max = nameComponents.size(); t < max; t++) {
+			if (t != 0) {
+				s.append(".");
+			}
+			s.append(nameComponents.get(t));
+		}
+		return s.toString();
+	}
 
-    public DestinationNode copyOf() {
-        return new DestinationNode(super.startPos, super.endPos, nameComponents, arguments);
-    }
+	public DestinationNode copyOf() {
+		return new DestinationNode(super.startPos, super.endPos, nameComponents, arguments);
+	}
 
-    ArgumentNode[] getArguments() {
-        return this.arguments;
-    }
+	ArgumentNode[] getArguments() {
+		return this.arguments;
+	}
 
 }

@@ -32,49 +32,50 @@ import org.springframework.util.SocketUtils;
  */
 public class OAuth2ServerResource extends ExternalResource {
 
-    private static final String OAUTH2_PORT_PROPERTY = "oauth2.port";
-    private final Log LOGGER = LogFactory.getLog(OAuth2ServerResource.class);
-    private String originalOAuth2Port;
-    private int oauth2ServerPort;
-    private ConfigurableApplicationContext application;
+	private static final String OAUTH2_PORT_PROPERTY = "oauth2.port";
+	private final Log LOGGER = LogFactory.getLog(OAuth2ServerResource.class);
+	private String originalOAuth2Port;
+	private int oauth2ServerPort;
+	private ConfigurableApplicationContext application;
 
-    public OAuth2ServerResource() {
-        super();
-    }
+	public OAuth2ServerResource() {
+		super();
+	}
 
-    @Override
-    protected void before() throws Throwable {
+	@Override
+	protected void before() throws Throwable {
 
-        originalOAuth2Port = System.getProperty(OAUTH2_PORT_PROPERTY);
+		originalOAuth2Port = System.getProperty(OAUTH2_PORT_PROPERTY);
 
-        this.oauth2ServerPort = SocketUtils.findAvailableTcpPort();
+		this.oauth2ServerPort = SocketUtils.findAvailableTcpPort();
 
-        LOGGER.info("Setting OAuth2 Server port to " + this.oauth2ServerPort);
+		LOGGER.info("Setting OAuth2 Server port to " + this.oauth2ServerPort);
 
-        System.setProperty(OAUTH2_PORT_PROPERTY, String.valueOf(this.oauth2ServerPort));
+		System.setProperty(OAUTH2_PORT_PROPERTY, String.valueOf(this.oauth2ServerPort));
 
-        this.application = new SpringApplicationBuilder(OAuth2TestServer.class)
-                .build()
-                .run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security" +
-                        "/support/oauth2TestServerConfig.yml");
+		this.application = new SpringApplicationBuilder(OAuth2TestServer.class).build()
+				.run("--spring.config.location=classpath:/org/springframework/cloud/dataflow/server/local/security"
+						+ "/support/oauth2TestServerConfig.yml");
 
-    }
+	}
 
-    @Override
-    protected void after() {
-        try {
-            application.stop();
-        } finally {
-            if (originalOAuth2Port != null) {
-                System.setProperty(OAUTH2_PORT_PROPERTY, originalOAuth2Port);
-            } else {
-                System.clearProperty(OAUTH2_PORT_PROPERTY);
-            }
-        }
-    }
+	@Override
+	protected void after() {
+		try {
+			application.stop();
+		}
+		finally {
+			if (originalOAuth2Port != null) {
+				System.setProperty(OAUTH2_PORT_PROPERTY, originalOAuth2Port);
+			}
+			else {
+				System.clearProperty(OAUTH2_PORT_PROPERTY);
+			}
+		}
+	}
 
-    public int getOauth2ServerPort() {
-        return oauth2ServerPort;
-    }
+	public int getOauth2ServerPort() {
+		return oauth2ServerPort;
+	}
 
 }

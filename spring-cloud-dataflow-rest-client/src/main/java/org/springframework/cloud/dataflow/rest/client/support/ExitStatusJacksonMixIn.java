@@ -30,10 +30,10 @@ import org.springframework.batch.core.ExitStatus;
 @JsonIgnoreProperties("running")
 public abstract class ExitStatusJacksonMixIn {
 
-    ExitStatusJacksonMixIn(@JsonProperty("exitCode") String exitCode,
-                           @JsonProperty("exitDescription") String exitDescription) {
-    }
+	ExitStatusJacksonMixIn(@JsonProperty("exitCode") String exitCode,
+			@JsonProperty("exitDescription") String exitDescription) {
+	}
 
-    @JsonProperty
-    abstract boolean isRunning();
+	@JsonProperty
+	abstract boolean isRunning();
 }

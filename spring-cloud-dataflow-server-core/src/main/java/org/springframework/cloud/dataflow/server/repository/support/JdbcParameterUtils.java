@@ -30,84 +30,86 @@ import java.util.Map;
  */
 public class JdbcParameterUtils {
 
-    /**
-     * Count the occurrences of the character placeholder in an SQL string
-     * <code>sql</code>. The character placeholder is not counted if it appears
-     * within a literal, that is, surrounded by single or double quotes. This method will
-     * count traditional placeholders in the form of a question mark ('?') as well as
-     * named parameters indicated with a leading ':' or '&amp;'.
-     * <p>
-     * The code for this method is taken from an early version of the
-     * {@link org.springframework.jdbc.core.namedparam.NamedParameterUtils}
-     * class.
-     *
-     * @param sql                  String to search in. Returns 0 if the given String is <code>null</code>.
-     * @param namedParameterHolder the list of parameter placehholder names
-     * @return the number of parameter placeholder and adds to the namedParameterHolder list any parsed
-     * namedParameters from the sql
-     */
-    public static int countParameterPlaceholders(String sql, List<String> namedParameterHolder) {
-        if (sql == null) {
-            return 0;
-        }
+	/**
+	 * Count the occurrences of the character placeholder in an SQL string
+	 * <code>sql</code>. The character placeholder is not counted if it appears within a
+	 * literal, that is, surrounded by single or double quotes. This method will count
+	 * traditional placeholders in the form of a question mark ('?') as well as named
+	 * parameters indicated with a leading ':' or '&amp;'.
+	 * <p>
+	 * The code for this method is taken from an early version of the
+	 * {@link org.springframework.jdbc.core.namedparam.NamedParameterUtils} class.
+	 *
+	 * @param sql String to search in. Returns 0 if the given String is <code>null</code>.
+	 * @param namedParameterHolder the list of parameter placehholder names
+	 * @return the number of parameter placeholder and adds to the namedParameterHolder
+	 * list any parsed namedParameters from the sql
+	 */
+	public static int countParameterPlaceholders(String sql, List<String> namedParameterHolder) {
+		if (sql == null) {
+			return 0;
+		}
 
-        char[] statement = sql.toCharArray();
-        boolean withinQuotes = false;
-        Map<String, StringBuilder> namedParameters = new HashMap<String, StringBuilder>();
-        char currentQuote = '-';
-        int parameterCount = 0;
-        int i = 0;
-        while (i < statement.length) {
-            if (withinQuotes) {
-                if (statement[i] == currentQuote) {
-                    withinQuotes = false;
-                    currentQuote = '-';
-                }
-            } else {
-                if (statement[i] == '"' || statement[i] == '\'') {
-                    withinQuotes = true;
-                    currentQuote = statement[i];
-                } else {
-                    if (statement[i] == ':' || statement[i] == '&') {
-                        int j = i + 1;
-                        StringBuilder parameter = new StringBuilder();
-                        while (j < statement.length && parameterNameContinues(statement, j)) {
-                            parameter.append(statement[j]);
-                            j++;
-                        }
-                        if (j - i > 1) {
-                            if (!namedParameters.containsKey(parameter.toString())) {
-                                parameterCount++;
-                                namedParameters.put(parameter.toString(), parameter);
-                                i = j - 1;
-                            }
-                        }
-                    } else {
-                        if (statement[i] == '?') {
-                            parameterCount++;
-                        }
-                    }
-                }
-            }
-            i++;
-        }
-        if (namedParameterHolder != null) {
-            namedParameterHolder.addAll(namedParameters.keySet());
-        }
-        return parameterCount;
-    }
+		char[] statement = sql.toCharArray();
+		boolean withinQuotes = false;
+		Map<String, StringBuilder> namedParameters = new HashMap<String, StringBuilder>();
+		char currentQuote = '-';
+		int parameterCount = 0;
+		int i = 0;
+		while (i < statement.length) {
+			if (withinQuotes) {
+				if (statement[i] == currentQuote) {
+					withinQuotes = false;
+					currentQuote = '-';
+				}
+			}
+			else {
+				if (statement[i] == '"' || statement[i] == '\'') {
+					withinQuotes = true;
+					currentQuote = statement[i];
+				}
+				else {
+					if (statement[i] == ':' || statement[i] == '&') {
+						int j = i + 1;
+						StringBuilder parameter = new StringBuilder();
+						while (j < statement.length && parameterNameContinues(statement, j)) {
+							parameter.append(statement[j]);
+							j++;
+						}
+						if (j - i > 1) {
+							if (!namedParameters.containsKey(parameter.toString())) {
+								parameterCount++;
+								namedParameters.put(parameter.toString(), parameter);
+								i = j - 1;
+							}
+						}
+					}
+					else {
+						if (statement[i] == '?') {
+							parameterCount++;
+						}
+					}
+				}
+			}
+			i++;
+		}
+		if (namedParameterHolder != null) {
+			namedParameterHolder.addAll(namedParameters.keySet());
+		}
+		return parameterCount;
+	}
 
-    /**
-     * Determine whether a parameter name continues at the current position,
-     * that is, does not end delimited by any whitespace character yet.
-     *
-     * @param statement the SQL statement
-     * @param pos       the position within the statement
-     */
-    private static boolean parameterNameContinues(char[] statement, int pos) {
-        return (statement[pos] != ' ' && statement[pos] != ',' && statement[pos] != ')' &&
-                statement[pos] != '"' && statement[pos] != '\'' && statement[pos] != '|' &&
-                statement[pos] != ';' && statement[pos] != '\n' && statement[pos] != '\r');
-    }
+	/**
+	 * Determine whether a parameter name continues at the current position, that is, does
+	 * not end delimited by any whitespace character yet.
+	 *
+	 * @param statement the SQL statement
+	 * @param pos the position within the statement
+	 */
+	private static boolean parameterNameContinues(char[] statement, int pos) {
+		return (statement[pos] != ' ' && statement[pos] != ',' && statement[pos] != ')' && statement[pos] != '"'
+				&& statement[pos] != '\'' && statement[pos] != '|' && statement[pos] != ';' && statement[pos] != '\n'
+				&& statement[pos] != '\r');
+	}
 
 }

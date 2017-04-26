@@ -19,7 +19,7 @@
 
         <!-- Annotations -->
         <!--<module name="AnnotationUseStyle">-->
-            <!--<property name="elementStyle" value="compact"/>-->
+        <!--<property name="elementStyle" value="compact"/>-->
         <!--</module>-->
         <module name="MissingOverride"/>
         <module name="PackageAnnotation"/>
@@ -43,9 +43,9 @@
 
         <!-- tabs instead of spaces -->
         <!--<module name="RegexpSinglelineJava">-->
-            <!--<property name="format" value="^\t* "/>-->
-            <!--<property name="message" value="Indent must use tab characters"/>-->
-            <!--<property name="ignoreComments" value="true"/>-->
+        <!--<property name="format" value="^\t* "/>-->
+        <!--<property name="message" value="Indent must use tab characters"/>-->
+        <!--<property name="ignoreComments" value="true"/>-->
         <!--</module>-->
 
         <!-- Class Design -->

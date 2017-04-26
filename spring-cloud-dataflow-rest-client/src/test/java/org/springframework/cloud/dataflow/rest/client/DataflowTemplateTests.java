@@ -47,130 +47,132 @@ import static org.junit.Assert.fail;
  */
 public class DataflowTemplateTests {
 
-    @Before
-    public void setup() {
-        System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(100));
-    }
+	@Before
+	public void setup() {
+		System.setProperty("sun.net.client.defaultConnectTimeout", String.valueOf(100));
+	}
 
-    @After
-    public void shutdown() {
-        System.clearProperty("sun.net.client.defaultConnectTimeout");
-    }
+	@After
+	public void shutdown() {
+		System.clearProperty("sun.net.client.defaultConnectTimeout");
+	}
 
-    @Test
-    public void testDataFlowTemplateContructorWithNullUri() throws URISyntaxException {
+	@Test
+	public void testDataFlowTemplateContructorWithNullUri() throws URISyntaxException {
 
-        try {
-            new DataFlowTemplate(null);
-        } catch (IllegalArgumentException e) {
-            assertEquals("The provided baseURI must not be null.", e.getMessage());
-            return;
-        }
+		try {
+			new DataFlowTemplate(null);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("The provided baseURI must not be null.", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test(expected = ResourceAccessException.class)
-    public void testDataFlowTemplateContructorWithNonExistingUri() throws URISyntaxException {
-        new DataFlowTemplate(new URI("http://doesnotexist:1234"));
-    }
+	@Test(expected = ResourceAccessException.class)
+	public void testDataFlowTemplateContructorWithNonExistingUri() throws URISyntaxException {
+		new DataFlowTemplate(new URI("http://doesnotexist:1234"));
+	}
 
-    @Test
-    public void testThatDefaultDataflowRestTemplateContainsMixins() {
-        final RestTemplate restTemplate = DataFlowTemplate.getDefaultDataflowRestTemplate();
+	@Test
+	public void testThatDefaultDataflowRestTemplateContainsMixins() {
+		final RestTemplate restTemplate = DataFlowTemplate.getDefaultDataflowRestTemplate();
 
-        assertNotNull(restTemplate);
-        assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
+		assertNotNull(restTemplate);
+		assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
 
-        assertCorrectMixins(restTemplate);
+		assertCorrectMixins(restTemplate);
 
-    }
+	}
 
-    private void assertCorrectMixins(RestTemplate restTemplate) {
-        boolean containsMappingJackson2HttpMessageConverter = false;
+	private void assertCorrectMixins(RestTemplate restTemplate) {
+		boolean containsMappingJackson2HttpMessageConverter = false;
 
-        for (HttpMessageConverter<?> converter : restTemplate.getMessageConverters()) {
-            if (converter instanceof MappingJackson2HttpMessageConverter) {
-                containsMappingJackson2HttpMessageConverter = true;
+		for (HttpMessageConverter<?> converter : restTemplate.getMessageConverters()) {
+			if (converter instanceof MappingJackson2HttpMessageConverter) {
+				containsMappingJackson2HttpMessageConverter = true;
 
-                final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter)
-                        converter;
-                final ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
+				final MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+				final ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
 
-                assertNotNull(objectMapper.findMixInClassFor(JobExecution.class));
-                assertNotNull(objectMapper.findMixInClassFor(JobParameters.class));
-                assertNotNull(objectMapper.findMixInClassFor(JobParameter.class));
-                assertNotNull(objectMapper.findMixInClassFor(JobInstance.class));
-                assertNotNull(objectMapper.findMixInClassFor(ExitStatus.class));
-                assertNotNull(objectMapper.findMixInClassFor(StepExecution.class));
-                assertNotNull(objectMapper.findMixInClassFor(ExecutionContext.class));
-                assertNotNull(objectMapper.findMixInClassFor(StepExecutionHistory.class));
-            }
-        }
+				assertNotNull(objectMapper.findMixInClassFor(JobExecution.class));
+				assertNotNull(objectMapper.findMixInClassFor(JobParameters.class));
+				assertNotNull(objectMapper.findMixInClassFor(JobParameter.class));
+				assertNotNull(objectMapper.findMixInClassFor(JobInstance.class));
+				assertNotNull(objectMapper.findMixInClassFor(ExitStatus.class));
+				assertNotNull(objectMapper.findMixInClassFor(StepExecution.class));
+				assertNotNull(objectMapper.findMixInClassFor(ExecutionContext.class));
+				assertNotNull(objectMapper.findMixInClassFor(StepExecutionHistory.class));
+			}
+		}
 
-        if (!containsMappingJackson2HttpMessageConverter) {
-            fail("Expected that the restTemplate's list of Message Converters contained a " +
-                    "MappingJackson2HttpMessageConverter");
-        }
-    }
+		if (!containsMappingJackson2HttpMessageConverter) {
+			fail("Expected that the restTemplate's list of Message Converters contained a "
+					+ "MappingJackson2HttpMessageConverter");
+		}
+	}
 
-    @Test
-    public void testThatPrepareRestTemplateWithNullContructorValueContainsMixins() {
-        final RestTemplate restTemplate = DataFlowTemplate.prepareRestTemplate(null);
+	@Test
+	public void testThatPrepareRestTemplateWithNullContructorValueContainsMixins() {
+		final RestTemplate restTemplate = DataFlowTemplate.prepareRestTemplate(null);
 
-        assertNotNull(restTemplate);
-        assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
+		assertNotNull(restTemplate);
+		assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
 
-        assertCorrectMixins(restTemplate);
+		assertCorrectMixins(restTemplate);
 
-    }
+	}
 
-    @Test
-    public void testThatPrepareRestTemplateWithProvidedRestTemplateContainsMixins() {
-        final RestTemplate providedRestTemplate = new RestTemplate();
-        final RestTemplate restTemplate = DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
+	@Test
+	public void testThatPrepareRestTemplateWithProvidedRestTemplateContainsMixins() {
+		final RestTemplate providedRestTemplate = new RestTemplate();
+		final RestTemplate restTemplate = DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
 
-        assertNotNull(restTemplate);
-        assertTrue(providedRestTemplate == restTemplate);
-        assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
+		assertNotNull(restTemplate);
+		assertTrue(providedRestTemplate == restTemplate);
+		assertTrue(restTemplate.getErrorHandler() instanceof VndErrorResponseErrorHandler);
 
-        assertCorrectMixins(restTemplate);
-    }
+		assertCorrectMixins(restTemplate);
+	}
 
-    @Test
-    public void testPrepareRestTemplateWithRestTemplateThatHasNoMessageConverters() {
-        final RestTemplate providedRestTemplate = new RestTemplate();
-        providedRestTemplate.getMessageConverters().clear();
+	@Test
+	public void testPrepareRestTemplateWithRestTemplateThatHasNoMessageConverters() {
+		final RestTemplate providedRestTemplate = new RestTemplate();
+		providedRestTemplate.getMessageConverters().clear();
 
-        try {
-            DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
-        } catch (IllegalArgumentException e) {
-            assertEquals("'messageConverters' must not be empty", e.getMessage());
-            return;
-        }
+		try {
+			DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("'messageConverters' must not be empty", e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 
-    @Test
-    public void testPrepareRestTemplateWithRestTemplateThatMissesJacksonConverter() {
-        final RestTemplate providedRestTemplate = new RestTemplate();
-        final Iterator<HttpMessageConverter<?>> iterator = providedRestTemplate.getMessageConverters().iterator();
+	@Test
+	public void testPrepareRestTemplateWithRestTemplateThatMissesJacksonConverter() {
+		final RestTemplate providedRestTemplate = new RestTemplate();
+		final Iterator<HttpMessageConverter<?>> iterator = providedRestTemplate.getMessageConverters().iterator();
 
-        while (iterator.hasNext()) {
-            if (iterator.next() instanceof MappingJackson2HttpMessageConverter) {
-                iterator.remove();
-            }
-        }
+		while (iterator.hasNext()) {
+			if (iterator.next() instanceof MappingJackson2HttpMessageConverter) {
+				iterator.remove();
+			}
+		}
 
-        try {
-            DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
-        } catch (IllegalArgumentException e) {
-            assertEquals("The RestTemplate does not contain a required MappingJackson2HttpMessageConverter.", e
-                    .getMessage());
-            return;
-        }
+		try {
+			DataFlowTemplate.prepareRestTemplate(providedRestTemplate);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("The RestTemplate does not contain a required MappingJackson2HttpMessageConverter.",
+					e.getMessage());
+			return;
+		}
 
-        fail("Expected an IllegalArgumentException to be thrown.");
-    }
+		fail("Expected an IllegalArgumentException to be thrown.");
+	}
 }

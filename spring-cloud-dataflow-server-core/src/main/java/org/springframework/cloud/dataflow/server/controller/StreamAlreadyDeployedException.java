@@ -17,13 +17,14 @@
 package org.springframework.cloud.dataflow.server.controller;
 
 /**
- * Thrown when a stream is already deployed when the controller gets a request to deploy it.
+ * Thrown when a stream is already deployed when the controller gets a request to deploy
+ * it.
  *
  * @author Ilayaperumal Gopinathan
  */
 public class StreamAlreadyDeployedException extends RuntimeException {
 
-    public StreamAlreadyDeployedException(String name) {
-        super(String.format("Stream '%s' is already deployed", name));
-    }
+	public StreamAlreadyDeployedException(String name) {
+		super(String.format("Stream '%s' is already deployed", name));
+	}
 }

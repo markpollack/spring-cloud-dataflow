@@ -78,153 +78,149 @@ import static org.springframework.hateoas.config.EnableHypermediaSupport.Hyperme
 @EnableWebMvc
 public class JobDependencies {
 
-    @Bean
-    public ApplicationConfigurationMetadataResolver metadataResolver() {
-        return new BootApplicationConfigurationMetadataResolver();
-    }
+	@Bean
+	public ApplicationConfigurationMetadataResolver metadataResolver() {
+		return new BootApplicationConfigurationMetadataResolver();
+	}
 
-    @Bean
-    public JobExecutionController jobExecutionController(TaskJobService repository) {
-        return new JobExecutionController(repository);
-    }
+	@Bean
+	public JobExecutionController jobExecutionController(TaskJobService repository) {
+		return new JobExecutionController(repository);
+	}
 
-    @Bean
-    public JobStepExecutionController jobStepExecutionController(JobService jobService) {
-        return new JobStepExecutionController(jobService);
-    }
+	@Bean
+	public JobStepExecutionController jobStepExecutionController(JobService jobService) {
+		return new JobStepExecutionController(jobService);
+	}
 
-    @Bean
-    public JobStepExecutionProgressController jobStepExecutionProgressController(JobService jobService) {
-        return new JobStepExecutionProgressController(jobService);
-    }
+	@Bean
+	public JobStepExecutionProgressController jobStepExecutionProgressController(JobService jobService) {
+		return new JobStepExecutionProgressController(jobService);
+	}
 
-    @Bean
-    public JobInstanceController jobInstanceController(TaskJobService repository) {
-        return new JobInstanceController(repository);
-    }
+	@Bean
+	public JobInstanceController jobInstanceController(TaskJobService repository) {
+		return new JobInstanceController(repository);
+	}
 
-    @Bean
-    public TaskExecutionController taskExecutionController(TaskExplorer explorer, TaskService taskService,
-                                                           TaskDefinitionRepository taskDefinitionRepository) {
-        return new TaskExecutionController(explorer, taskService, taskDefinitionRepository);
-    }
+	@Bean
+	public TaskExecutionController taskExecutionController(TaskExplorer explorer, TaskService taskService,
+			TaskDefinitionRepository taskDefinitionRepository) {
+		return new TaskExecutionController(explorer, taskService, taskDefinitionRepository);
+	}
 
-    @Bean
-    public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
-        TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
-        taskRepositoryInitializer.setDataSource(dataSource);
-        return taskRepositoryInitializer;
-    }
+	@Bean
+	public TaskRepositoryInitializer taskExecutionRepository(DataSource dataSource) {
+		TaskRepositoryInitializer taskRepositoryInitializer = new TaskRepositoryInitializer();
+		taskRepositoryInitializer.setDataSource(dataSource);
+		return taskRepositoryInitializer;
+	}
 
-    @Bean
-    public TaskJobService taskJobExecutionRepository(JobService jobService,
-                                                     TaskExplorer taskExplorer, TaskDefinitionRepository
-                                                                 taskDefinitionRepository, TaskService taskService) {
-        return new DefaultTaskJobService(jobService, taskExplorer, taskDefinitionRepository, taskService);
-    }
+	@Bean
+	public TaskJobService taskJobExecutionRepository(JobService jobService, TaskExplorer taskExplorer,
+			TaskDefinitionRepository taskDefinitionRepository, TaskService taskService) {
+		return new DefaultTaskJobService(jobService, taskExplorer, taskDefinitionRepository, taskService);
+	}
 
-    @Bean
-    public TaskDefinitionRepository taskDefinitionRepository() {
-        return new InMemoryTaskDefinitionRepository();
-    }
+	@Bean
+	public TaskDefinitionRepository taskDefinitionRepository() {
+		return new InMemoryTaskDefinitionRepository();
+	}
 
-    @Bean
-    public TaskService taskService(TaskDefinitionRepository repository, TaskExplorer explorer,
-                                   AppRegistry registry, ResourceLoader resourceLoader, TaskLauncher taskLauncher,
-                                   ApplicationConfigurationMetadataResolver metadataResolver,
-                                   DeploymentIdRepository deploymentIdRepository) {
-        return new DefaultTaskService(new DataSourceProperties(), repository,
-                explorer, taskRepository(),
-                registry, resourceLoader, taskLauncher, metadataResolver,
-                new TaskConfigurationProperties(), deploymentIdRepository, null);
-    }
+	@Bean
+	public TaskService taskService(TaskDefinitionRepository repository, TaskExplorer explorer, AppRegistry registry,
+			ResourceLoader resourceLoader, TaskLauncher taskLauncher,
+			ApplicationConfigurationMetadataResolver metadataResolver, DeploymentIdRepository deploymentIdRepository) {
+		return new DefaultTaskService(new DataSourceProperties(), repository, explorer, taskRepository(), registry,
+				resourceLoader, taskLauncher, metadataResolver, new TaskConfigurationProperties(),
+				deploymentIdRepository, null);
+	}
 
-    @Bean
-    public TaskRepository taskRepository() {
-        return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
-    }
+	@Bean
+	public TaskRepository taskRepository() {
+		return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean());
+	}
 
-    @Bean
-    public TaskBatchDao taskBatchDao(DataSource dataSource) {
-        return new JdbcTaskBatchDao(dataSource);
-    }
+	@Bean
+	public TaskBatchDao taskBatchDao(DataSource dataSource) {
+		return new JdbcTaskBatchDao(dataSource);
+	}
 
-    @Bean
-    public SimpleJobServiceFactoryBean simpleJobServiceFactoryBean(DataSource dataSource,
-                                                                   JobRepositoryFactoryBean repositoryFactoryBean) {
-        SimpleJobServiceFactoryBean factoryBean = new SimpleJobServiceFactoryBean();
-        factoryBean.setDataSource(dataSource);
-        try {
-            factoryBean.setJobRepository(repositoryFactoryBean.getObject());
-            factoryBean.setJobLocator(new MapJobRegistry());
-            factoryBean.setJobLauncher(new SimpleJobLauncher());
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        return factoryBean;
-    }
+	@Bean
+	public SimpleJobServiceFactoryBean simpleJobServiceFactoryBean(DataSource dataSource,
+			JobRepositoryFactoryBean repositoryFactoryBean) {
+		SimpleJobServiceFactoryBean factoryBean = new SimpleJobServiceFactoryBean();
+		factoryBean.setDataSource(dataSource);
+		try {
+			factoryBean.setJobRepository(repositoryFactoryBean.getObject());
+			factoryBean.setJobLocator(new MapJobRegistry());
+			factoryBean.setJobLauncher(new SimpleJobLauncher());
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+		return factoryBean;
+	}
 
-    @Bean
-    public JobRepositoryFactoryBean jobRepositoryFactoryBeanForServer(DataSource dataSource,
-                                                                      DataSourceTransactionManager
-                                                                              dataSourceTransactionManager) {
-        JobRepositoryFactoryBean repositoryFactoryBean = new JobRepositoryFactoryBean();
-        repositoryFactoryBean.setDataSource(dataSource);
-        repositoryFactoryBean.setTransactionManager(dataSourceTransactionManager);
-        return repositoryFactoryBean;
-    }
+	@Bean
+	public JobRepositoryFactoryBean jobRepositoryFactoryBeanForServer(DataSource dataSource,
+			DataSourceTransactionManager dataSourceTransactionManager) {
+		JobRepositoryFactoryBean repositoryFactoryBean = new JobRepositoryFactoryBean();
+		repositoryFactoryBean.setDataSource(dataSource);
+		repositoryFactoryBean.setTransactionManager(dataSourceTransactionManager);
+		return repositoryFactoryBean;
+	}
 
-    @Bean
-    public DataSourceTransactionManager transactionManagerForServer(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
+	@Bean
+	public DataSourceTransactionManager transactionManagerForServer(DataSource dataSource) {
+		return new DataSourceTransactionManager(dataSource);
+	}
 
-    @Bean
-    public JobExplorerFactoryBean jobExplorerFactoryBeanForServer(DataSource dataSource) {
-        JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
-        jobExplorerFactoryBean.setDataSource(dataSource);
-        return jobExplorerFactoryBean;
-    }
+	@Bean
+	public JobExplorerFactoryBean jobExplorerFactoryBeanForServer(DataSource dataSource) {
+		JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
+		jobExplorerFactoryBean.setDataSource(dataSource);
+		return jobExplorerFactoryBean;
+	}
 
-    @Bean
-    public BatchDatabaseInitializer batchRepositoryInitializerForDefaultDBForServer(DataSource dataSource,
-                                                                                    ResourceLoader resourceLoader,
-                                                                                    BatchProperties properties) {
-        return new BatchDatabaseInitializer(dataSource, resourceLoader, properties);
-    }
+	@Bean
+	public BatchDatabaseInitializer batchRepositoryInitializerForDefaultDBForServer(DataSource dataSource,
+			ResourceLoader resourceLoader, BatchProperties properties) {
+		return new BatchDatabaseInitializer(dataSource, resourceLoader, properties);
+	}
 
-    @Bean
-    public TaskExplorer taskExplorer(TaskExecutionDaoFactoryBean daoFactoryBean) {
-        return new SimpleTaskExplorer(daoFactoryBean);
-    }
+	@Bean
+	public TaskExplorer taskExplorer(TaskExecutionDaoFactoryBean daoFactoryBean) {
+		return new SimpleTaskExplorer(daoFactoryBean);
+	}
 
-    @Bean
-    public TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean(DataSource dataSource) {
-        return new TaskExecutionDaoFactoryBean(dataSource);
-    }
+	@Bean
+	public TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean(DataSource dataSource) {
+		return new TaskExecutionDaoFactoryBean(dataSource);
+	}
 
-    @Bean
-    public RestControllerAdvice restControllerAdvice() {
-        return new RestControllerAdvice();
-    }
+	@Bean
+	public RestControllerAdvice restControllerAdvice() {
+		return new RestControllerAdvice();
+	}
 
-    @Bean
-    public DeploymentIdRepository deploymentIdRepository() {
-        return new InMemoryDeploymentIdRepository();
-    }
+	@Bean
+	public DeploymentIdRepository deploymentIdRepository() {
+		return new InMemoryDeploymentIdRepository();
+	}
 
-    @Bean
-    public UriRegistry uriRegistry() {
-        return new InMemoryUriRegistry();
-    }
+	@Bean
+	public UriRegistry uriRegistry() {
+		return new InMemoryUriRegistry();
+	}
 
-    @Bean
-    public AppRegistry appRegistry() {
-        return new AppRegistry(uriRegistry(), new DefaultResourceLoader());
-    }
+	@Bean
+	public AppRegistry appRegistry() {
+		return new AppRegistry(uriRegistry(), new DefaultResourceLoader());
+	}
 
-    @Bean
-    public TaskLauncher taskLauncher() {
-        return mock(TaskLauncher.class);
-    }
+	@Bean
+	public TaskLauncher taskLauncher() {
+		return mock(TaskLauncher.class);
+	}
 }

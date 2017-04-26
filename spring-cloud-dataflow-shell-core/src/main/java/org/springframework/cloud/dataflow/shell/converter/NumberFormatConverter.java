@@ -33,26 +33,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class NumberFormatConverter implements Converter<NumberFormat> {
 
-    public static final String DEFAULT = "<use platform locale>";
+	public static final String DEFAULT = "<use platform locale>";
 
-    @Override
-    public boolean supports(Class<?> type, String optionContext) {
-        return NumberFormat.class.isAssignableFrom(type);
-    }
+	@Override
+	public boolean supports(Class<?> type, String optionContext) {
+		return NumberFormat.class.isAssignableFrom(type);
+	}
 
-    @Override
-    public NumberFormat convertFromText(String value, Class<?> targetType, String optionContext) {
-        if (DEFAULT.equals(value)) {
-            return NumberFormat.getInstance();
-        } else {
-            return new DecimalFormat(value);
-        }
-    }
+	@Override
+	public NumberFormat convertFromText(String value, Class<?> targetType, String optionContext) {
+		if (DEFAULT.equals(value)) {
+			return NumberFormat.getInstance();
+		}
+		else {
+			return new DecimalFormat(value);
+		}
+	}
 
-    @Override
-    public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
-                                        String optionContext, MethodTarget target) {
-        return false;
-    }
+	@Override
+	public boolean getAllPossibleValues(List<Completion> completions, Class<?> targetType, String existingData,
+			String optionContext, MethodTarget target) {
+		return false;
+	}
 
 }

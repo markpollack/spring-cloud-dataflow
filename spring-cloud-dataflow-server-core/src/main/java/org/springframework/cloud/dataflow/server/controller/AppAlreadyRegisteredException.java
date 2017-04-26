@@ -27,21 +27,21 @@ import org.springframework.cloud.dataflow.registry.AppRegistration;
  */
 public class AppAlreadyRegisteredException extends IllegalStateException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final AppRegistration previous;
+	private final AppRegistration previous;
 
-    public AppAlreadyRegisteredException(AppRegistration previous) {
-        this.previous = previous;
-    }
+	public AppAlreadyRegisteredException(AppRegistration previous) {
+		this.previous = previous;
+	}
 
-    @Override
-    public String getMessage() {
-        return String.format("The '%s:%s' application is already registered as %s", previous.getType(), previous
-                .getName(), previous.getUri());
-    }
+	@Override
+	public String getMessage() {
+		return String.format("The '%s:%s' application is already registered as %s", previous.getType(),
+				previous.getName(), previous.getUri());
+	}
 
-    public AppRegistration getPrevious() {
-        return previous;
-    }
+	public AppRegistration getPrevious() {
+		return previous;
+	}
 }
