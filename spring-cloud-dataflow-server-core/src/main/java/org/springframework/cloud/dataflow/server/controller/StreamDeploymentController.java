@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -284,7 +286,7 @@ public class StreamDeploymentController {
 			// Merge *definition time* app properties with *deployment time* properties
 			// and expand them to their long form if applicable
 			AppDefinition revisedDefinition = mergeAndExpandAppProperties(currentApp, metadataResource,
-					appDeployTimeProperties);
+					appDeployTimeProperties, registration);
 
 			AppDeploymentRequest request = new AppDeploymentRequest(revisedDefinition, appResource,
 					deployerDeploymentProperties);
@@ -310,13 +312,26 @@ public class StreamDeploymentController {
 	 * (amongst the whitelisted supported properties of the app) if applicable.
 	 */
 	/* default */ AppDefinition mergeAndExpandAppProperties(StreamAppDefinition original, Resource metadataResource,
-			Map<String, String> appDeployTimeProperties) {
+															Map<String, String> appDeployTimeProperties, AppRegistration registration) {
 		Map<String, String> merged = new HashMap<>(original.getProperties());
 		merged.putAll(appDeployTimeProperties);
 		merged = whitelistProperties.qualifyProperties(merged, metadataResource);
 
 		merged.putIfAbsent(StreamPropertyKeys.METRICS_PROPERTIES, "spring.application.name,spring.application.index,"
-				+ "spring.cloud.application.*,spring.cloud.dataflow.*");
+				+ "spring.cloud.application.*,spring.cloud.dataflow.*,spring.metrics.export.*,spring.cloud.stream.*,info.app.*," +
+				"spring.cloud.deployer.*");
+		merged.putIfAbsent("spring.cloud.deployer.resourceUrl", registration.getUri().toString());
+		if (registration.getMetadataUri() != null) {
+			merged.putIfAbsent("spring.cloud.deployer.resourceMetadataUrl", registration.getMetadataUri().toString());
+		}
+		if (registration != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				merged.putIfAbsent("spring.cloud.deployer.deploymentProperties", mapper.writeValueAsString(merged));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
 		merged.putIfAbsent(METRICS_TRIGGER_INCLUDES, "integration**");
 
 		return new AppDefinition(original.getName(), merged);

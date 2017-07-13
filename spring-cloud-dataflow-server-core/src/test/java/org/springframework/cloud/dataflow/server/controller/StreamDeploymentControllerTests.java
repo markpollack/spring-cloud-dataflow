@@ -84,7 +84,7 @@ public class StreamDeploymentControllerTests {
 				.setProperty("timezone", "GMT+2").build("streamname");
 
 		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>(), null);
 
 		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.timezone", "GMT+2"));
 		Assert.assertThat(modified.getProperties(), not(IsMapContaining.hasKey("timezone")));
@@ -96,7 +96,7 @@ public class StreamDeploymentControllerTests {
 				.setProperty("time.format", "hh").setProperty("date.format", "yy").build("streamname");
 
 		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>(), null);
 
 		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.format", "yy"));
 		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("time.format", "hh"));
@@ -114,7 +114,7 @@ public class StreamDeploymentControllerTests {
 		thrown.expectMessage("date.format");
 		thrown.expectMessage("time.format");
 
-		controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+		controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>(), null);
 
 	}
 
@@ -125,7 +125,7 @@ public class StreamDeploymentControllerTests {
 				.build("streamname");
 
 		Resource app = new ClassPathResource("/apps/whitelist-source");
-		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>());
+		AppDefinition modified = controller.mergeAndExpandAppProperties(appDefinition, app, new HashMap<>(), null);
 
 		Assert.assertThat(modified.getProperties(), IsMapContaining.hasEntry("date.some-long-property", "yy"));
 
