@@ -51,8 +51,6 @@ import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.cloud.skipper.client.SkipperClient;
-import org.springframework.cloud.skipper.client.io.DefaultPackageWriter;
-import org.springframework.cloud.skipper.client.io.PackageWriter;
 import org.springframework.cloud.skipper.domain.ConfigValues;
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.InstallRequest;
@@ -61,6 +59,8 @@ import org.springframework.cloud.skipper.domain.PackageIdentifier;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Template;
 import org.springframework.cloud.skipper.domain.UploadRequest;
+import org.springframework.cloud.skipper.io.DefaultPackageWriter;
+import org.springframework.cloud.skipper.io.PackageWriter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
@@ -276,7 +276,7 @@ public class StreamDeploymentService {
 	}
 
 	public List<Template> createGenericTemplate() {
-		Resource resource = new ClassPathResource("/org/springframework/cloud/skipper/client/io/generic-template.yml");
+		Resource resource = new ClassPathResource("/org/springframework/cloud/skipper/io/generic-template.yml");
 		String genericTempateData = null;
 		try {
 			genericTempateData = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
