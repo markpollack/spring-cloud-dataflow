@@ -119,22 +119,24 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
 	@Bean
 	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-																 DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
-																 ApplicationConfigurationMetadataResolver metadataResolver,
-																 CommonApplicationProperties applicationProperties, StreamDeploymentService streamDeploymentService) {
+			DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
+			ApplicationConfigurationMetadataResolver metadataResolver,
+			CommonApplicationProperties applicationProperties, StreamDeploymentService streamDeploymentService) {
 		return new StreamDeploymentController(repository, deploymentIdRepository, registry, appDeployer(),
-				metadataResolver, applicationProperties,streamDeploymentService);
+				metadataResolver, applicationProperties, streamDeploymentService);
 	}
 
 	@Bean
 	public StreamDeploymentService streamDeploymentService(AppRegistry appRegistry,
-														   CommonApplicationProperties commonApplicationProperties,
-														   ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
-														   AppDeployer appDeployer,
-														   DeploymentIdRepository deploymentIdRepository,
-														   SkipperClient skipperClient) {
+			CommonApplicationProperties commonApplicationProperties,
+			ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
+			AppDeployer appDeployer,
+			DeploymentIdRepository deploymentIdRepository,
+			StreamDefinitionRepository streamDefinitionRepository,
+			SkipperClient skipperClient) {
 		return new StreamDeploymentService(appRegistry, commonApplicationProperties,
-				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository, skipperClient);
+				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository,
+				streamDefinitionRepository, skipperClient);
 	}
 
 	@Bean
@@ -144,9 +146,10 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
 	@Bean
 	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController) {
+			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
+			StreamDeploymentService streamDeploymentService) {
 		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, appDeployer(),
-				appRegistry());
+				appRegistry(), streamDeploymentService);
 	}
 
 	@Bean

@@ -18,9 +18,7 @@ package org.springframework.cloud.dataflow.server.controller;
 
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +29,6 @@ import org.springframework.cloud.dataflow.core.StreamDefinition;
 import org.springframework.cloud.dataflow.core.StreamPropertyKeys;
 import org.springframework.cloud.dataflow.registry.AppRegistry;
 import org.springframework.cloud.dataflow.rest.resource.StreamDeploymentResource;
-import org.springframework.cloud.dataflow.rest.util.DeploymentPropertiesUtils;
 import org.springframework.cloud.dataflow.server.config.apps.CommonApplicationProperties;
 import org.springframework.cloud.dataflow.server.repository.DeploymentIdRepository;
 import org.springframework.cloud.dataflow.server.repository.DeploymentKey;
@@ -42,9 +39,7 @@ import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.AppStatus;
 import org.springframework.cloud.deployer.spi.app.DeploymentState;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
-import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.core.io.Resource;
-import org.springframework.data.util.Pair;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
@@ -70,16 +65,13 @@ import org.springframework.web.bind.annotation.RestController;
 @ExposesResourceFor(StreamDeploymentResource.class)
 public class StreamDeploymentController {
 
-	private static Log logger = LogFactory.getLog(StreamDeploymentController.class);
-
 	/**
 	 * This is the spring boot property key that Spring Cloud Stream uses to filter the
-	 * metrics to import when the specific Spring Cloud Stream "applicaiton" trigger is
-	 * fired for metrics export.
+	 * metrics to import when the specific Spring Cloud Stream "applicaiton" trigger is fired
+	 * for metrics export.
 	 */
 	private static final String METRICS_TRIGGER_INCLUDES = "spring.metrics.export.triggers.application.includes";
-
-
+	private static Log logger = LogFactory.getLog(StreamDeploymentController.class);
 	private final StreamDeploymentService streamDeploymentService;
 
 	/**
@@ -117,10 +109,9 @@ public class StreamDeploymentController {
 	 * <li>deployment operations to the provided {@link AppDeployer}</li>
 	 * </ul>
 	 *
-	 * @param repository the repository this controller will use for stream CRUD
-	 * operations
-	 * @param deploymentIdRepository the repository this controller will use for
-	 * deployment IDs
+	 * @param repository the repository this controller will use for stream CRUD operations
+	 * @param deploymentIdRepository the repository this controller will use for deployment
+	 * IDs
 	 * @param registry the registry this controller will use to lookup apps
 	 * @param deployer the deployer this controller will use to deploy stream apps
 	 * @param metadataResolver the application metadata resolver
@@ -129,7 +120,7 @@ public class StreamDeploymentController {
 	public StreamDeploymentController(StreamDefinitionRepository repository,
 			DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
 			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties commonProperties,
-									  StreamDeploymentService streamDeploymentService) {
+			StreamDeploymentService streamDeploymentService) {
 		Assert.notNull(repository, "StreamDefinitionRepository must not be null");
 		Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
 		Assert.notNull(registry, "AppRegistry must not be null");
@@ -176,62 +167,20 @@ public class StreamDeploymentController {
 	 * Request deployment of an existing stream definition.
 	 *
 	 * @param name the name of an existing stream definition (required)
-	 * @param properties the deployment properties for the stream as a comma-delimited
-	 * list of key=value pairs
+	 * @param properties the deployment properties for the stream as a comma-delimited list of
+	 * key=value pairs
 	 */
 	@RequestMapping(value = "/{name}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public void deploy(@PathVariable("name") String name,
 			@RequestBody(required = false) Map<String, String> properties) {
-		StreamDefinition streamDefinition = this.repository.findOne(name);
-		if (streamDefinition == null) {
-			throw new NoSuchStreamDefinitionException(name);
-		}
-		String status = calculateStreamState(name);
-		if (DeploymentState.deployed.equals(DeploymentState.valueOf(status))) {
-			throw new StreamAlreadyDeployedException(name);
-		}
-		else if (DeploymentState.deploying.equals(DeploymentState.valueOf(status))) {
-			throw new StreamAlreadyDeployingException(name);
-		}
-		DeploymentPropertiesUtils.ensureJustDeploymentProperties(properties);
-		deployStream(streamDefinition, properties);
-	}
-
-	private String calculateStreamState(String name) {
-		Set<DeploymentState> appStates = EnumSet.noneOf(DeploymentState.class);
-		StreamDefinition stream = this.repository.findOne(name);
-		for (StreamAppDefinition appDefinition : stream.getAppDefinitions()) {
-			String key = DeploymentKey.forStreamAppDefinition(appDefinition);
-			String id = this.deploymentIdRepository.findOne(key);
-			if (id != null) {
-				AppStatus status = this.deployer.status(id);
-				appStates.add(status.getState());
-			}
-			else {
-				appStates.add(DeploymentState.undeployed);
-			}
-		}
-		return StreamDefinitionController.aggregateState(appStates).toString();
+		streamDeploymentService.deployStream(name, properties);
 	}
 
 	/**
-	 * Deploy a stream as defined by its {@link StreamDefinition} and optional deployment
-	 * properties.
-	 *
-	 * @param streamDefinition the stream to deploy
-	 * @param streamDeploymentProperties the deployment properties for the stream
-	 */
-	private void deployStream(StreamDefinition streamDefinition, Map<String, String> streamDeploymentProperties) {
-		List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList =
-				streamDeploymentService.createRequests(streamDefinition, streamDeploymentProperties);
-		streamDeploymentService.deploy(streamDefinition, pairList);
-	}
-
-	/**
-	 * Return a new app definition where definition-time and deploy-time properties have
-	 * been merged and short form parameters have been expanded to their long form
-	 * (amongst the whitelisted supported properties of the app) if applicable.
+	 * Return a new app definition where definition-time and deploy-time properties have been
+	 * merged and short form parameters have been expanded to their long form (amongst the
+	 * whitelisted supported properties of the app) if applicable.
 	 */
 	/* default */ AppDefinition mergeAndExpandAppProperties(StreamAppDefinition original, Resource metadataResource,
 			Map<String, String> appDeployTimeProperties) {

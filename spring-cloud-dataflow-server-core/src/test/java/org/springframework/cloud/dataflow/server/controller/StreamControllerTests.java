@@ -144,13 +144,13 @@ public class StreamControllerTests {
 		StreamDeploymentController deploymentController = new StreamDeploymentController(
 				new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(), appRegistry,
 				appDeployer, metadataResolver, new CommonApplicationProperties(), streamDeploymentService);
-		new StreamDefinitionController(null, null, deploymentController, appDeployer, appRegistry);
+		new StreamDefinitionController(null, null, deploymentController, appDeployer, appRegistry, streamDeploymentService);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorMissingDeploymentController() {
 		new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(),
-				null, appDeployer, appRegistry);
+				null, appDeployer, appRegistry, streamDeploymentService);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -159,7 +159,7 @@ public class StreamControllerTests {
 				new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(), appRegistry,
 				appDeployer, metadataResolver, new CommonApplicationProperties(), streamDeploymentService);
 		new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(),
-				deploymentController, null, appRegistry);
+				deploymentController, null, appRegistry, streamDeploymentService);
 	}
 
 	@Test

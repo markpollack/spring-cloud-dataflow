@@ -22,10 +22,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,10 +47,17 @@ import org.springframework.cloud.dataflow.registry.AppRegistry;
 import org.springframework.cloud.dataflow.rest.util.DeploymentPropertiesUtils;
 import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
 import org.springframework.cloud.dataflow.server.config.apps.CommonApplicationProperties;
+import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployedException;
+import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployingException;
+import org.springframework.cloud.dataflow.server.controller.StreamDefinitionController;
 import org.springframework.cloud.dataflow.server.controller.WhitelistProperties;
 import org.springframework.cloud.dataflow.server.repository.DeploymentIdRepository;
 import org.springframework.cloud.dataflow.server.repository.DeploymentKey;
+import org.springframework.cloud.dataflow.server.repository.NoSuchStreamDefinitionException;
+import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
+import org.springframework.cloud.deployer.spi.app.AppStatus;
+import org.springframework.cloud.deployer.spi.app.DeploymentState;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.cloud.skipper.client.SkipperClient;
@@ -83,11 +93,25 @@ public class StreamDeploymentService {
 	 * for metrics export.
 	 */
 	private static final String METRICS_TRIGGER_INCLUDES = "spring.metrics.export.triggers.application.includes";
+
+	public static final String SKIPPER_KEY_PREFIX = "spring.cloud.dataflow.skipper";
+
+	public static final String SKIPPER_ENABLED_PROPERTY_KEY = SKIPPER_KEY_PREFIX + ".enabled";
+
 	private static final String DEFAULT_PARTITION_KEY_EXPRESSION = "payload";
+
 	private static Log logger = LogFactory.getLog(StreamDeploymentService.class);
+
 	private static String deployLoggingString = "Deploying application named [%s] as part of stream named [%s] "
 			+ "with resource URI [%s]";
+
 	private final WhitelistProperties whitelistProperties;
+
+	/**
+	 * The repository this controller will use for stream CRUD operations.
+	 */
+	private final StreamDefinitionRepository streamDefinitionRepository;
+
 	/**
 	 * The app registry this controller will use to lookup apps.
 	 */
@@ -115,27 +139,88 @@ public class StreamDeploymentService {
 			ApplicationConfigurationMetadataResolver metadataResolver,
 			AppDeployer appDeployer,
 			DeploymentIdRepository deploymentIdRepository,
+			StreamDefinitionRepository streamDefinitionRepository,
 			SkipperClient skipperClient) {
 		Assert.notNull(appRegistry, "AppRegistry must not be null");
 		Assert.notNull(commonApplicationProperties, "CommonApplicationProperties must not be null");
 		Assert.notNull(metadataResolver, "MetadataResolver must not be null");
 		Assert.notNull(appDeployer, "AppDeployer must not be null");
 		Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
+		Assert.notNull(streamDefinitionRepository, "StreamDefinitionRepository must not be null");
 		this.appRegistry = appRegistry;
 		this.commonApplicationProperties = commonApplicationProperties;
 		this.whitelistProperties = new WhitelistProperties(metadataResolver);
 		this.appDeployer = appDeployer;
 		this.deploymentIdRepository = deploymentIdRepository;
+		this.streamDefinitionRepository = streamDefinitionRepository;
 		this.skipperClient = skipperClient;
 	}
 
-	public void deploy(StreamDefinition streamDefinition,
-			List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList) {
+	public void deployStream(String name, Map<String, String> properties) {
+		deployStreamWithDefinition(createStreamDefinitionForDeploy(name, properties), properties);
+	}
 
-		if (skipperClient != null) {
-			logger.info("Deploying Stream using skipper");
-			deployUsingSkipper(streamDefinition, pairList);
+	private StreamDefinition createStreamDefinitionForDeploy(String name, Map<String, String> properties) {
+		StreamDefinition streamDefinition = this.streamDefinitionRepository.findOne(name);
+		if (streamDefinition == null) {
+			throw new NoSuchStreamDefinitionException(name);
 		}
+		String status = calculateStreamState(name);
+		if (DeploymentState.deployed.equals(DeploymentState.valueOf(status))) {
+			throw new StreamAlreadyDeployedException(name);
+		}
+		else if (DeploymentState.deploying.equals(DeploymentState.valueOf(status))) {
+			throw new StreamAlreadyDeployingException(name);
+		}
+		return streamDefinition;
+	}
+
+	private String calculateStreamState(String name) {
+		Set<DeploymentState> appStates = EnumSet.noneOf(DeploymentState.class);
+		StreamDefinition stream = this.streamDefinitionRepository.findOne(name);
+		for (StreamAppDefinition appDefinition : stream.getAppDefinitions()) {
+			String key = DeploymentKey.forStreamAppDefinition(appDefinition);
+			String id = this.deploymentIdRepository.findOne(key);
+			if (id != null) {
+				AppStatus status = this.appDeployer.status(id);
+				appStates.add(status.getState());
+			}
+			else {
+				appStates.add(DeploymentState.undeployed);
+			}
+		}
+		return StreamDefinitionController.aggregateState(appStates).toString();
+	}
+
+	/**
+	 * Deploy a stream as defined by its {@link StreamDefinition} and optional deployment
+	 * properties.
+	 *
+	 * @param streamDefinition the stream to deploy
+	 * @param streamDeploymentProperties the deployment properties for the stream
+	 */
+	private void deployStreamWithDefinition(StreamDefinition streamDefinition, Map<String, String> streamDeploymentProperties) {
+
+		//Extract skipper properties
+		Map<String, String> skipperDeploymentProperties = streamDeploymentProperties.entrySet().stream()
+				.filter(mapEntry -> mapEntry.getKey().startsWith(SKIPPER_KEY_PREFIX))
+				.collect(Collectors.toMap(mapEntry -> mapEntry.getKey(), mapEntry -> mapEntry.getValue()));
+		//Create map without any skipper properties
+		Map<String, String> deploymentPropertiestoUse = streamDeploymentProperties.entrySet().stream()
+				.filter(mapEntry -> !mapEntry.getKey().startsWith(SKIPPER_KEY_PREFIX))
+				.collect(Collectors.toMap(mapEntry -> mapEntry.getKey(), mapEntry -> mapEntry.getValue()));
+
+		List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList = createRequests(streamDefinition,
+				deploymentPropertiestoUse);
+		DeploymentPropertiesUtils.ensureJustDeploymentProperties(deploymentPropertiestoUse);
+		if (skipperDeploymentProperties.containsKey(SKIPPER_ENABLED_PROPERTY_KEY)) {
+			deployUsingSkipper(streamDefinition, pairList, skipperDeploymentProperties);
+		} else {
+			deploy(pairList);
+		}
+	}
+
+	private void deploy(List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList) {
 		for (Pair<AppDeploymentRequest, StreamAppDefinition> pair : pairList) {
 			AppDeploymentRequest appDeploymentRequest = pair.getFirst();
 			StreamAppDefinition streamAppDefinition = pair.getSecond();
@@ -156,14 +241,16 @@ public class StreamDeploymentService {
 	}
 
 	private void deployUsingSkipper(StreamDefinition streamDefinition,
-			List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList) {
-		//Create the package .zip file to upload
+									List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList,
+									Map<String, String> skipperDeploymentProperties) {
+		logger.info("Deploying Stream " + streamDefinition.getName() + " using skipper.");
+		// Create the package .zip file to upload
 		File packageFile = createPackageForStream(streamDefinition, pairList);
 
-		//Upload the package
+		// Upload the package
 		UploadRequest uploadRequest = new UploadRequest();
 		uploadRequest.setName(streamDefinition.getName());
-		uploadRequest.setVersion("1.0.0");
+		uploadRequest.setVersion("1.0.0");  //TODO get from skipperDeploymentProperties...
 		uploadRequest.setExtension("zip");
 		uploadRequest.setRepoName("local");
 		try {
@@ -174,7 +261,7 @@ public class StreamDeploymentService {
 		}
 		skipperClient.upload(uploadRequest);
 
-		//Install the package
+		// Install the package
 		InstallRequest installRequest = new InstallRequest();
 		PackageIdentifier packageIdentifier = new PackageIdentifier();
 		packageIdentifier.setPackageName(streamDefinition.getName());
@@ -187,6 +274,9 @@ public class StreamDeploymentService {
 		installProperties.setConfigValues(new ConfigValues());
 		installRequest.setInstallProperties(installProperties);
 		skipperClient.install(installRequest);
+
+		//TODO store releasename in deploymentIdRepository...
+		//this.deploymentIdRepository.save(DeploymentKey.forStreamAppDefinition(streamAppDefinition), id);
 
 	}
 
@@ -275,7 +365,7 @@ public class StreamDeploymentService {
 
 	}
 
-	public List<Template> createGenericTemplate() {
+	private List<Template> createGenericTemplate() {
 		Resource resource = new ClassPathResource("/org/springframework/cloud/skipper/io/generic-template.yml");
 		String genericTempateData = null;
 		try {
@@ -297,7 +387,7 @@ public class StreamDeploymentService {
 		return templateList;
 	}
 
-	public List<Pair<AppDeploymentRequest, StreamAppDefinition>> createRequests(StreamDefinition stream,
+	private List<Pair<AppDeploymentRequest, StreamAppDefinition>> createRequests(StreamDefinition stream,
 			Map<String, String> streamDeploymentProperties) {
 		List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList = new ArrayList<>();
 		if (streamDeploymentProperties == null) {

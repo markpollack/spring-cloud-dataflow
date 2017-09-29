@@ -21,6 +21,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.analytics.metrics.AggregateCounterRepository;
 import org.springframework.analytics.metrics.FieldValueCounterRepository;
 import org.springframework.analytics.rest.controller.AggregateCounterController;
@@ -82,6 +85,7 @@ import org.springframework.cloud.deployer.resource.support.DelegatingResourceLoa
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.task.TaskLauncher;
 import org.springframework.cloud.skipper.client.SkipperClient;
+import org.springframework.cloud.skipper.client.SkipperClientProperties;
 import org.springframework.cloud.task.repository.TaskExplorer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -104,10 +108,13 @@ import org.springframework.scheduling.concurrent.ForkJoinPoolFactoryBean;
 @Configuration
 @Import(CompletionConfiguration.class)
 @ConditionalOnBean({ EnableDataFlowServerConfiguration.Marker.class, AppDeployer.class, TaskLauncher.class })
-@EnableConfigurationProperties({ FeaturesProperties.class, VersionInfoProperties.class, MetricsProperties.class })
+@EnableConfigurationProperties({ FeaturesProperties.class, VersionInfoProperties.class, MetricsProperties.class,
+		SkipperClientProperties.class })
 @ConditionalOnProperty(prefix = "dataflow.server", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableCircuitBreaker
 public class DataFlowControllerAutoConfiguration {
+
+	private static Log logger = LogFactory.getLog(DataFlowControllerAutoConfiguration.class);
 
 	@Bean
 	public UriRegistry uriRegistry(DataSource dataSource) {
@@ -138,9 +145,9 @@ public class DataFlowControllerAutoConfiguration {
 	@ConditionalOnBean(StreamDefinitionRepository.class)
 	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
 			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
-			AppDeployer deployer, AppRegistry appRegistry) {
+			AppDeployer deployer, AppRegistry appRegistry, StreamDeploymentService streamDeploymentService) {
 		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, deployer,
-				appRegistry);
+				appRegistry, streamDeploymentService);
 	}
 
 	@Bean
@@ -148,15 +155,16 @@ public class DataFlowControllerAutoConfiguration {
 	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
 			DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
 			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties,
-																 StreamDeploymentService streamDeploymentService) {
+			StreamDeploymentService streamDeploymentService) {
 		return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer, metadataResolver,
 				appsProperties, streamDeploymentService);
 	}
 
 	@Bean
 	@ConditionalOnBean(StreamDefinitionRepository.class)
-	public SkipperClient skipperClient() {
-		return SkipperClient.create("http://localhost:7577");
+	public SkipperClient skipperClient(SkipperClientProperties skipperClientProperties) {
+		logger.info("Skipper URI = [" + skipperClientProperties.getUri() + "]");
+		return SkipperClient.create(skipperClientProperties.getUri());
 	}
 
 	@Bean
@@ -165,9 +173,11 @@ public class DataFlowControllerAutoConfiguration {
 			CommonApplicationProperties commonApplicationProperties,
 			ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
 			AppDeployer appDeployer,
-			DeploymentIdRepository deploymentIdRepository, SkipperClient skipperClient) {
+			DeploymentIdRepository deploymentIdRepository, StreamDefinitionRepository streamDefinitionRepository,
+			SkipperClient skipperClient) {
 		return new StreamDeploymentService(appRegistry, commonApplicationProperties,
-				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository, skipperClient);
+				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository,
+				streamDefinitionRepository, skipperClient);
 	}
 
 	@Bean
