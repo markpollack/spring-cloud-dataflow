@@ -72,6 +72,7 @@ import org.springframework.cloud.dataflow.server.controller.support.MetricStore;
 import org.springframework.cloud.dataflow.server.repository.DeploymentIdRepository;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.TaskDefinitionRepository;
+import org.springframework.cloud.dataflow.server.service.StreamDeploymentService;
 import org.springframework.cloud.dataflow.server.service.TaskJobService;
 import org.springframework.cloud.dataflow.server.service.TaskService;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
@@ -80,6 +81,7 @@ import org.springframework.cloud.deployer.resource.registry.UriRegistry;
 import org.springframework.cloud.deployer.resource.support.DelegatingResourceLoader;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.task.TaskLauncher;
+import org.springframework.cloud.skipper.client.SkipperClient;
 import org.springframework.cloud.task.repository.TaskExplorer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -145,9 +147,27 @@ public class DataFlowControllerAutoConfiguration {
 	@ConditionalOnBean(StreamDefinitionRepository.class)
 	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
 			DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
-			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties) {
+			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties,
+																 StreamDeploymentService streamDeploymentService) {
 		return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer, metadataResolver,
-				appsProperties);
+				appsProperties, streamDeploymentService);
+	}
+
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	public SkipperClient skipperClient() {
+		return SkipperClient.create("http://localhost:7577");
+	}
+
+	@Bean
+	@ConditionalOnBean(StreamDefinitionRepository.class)
+	public StreamDeploymentService streamDeploymentService(AppRegistry appRegistry,
+			CommonApplicationProperties commonApplicationProperties,
+			ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
+			AppDeployer appDeployer,
+			DeploymentIdRepository deploymentIdRepository, SkipperClient skipperClient) {
+		return new StreamDeploymentService(appRegistry, commonApplicationProperties,
+				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository, skipperClient);
 	}
 
 	@Bean
