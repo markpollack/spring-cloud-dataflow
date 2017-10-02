@@ -16,6 +16,7 @@
 package org.springframework.cloud.dataflow.server.stream;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.util.Assert;
@@ -28,7 +29,7 @@ public class StreamDeploymentRequest {
 	/**
 	 * Name of stream.
 	 */
-	private final String name;
+	private final String streamName;
 
 	/**
 	 * DSL definition for stream.
@@ -40,13 +41,21 @@ public class StreamDeploymentRequest {
 	 */
 	private final List<AppDeploymentRequest> appDeploymentRequests;
 
-	public StreamDeploymentRequest(String name, String dslText, List<AppDeploymentRequest> appDeploymentRequests) {
-		Assert.hasText(name, "name is required");
+	/**
+	 * The set of properties for the {@link StreamDeployer} implementation to use.
+	 */
+	private final Map<String, String> streamDeployerProperties;
+
+	public StreamDeploymentRequest(String streamName, String dslText, List<AppDeploymentRequest> appDeploymentRequests,
+			Map<String, String> streamDeployerProperties) {
+		Assert.hasText(streamName, "stream name is required");
 		Assert.hasText(dslText, "dslText is required");
 		Assert.notNull(appDeploymentRequests, "appDeploymentRequests can not be null");
-		this.name = name;
+		Assert.notNull(streamDeployerProperties, "streamDeployerProperties can not be null");
+		this.streamName = streamName;
 		this.dslText = dslText;
 		this.appDeploymentRequests = appDeploymentRequests;
+		this.streamDeployerProperties = streamDeployerProperties;
 	}
 
 	/**
@@ -54,8 +63,8 @@ public class StreamDeploymentRequest {
 	 *
 	 * @return stream name
 	 */
-	public String getName() {
-		return name;
+	public String getStreamName() {
+		return streamName;
 	}
 
 	/**

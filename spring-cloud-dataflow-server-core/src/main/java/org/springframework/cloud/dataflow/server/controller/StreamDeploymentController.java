@@ -34,7 +34,7 @@ import org.springframework.cloud.dataflow.server.repository.DeploymentIdReposito
 import org.springframework.cloud.dataflow.server.repository.DeploymentKey;
 import org.springframework.cloud.dataflow.server.repository.NoSuchStreamDefinitionException;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
-import org.springframework.cloud.dataflow.server.service.StreamService;
+import org.springframework.cloud.dataflow.server.service.impl.DefaultStreamService;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.AppStatus;
 import org.springframework.cloud.deployer.spi.app.DeploymentState;
@@ -72,7 +72,7 @@ public class StreamDeploymentController {
 	 */
 	private static final String METRICS_TRIGGER_INCLUDES = "spring.metrics.export.triggers.application.includes";
 	private static Log logger = LogFactory.getLog(StreamDeploymentController.class);
-	private final StreamService streamService;
+	private final DefaultStreamService defaultStreamService;
 
 	/**
 	 * The repository this controller will use for stream CRUD operations.
@@ -120,21 +120,21 @@ public class StreamDeploymentController {
 	public StreamDeploymentController(StreamDefinitionRepository repository,
 									  DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
 									  ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties commonProperties,
-									  StreamService streamService) {
+									  DefaultStreamService defaultStreamService) {
 		Assert.notNull(repository, "StreamDefinitionRepository must not be null");
 		Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
 		Assert.notNull(registry, "AppRegistry must not be null");
 		Assert.notNull(deployer, "AppDeployer must not be null");
 		Assert.notNull(metadataResolver, "MetadataResolver must not be null");
 		Assert.notNull(commonProperties, "CommonApplicationProperties must not be null");
-		Assert.notNull(streamService, "StreamDeploymentService must not be null");
+		Assert.notNull(defaultStreamService, "StreamDeploymentService must not be null");
 		this.repository = repository;
 		this.deploymentIdRepository = deploymentIdRepository;
 		this.registry = registry;
 		this.deployer = deployer;
 		this.whitelistProperties = new WhitelistProperties(metadataResolver);
 		this.commonApplicationProperties = commonProperties;
-		this.streamService = streamService;
+		this.defaultStreamService = defaultStreamService;
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class StreamDeploymentController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void deploy(@PathVariable("name") String name,
 			@RequestBody(required = false) Map<String, String> properties) {
-		streamService.deployStream(name, properties);
+		defaultStreamService.deployStream(name, properties);
 	}
 
 	/**

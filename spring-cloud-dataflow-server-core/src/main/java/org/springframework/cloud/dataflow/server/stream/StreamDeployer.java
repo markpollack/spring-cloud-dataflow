@@ -20,5 +20,10 @@ package org.springframework.cloud.dataflow.server.stream;
  */
 public interface StreamDeployer {
 
+	// TODO return 'stream handle' stream name for AppDeployer impl, release name for Skipper
+	// impl.
+	// TODO store releaseName in SCDF for stream name?
 	void deployStream(StreamDeploymentRequest streamDeploymentRequest);
+
+	String calculateStreamState(String streamName);
 }

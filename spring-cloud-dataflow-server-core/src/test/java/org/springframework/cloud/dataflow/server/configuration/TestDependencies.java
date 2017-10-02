@@ -55,10 +55,12 @@ import org.springframework.cloud.dataflow.server.repository.InMemoryStreamDefini
 import org.springframework.cloud.dataflow.server.repository.InMemoryTaskDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.TaskDefinitionRepository;
-import org.springframework.cloud.dataflow.server.service.StreamService;
 import org.springframework.cloud.dataflow.server.service.TaskService;
+import org.springframework.cloud.dataflow.server.service.impl.DefaultStreamService;
 import org.springframework.cloud.dataflow.server.service.impl.DefaultTaskService;
 import org.springframework.cloud.dataflow.server.service.impl.TaskConfigurationProperties;
+import org.springframework.cloud.dataflow.server.stream.AppDeployerStreamDeployer;
+import org.springframework.cloud.dataflow.server.stream.SkipperStreamDeployer;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.resource.maven.MavenResourceLoader;
 import org.springframework.cloud.deployer.resource.registry.InMemoryUriRegistry;
@@ -119,24 +121,38 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
 	@Bean
 	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-																 DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
-																 ApplicationConfigurationMetadataResolver metadataResolver,
-																 CommonApplicationProperties applicationProperties, StreamService streamService) {
+			DeploymentIdRepository deploymentIdRepository, AppRegistry registry,
+			ApplicationConfigurationMetadataResolver metadataResolver,
+			CommonApplicationProperties applicationProperties, DefaultStreamService defaultStreamService) {
 		return new StreamDeploymentController(repository, deploymentIdRepository, registry, appDeployer(),
-				metadataResolver, applicationProperties, streamService);
+				metadataResolver, applicationProperties, defaultStreamService);
 	}
 
 	@Bean
-	public StreamService streamDeploymentService(AppRegistry appRegistry,
-												 CommonApplicationProperties commonApplicationProperties,
-												 ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
-												 AppDeployer appDeployer,
-												 DeploymentIdRepository deploymentIdRepository,
-												 StreamDefinitionRepository streamDefinitionRepository,
-												 SkipperClient skipperClient) {
-		return new StreamService(appRegistry, commonApplicationProperties,
-				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository,
-				streamDefinitionRepository, skipperClient);
+	public DefaultStreamService streamDeploymentService(AppRegistry appRegistry,
+			CommonApplicationProperties commonApplicationProperties,
+			ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
+			StreamDefinitionRepository streamDefinitionRepository,
+			AppDeployerStreamDeployer appDeployerStreamDeployer,
+			SkipperStreamDeployer skipperStreamDeployer) {
+		return new DefaultStreamService(appRegistry,
+				commonApplicationProperties,
+				applicationConfigurationMetadataResolver,
+				streamDefinitionRepository,
+				appDeployerStreamDeployer,
+				skipperStreamDeployer);
+	}
+
+	@Bean
+	public AppDeployerStreamDeployer appDeployerStreamDeployer(AppDeployer appDeployer,
+			DeploymentIdRepository deploymentIdRepository,
+			StreamDefinitionRepository streamDefinitionRepository) {
+		return new AppDeployerStreamDeployer(appDeployer, deploymentIdRepository, streamDefinitionRepository);
+	}
+
+	@Bean
+	public SkipperStreamDeployer skipperStreamDeployer(SkipperClient skipperClient) {
+		return new SkipperStreamDeployer(skipperClient);
 	}
 
 	@Bean
@@ -146,10 +162,10 @@ public class TestDependencies extends WebMvcConfigurationSupport {
 
 	@Bean
 	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-																 DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
-																 StreamService streamService) {
+			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
+			DefaultStreamService defaultStreamService) {
 		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, appDeployer(),
-				appRegistry(), streamService);
+				appRegistry(), defaultStreamService);
 	}
 
 	@Bean
