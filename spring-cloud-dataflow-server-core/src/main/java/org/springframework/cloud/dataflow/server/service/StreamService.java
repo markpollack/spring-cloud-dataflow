@@ -85,22 +85,19 @@ import static org.springframework.cloud.deployer.spi.app.AppDeployer.COUNT_PROPE
  * @author Mark Pollack
  */
 @Service
-public class StreamDeploymentService {
+public class StreamService {
 
+	public static final String SKIPPER_KEY_PREFIX = "spring.cloud.dataflow.skipper";
+	public static final String SKIPPER_ENABLED_PROPERTY_KEY = SKIPPER_KEY_PREFIX + ".enabled";
 	/**
 	 * This is the spring boot property key that Spring Cloud Stream uses to filter the
 	 * metrics to import when the specific Spring Cloud Stream "applicaiton" trigger is fired
 	 * for metrics export.
 	 */
 	private static final String METRICS_TRIGGER_INCLUDES = "spring.metrics.export.triggers.application.includes";
-
-	public static final String SKIPPER_KEY_PREFIX = "spring.cloud.dataflow.skipper";
-
-	public static final String SKIPPER_ENABLED_PROPERTY_KEY = SKIPPER_KEY_PREFIX + ".enabled";
-
 	private static final String DEFAULT_PARTITION_KEY_EXPRESSION = "payload";
 
-	private static Log logger = LogFactory.getLog(StreamDeploymentService.class);
+	private static Log logger = LogFactory.getLog(StreamService.class);
 
 	private static String deployLoggingString = "Deploying application named [%s] as part of stream named [%s] "
 			+ "with resource URI [%s]";
@@ -134,7 +131,7 @@ public class StreamDeploymentService {
 	 */
 	private final CommonApplicationProperties commonApplicationProperties;
 
-	public StreamDeploymentService(AppRegistry appRegistry,
+	public StreamService(AppRegistry appRegistry,
 			CommonApplicationProperties commonApplicationProperties,
 			ApplicationConfigurationMetadataResolver metadataResolver,
 			AppDeployer appDeployer,
@@ -157,6 +154,9 @@ public class StreamDeploymentService {
 	}
 
 	public void deployStream(String name, Map<String, String> properties) {
+		if (properties == null) {
+			properties = new HashMap<>();
+		}
 		deployStreamWithDefinition(createStreamDefinitionForDeploy(name, properties), properties);
 	}
 
@@ -199,13 +199,14 @@ public class StreamDeploymentService {
 	 * @param streamDefinition the stream to deploy
 	 * @param streamDeploymentProperties the deployment properties for the stream
 	 */
-	private void deployStreamWithDefinition(StreamDefinition streamDefinition, Map<String, String> streamDeploymentProperties) {
+	private void deployStreamWithDefinition(StreamDefinition streamDefinition,
+			Map<String, String> streamDeploymentProperties) {
 
-		//Extract skipper properties
+		// Extract skipper properties
 		Map<String, String> skipperDeploymentProperties = streamDeploymentProperties.entrySet().stream()
 				.filter(mapEntry -> mapEntry.getKey().startsWith(SKIPPER_KEY_PREFIX))
 				.collect(Collectors.toMap(mapEntry -> mapEntry.getKey(), mapEntry -> mapEntry.getValue()));
-		//Create map without any skipper properties
+		// Create map without any skipper properties
 		Map<String, String> deploymentPropertiestoUse = streamDeploymentProperties.entrySet().stream()
 				.filter(mapEntry -> !mapEntry.getKey().startsWith(SKIPPER_KEY_PREFIX))
 				.collect(Collectors.toMap(mapEntry -> mapEntry.getKey(), mapEntry -> mapEntry.getValue()));
@@ -215,7 +216,8 @@ public class StreamDeploymentService {
 		DeploymentPropertiesUtils.ensureJustDeploymentProperties(deploymentPropertiestoUse);
 		if (skipperDeploymentProperties.containsKey(SKIPPER_ENABLED_PROPERTY_KEY)) {
 			deployUsingSkipper(streamDefinition, pairList, skipperDeploymentProperties);
-		} else {
+		}
+		else {
 			deploy(pairList);
 		}
 	}
@@ -241,8 +243,8 @@ public class StreamDeploymentService {
 	}
 
 	private void deployUsingSkipper(StreamDefinition streamDefinition,
-									List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList,
-									Map<String, String> skipperDeploymentProperties) {
+			List<Pair<AppDeploymentRequest, StreamAppDefinition>> pairList,
+			Map<String, String> skipperDeploymentProperties) {
 		logger.info("Deploying Stream " + streamDefinition.getName() + " using skipper.");
 		// Create the package .zip file to upload
 		File packageFile = createPackageForStream(streamDefinition, pairList);
@@ -250,7 +252,7 @@ public class StreamDeploymentService {
 		// Upload the package
 		UploadRequest uploadRequest = new UploadRequest();
 		uploadRequest.setName(streamDefinition.getName());
-		uploadRequest.setVersion("1.0.0");  //TODO get from skipperDeploymentProperties...
+		uploadRequest.setVersion("1.0.0"); // TODO get from skipperDeploymentProperties...
 		uploadRequest.setExtension("zip");
 		uploadRequest.setRepoName("local");
 		try {
@@ -275,8 +277,9 @@ public class StreamDeploymentService {
 		installRequest.setInstallProperties(installProperties);
 		skipperClient.install(installRequest);
 
-		//TODO store releasename in deploymentIdRepository...
-		//this.deploymentIdRepository.save(DeploymentKey.forStreamAppDefinition(streamAppDefinition), id);
+		// TODO store releasename in deploymentIdRepository...
+		// this.deploymentIdRepository.save(DeploymentKey.forStreamAppDefinition(streamAppDefinition),
+		// id);
 
 	}
 

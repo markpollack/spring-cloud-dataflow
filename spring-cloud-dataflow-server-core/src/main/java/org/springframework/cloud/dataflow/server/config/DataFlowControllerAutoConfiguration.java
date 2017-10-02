@@ -75,7 +75,7 @@ import org.springframework.cloud.dataflow.server.controller.support.MetricStore;
 import org.springframework.cloud.dataflow.server.repository.DeploymentIdRepository;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.TaskDefinitionRepository;
-import org.springframework.cloud.dataflow.server.service.StreamDeploymentService;
+import org.springframework.cloud.dataflow.server.service.StreamService;
 import org.springframework.cloud.dataflow.server.service.TaskJobService;
 import org.springframework.cloud.dataflow.server.service.TaskService;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
@@ -144,20 +144,20 @@ public class DataFlowControllerAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(StreamDefinitionRepository.class)
 	public StreamDefinitionController streamDefinitionController(StreamDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
-			AppDeployer deployer, AppRegistry appRegistry, StreamDeploymentService streamDeploymentService) {
+																 DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
+																 AppDeployer deployer, AppRegistry appRegistry, StreamService streamService) {
 		return new StreamDefinitionController(repository, deploymentIdRepository, deploymentController, deployer,
-				appRegistry, streamDeploymentService);
+				appRegistry, streamService);
 	}
 
 	@Bean
 	@ConditionalOnBean(StreamDefinitionRepository.class)
 	public StreamDeploymentController streamDeploymentController(StreamDefinitionRepository repository,
-			DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
-			ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties,
-			StreamDeploymentService streamDeploymentService) {
+																 DeploymentIdRepository deploymentIdRepository, AppRegistry registry, AppDeployer deployer,
+																 ApplicationConfigurationMetadataResolver metadataResolver, CommonApplicationProperties appsProperties,
+																 StreamService streamService) {
 		return new StreamDeploymentController(repository, deploymentIdRepository, registry, deployer, metadataResolver,
-				appsProperties, streamDeploymentService);
+				appsProperties, streamService);
 	}
 
 	@Bean
@@ -169,13 +169,13 @@ public class DataFlowControllerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(StreamDefinitionRepository.class)
-	public StreamDeploymentService streamDeploymentService(AppRegistry appRegistry,
-			CommonApplicationProperties commonApplicationProperties,
-			ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
-			AppDeployer appDeployer,
-			DeploymentIdRepository deploymentIdRepository, StreamDefinitionRepository streamDefinitionRepository,
-			SkipperClient skipperClient) {
-		return new StreamDeploymentService(appRegistry, commonApplicationProperties,
+	public StreamService streamDeploymentService(AppRegistry appRegistry,
+												 CommonApplicationProperties commonApplicationProperties,
+												 ApplicationConfigurationMetadataResolver applicationConfigurationMetadataResolver,
+												 AppDeployer appDeployer,
+												 DeploymentIdRepository deploymentIdRepository, StreamDefinitionRepository streamDefinitionRepository,
+												 SkipperClient skipperClient) {
+		return new StreamService(appRegistry, commonApplicationProperties,
 				applicationConfigurationMetadataResolver, appDeployer, deploymentIdRepository,
 				streamDefinitionRepository, skipperClient);
 	}

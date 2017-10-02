@@ -52,7 +52,7 @@ import org.springframework.cloud.dataflow.server.repository.DuplicateStreamDefin
 import org.springframework.cloud.dataflow.server.repository.NoSuchStreamDefinitionException;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.support.SearchPageable;
-import org.springframework.cloud.dataflow.server.service.StreamDeploymentService;
+import org.springframework.cloud.dataflow.server.service.StreamService;
 import org.springframework.cloud.dataflow.server.support.CannotDetermineApplicationTypeException;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.DeploymentState;
@@ -74,7 +74,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.cloud.dataflow.server.service.StreamDeploymentService.SKIPPER_ENABLED_PROPERTY_KEY;
+import static org.springframework.cloud.dataflow.server.service.StreamService.SKIPPER_ENABLED_PROPERTY_KEY;
 
 /**
  * Controller for operations on {@link StreamDefinition}. This includes CRUD and optional
@@ -98,7 +98,7 @@ public class StreamDefinitionController {
 	/**
 	 * The service that is responsible for deploying streams.
 	 */
-	private final StreamDeploymentService streamDeploymentService;
+	private final StreamService streamService;
 
 	/**
 	 * The repository this controller will use for stream CRUD operations.
@@ -144,19 +144,19 @@ public class StreamDefinitionController {
 	 */
 	public StreamDefinitionController(StreamDefinitionRepository repository,
 			DeploymentIdRepository deploymentIdRepository, StreamDeploymentController deploymentController,
-			AppDeployer deployer, AppRegistry appRegistry, StreamDeploymentService streamDeploymentService) {
+			AppDeployer deployer, AppRegistry appRegistry, StreamService streamService) {
 		Assert.notNull(repository, "StreamDefinitionRepository must not be null");
 		Assert.notNull(deploymentIdRepository, "DeploymentIdRepository must not be null");
 		Assert.notNull(deploymentController, "StreamDeploymentController must not be null");
 		Assert.notNull(deployer, "AppDeployer must not be null");
 		Assert.notNull(appRegistry, "AppRegistry must not be null");
-		Assert.notNull(streamDeploymentService, "StreamDeploymentService must not be null");
+		Assert.notNull(streamService, "StreamDeploymentService must not be null");
 		this.deploymentController = deploymentController;
 		this.deploymentIdRepository = deploymentIdRepository;
 		this.repository = repository;
 		this.deployer = deployer;
 		this.appRegistry = appRegistry;
-		this.streamDeploymentService = streamDeploymentService;
+		this.streamService = streamService;
 	}
 
 	/**
@@ -275,8 +275,10 @@ public class StreamDefinitionController {
 		this.repository.save(stream);
 		if (deploy) {
 			Map<String, String> streamDeploymentProperties = new HashMap<>();
-			streamDeploymentProperties.put(SKIPPER_ENABLED_PROPERTY_KEY, "true");
-			streamDeploymentService.deployStream(name, streamDeploymentProperties);
+			if (useSkipper) {
+				streamDeploymentProperties.put(SKIPPER_ENABLED_PROPERTY_KEY, "true");
+			}
+			streamService.deployStream(name, streamDeploymentProperties);
 		}
 		return new Assembler(new PageImpl<>(Collections.singletonList(stream))).toResource(stream);
 	}

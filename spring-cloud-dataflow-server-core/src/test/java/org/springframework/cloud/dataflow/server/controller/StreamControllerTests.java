@@ -43,7 +43,7 @@ import org.springframework.cloud.dataflow.server.repository.DeploymentKey;
 import org.springframework.cloud.dataflow.server.repository.InMemoryDeploymentIdRepository;
 import org.springframework.cloud.dataflow.server.repository.InMemoryStreamDefinitionRepository;
 import org.springframework.cloud.dataflow.server.repository.StreamDefinitionRepository;
-import org.springframework.cloud.dataflow.server.service.StreamDeploymentService;
+import org.springframework.cloud.dataflow.server.service.StreamService;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
 import org.springframework.cloud.deployer.resource.maven.MavenResource;
 import org.springframework.cloud.deployer.resource.maven.MavenResourceLoader;
@@ -124,7 +124,7 @@ public class StreamControllerTests {
 	private CommonApplicationProperties appsProperties;
 
 	@Autowired
-	private StreamDeploymentService streamDeploymentService;
+	private StreamService streamService;
 
 	@Before
 	public void setupMocks() {
@@ -143,23 +143,23 @@ public class StreamControllerTests {
 	public void testConstructorMissingRepository() {
 		StreamDeploymentController deploymentController = new StreamDeploymentController(
 				new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(), appRegistry,
-				appDeployer, metadataResolver, new CommonApplicationProperties(), streamDeploymentService);
-		new StreamDefinitionController(null, null, deploymentController, appDeployer, appRegistry, streamDeploymentService);
+				appDeployer, metadataResolver, new CommonApplicationProperties(), streamService);
+		new StreamDefinitionController(null, null, deploymentController, appDeployer, appRegistry, streamService);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorMissingDeploymentController() {
 		new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(),
-				null, appDeployer, appRegistry, streamDeploymentService);
+				null, appDeployer, appRegistry, streamService);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorMissingDeployer() {
 		StreamDeploymentController deploymentController = new StreamDeploymentController(
 				new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(), appRegistry,
-				appDeployer, metadataResolver, new CommonApplicationProperties(), streamDeploymentService);
+				appDeployer, metadataResolver, new CommonApplicationProperties(), streamService);
 		new StreamDefinitionController(new InMemoryStreamDefinitionRepository(), new InMemoryDeploymentIdRepository(),
-				deploymentController, null, appRegistry, streamDeploymentService);
+				deploymentController, null, appRegistry, streamService);
 	}
 
 	@Test
