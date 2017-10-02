@@ -88,13 +88,16 @@ import static org.springframework.cloud.deployer.spi.app.AppDeployer.COUNT_PROPE
 public class StreamService {
 
 	public static final String SKIPPER_KEY_PREFIX = "spring.cloud.dataflow.skipper";
+
 	public static final String SKIPPER_ENABLED_PROPERTY_KEY = SKIPPER_KEY_PREFIX + ".enabled";
+
 	/**
 	 * This is the spring boot property key that Spring Cloud Stream uses to filter the
 	 * metrics to import when the specific Spring Cloud Stream "applicaiton" trigger is fired
 	 * for metrics export.
 	 */
 	private static final String METRICS_TRIGGER_INCLUDES = "spring.metrics.export.triggers.application.includes";
+
 	private static final String DEFAULT_PARTITION_KEY_EXPRESSION = "payload";
 
 	private static Log logger = LogFactory.getLog(StreamService.class);
@@ -227,10 +230,8 @@ public class StreamService {
 			AppDeploymentRequest appDeploymentRequest = pair.getFirst();
 			StreamAppDefinition streamAppDefinition = pair.getSecond();
 			try {
-				ApplicationType type = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-				AppRegistration registration = this.appRegistry.find(streamAppDefinition.getRegisteredAppName(), type);
 				logger.info(String.format(deployLoggingString, appDeploymentRequest.getDefinition().getName(),
-						streamAppDefinition.getStreamName(), registration.getUri()));
+						streamAppDefinition.getStreamName(), appDeploymentRequest.getResource().getURI()));
 				String id = this.appDeployer.deploy(appDeploymentRequest);
 				this.deploymentIdRepository.save(DeploymentKey.forStreamAppDefinition(streamAppDefinition), id);
 			}
