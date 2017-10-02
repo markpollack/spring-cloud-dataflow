@@ -232,10 +232,12 @@ public class StreamDefinitionController {
 	 * @param dsl DSL definition for stream
 	 * @param deploy if {@code true}, the stream is deployed upon creation (default is
 	 * {@code false})
+	 * @param useSkipper if {@code true}, delegate the deployment of the stream to skipper
+	 * (default is false)
 	 * @return the created stream definition
 	 * @throws DuplicateStreamDefinitionException if a stream definition with the same name
 	 * already exists
-	 * @throws InvalidStreamDefinitionException if there errors in parsing the strem DSL,
+	 * @throws InvalidStreamDefinitionException if there errors in parsing the stream DSL,
 	 * resolving the name, or type of applications in the stream
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST)

@@ -173,7 +173,7 @@ public class StreamDeploymentController {
 	@RequestMapping(value = "/{name}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public void deploy(@PathVariable("name") String name,
-			@RequestBody(required = false) Map<String, String> properties) {
+					   @RequestBody(required = false) Map<String, String> properties) {
 		defaultStreamService.deployStream(name, properties);
 	}
 

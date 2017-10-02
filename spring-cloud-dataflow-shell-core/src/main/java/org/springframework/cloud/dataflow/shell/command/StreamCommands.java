@@ -108,7 +108,7 @@ public class StreamCommands implements CommandMarker {
 			@CliOption(mandatory = true, key = { "definition" }, help = "a stream definition, using the DSL (e.g. "
 					+ "\"http --port=9000 | hdfs\")", optionContext = "disable-string-converter completion-stream") String dsl,
 			@CliOption(key = "deploy", help = "whether to deploy the stream immediately", unspecifiedDefaultValue = "false", specifiedDefaultValue = "true") boolean deploy,
-			@CliOption(key = "useSkipper", help = "whether to deploy the stream using skipper", unspecifiedDefaultValue = "false", specifiedDefaultValue = "false") boolean useSkipper) {
+			@CliOption(key = "useSkipper", help = "whether to deploy the stream using skipper", unspecifiedDefaultValue = "false", specifiedDefaultValue = "true") boolean useSkipper) {
 		streamOperations().createStream(name, dsl, deploy, useSkipper);
 		String message = String.format("Created new stream '%s'", name);
 		if (deploy) {
