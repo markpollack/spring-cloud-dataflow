@@ -168,7 +168,7 @@ public class AppDeploymentRequestCreator {
 			String version = extractAppVersionProperty(currentApp, streamDeploymentProperties);
 			List<String> commandlineArguments = new ArrayList<>();
 			if (version != null) {
-				//TODO ensure new version as a resource exists and load that AppRegistration
+				// TODO ensure new version as a resource exists and load that AppRegistration
 				commandlineArguments.add(version);
 			}
 
@@ -196,6 +196,8 @@ public class AppDeploymentRequestCreator {
 			nextAppCount = getInstanceCount(deployerDeploymentProperties);
 			isDownStreamAppPartitioned = isPartitionedConsumer(appDeployTimeProperties, upstreamAppSupportsPartition);
 
+			logger.info(String.format("Creating resource with [%s] for application [%s]",
+					appRegistration.getUri(), currentApp.getName()));
 			Resource appResource = appRegistration.getResource();
 			Resource metadataResource = appRegistration.getMetadataResource();
 
