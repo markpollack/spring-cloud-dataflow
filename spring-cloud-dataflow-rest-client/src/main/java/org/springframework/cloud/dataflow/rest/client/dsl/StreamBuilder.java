@@ -1,0 +1,92 @@
+/*
+ * Copyright 2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.cloud.dataflow.rest.client.dsl;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
+import org.springframework.util.StringUtils;
+
+/**
+ * @author Mark Pollack
+ */
+public class StreamBuilder {
+
+	private String name;
+
+	private DataFlowOperations client;
+
+	private String definition;
+
+	private List<StreamApplication> applications = new LinkedList<>();
+
+	StreamBuilder(String name, DataFlowOperations client, String definition,
+			List<StreamApplication> applications) {
+		this.name = name;
+		this.client = client;
+		this.definition = definition;
+		this.applications = applications;
+		if (StringUtils.isEmpty(definition)) {
+			createStreamDefinition();
+		}
+		this.client.streamOperations().createStream(this.name, this.definition,
+				false);
+	}
+
+	public void destroy() {
+		this.client.streamOperations().destroy(this.name);
+	}
+
+	public Stream deploy(Map<String, String> deploymentProperties) {
+		Map<String, String> resolvedProperties = resolveDeploymentProperties(
+				deploymentProperties);
+		client.streamOperations().deploy(this.name, resolvedProperties);
+		return new Stream(this.name, this.applications, this.definition, this.client);
+	}
+
+	public Stream deploy() {
+		return deploy(null);
+	}
+
+	private void createStreamDefinition() {
+		StringBuilder buffer = new StringBuilder();
+		this.definition = StringUtils.collectionToDelimitedString(applications,
+				" | ");
+	}
+
+	/**
+	 * Concatenates any deployment properties from the apps with a given map used during
+	 * {@link StreamBuilder#deploy(Map)}
+	 * @return
+	 */
+	private Map<String, String> resolveDeploymentProperties(
+			Map<String, String> deploymentProperties) {
+		Map<String, String> properties = new HashMap<>();
+		if (deploymentProperties != null) {
+			properties.putAll(deploymentProperties);
+		}
+		for (StreamApplication app : this.applications) {
+			for (Map.Entry<String, Object> entry : app.getDeploymentProperties()
+					.entrySet()) {
+				properties.put(entry.getKey(), entry.getValue().toString());
+			}
+		}
+		return properties;
+	}
+}
