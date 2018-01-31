@@ -18,6 +18,7 @@ package org.springframework.cloud.dataflow.registry.domain;
 
 import java.net.URI;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.springframework.cloud.dataflow.core.ApplicationType;
@@ -53,12 +54,14 @@ public class AppRegistration extends AbstractEntity implements Comparable<AppReg
 	/**
 	 * URI for the app resource.
 	 */
+	@Lob
 	private URI uri;
 
 	/**
 	 * URI for the app metadata or {@literal null} if the app itself should be used as
 	 * metadata source.
 	 */
+	@Lob
 	private URI metadataUri;
 
 	/**
