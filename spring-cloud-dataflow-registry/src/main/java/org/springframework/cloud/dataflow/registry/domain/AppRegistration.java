@@ -25,7 +25,7 @@ import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.util.Assert;
 
 /**
- * This maps a (name + type + version) triple to a URI
+ * Models the registration of applications.
  *
  * @author Patrick Peralta
  * @author Mark Fisher
