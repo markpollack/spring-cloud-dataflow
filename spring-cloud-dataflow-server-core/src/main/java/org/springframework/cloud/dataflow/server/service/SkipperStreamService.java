@@ -20,6 +20,7 @@ import java.util.Collection;
 import org.springframework.cloud.dataflow.rest.UpdateStreamRequest;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.domain.Release;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Extends the core {@link StreamService} with support for operations provided by Skipper.
@@ -28,6 +29,7 @@ import org.springframework.cloud.skipper.domain.Release;
  * @author Ilayaperumal Gopinathan
  * @author Christian Tzolov
  */
+@Transactional
 public interface SkipperStreamService extends StreamService {
 
 	/**

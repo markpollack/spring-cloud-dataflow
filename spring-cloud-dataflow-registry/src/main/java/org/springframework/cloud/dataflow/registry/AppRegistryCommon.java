@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.cloud.dataflow.core.ApplicationType;
 import org.springframework.cloud.dataflow.registry.domain.AppRegistration;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Common interface (bridge) for the legacy {@link AppRegistry} and the new
@@ -30,6 +31,7 @@ import org.springframework.core.io.Resource;
  *
  * @author Christian Tzolov
  */
+@Transactional
 public interface AppRegistryCommon {
 
 	/**

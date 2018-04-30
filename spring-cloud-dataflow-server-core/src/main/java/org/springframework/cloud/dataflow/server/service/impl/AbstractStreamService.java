@@ -142,6 +142,11 @@ public abstract class AbstractStreamService implements StreamService {
 		doDeployStream(streamDefinition, deploymentProperties);
 	}
 
+	@Override
+	public StreamDefinition findOne(String name) {
+		return this.streamDefinitionRepository.findOne(name);
+	}
+
 	protected abstract void doDeployStream(StreamDefinition streamDefinition, Map<String, String> deploymentProperties);
 
 	protected abstract DeploymentState doCalculateStreamState(String name);

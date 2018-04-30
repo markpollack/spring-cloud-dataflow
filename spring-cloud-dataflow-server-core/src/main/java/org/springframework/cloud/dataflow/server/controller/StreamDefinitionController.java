@@ -270,7 +270,7 @@ public class StreamDefinitionController {
 	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	public StreamDefinitionResource display(@PathVariable("name") String name) {
-		StreamDefinition definition = streamDefinitionRepository.findOne(name);
+		StreamDefinition definition = streamService.findOne(name);
 		if (definition == null) {
 			throw new NoSuchStreamDefinitionException(name);
 		}

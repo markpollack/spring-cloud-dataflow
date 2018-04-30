@@ -158,6 +158,10 @@ public class SkipperAppRegistryController {
 		if (registration == null) {
 			throw new NoSuchAppRegistrationException(name, type, version);
 		}
+		return getDetailedAppRegistrationResource(registration);
+	}
+
+	private DetailedAppRegistrationResource getDetailedAppRegistrationResource(AppRegistration registration) {
 		DetailedAppRegistrationResource result = new DetailedAppRegistrationResource(
 				assembler.toResource(registration));
 		List<ConfigurationMetadataProperty> properties = metadataResolver
@@ -173,14 +177,8 @@ public class SkipperAppRegistryController {
 	@ResponseStatus(HttpStatus.OK)
 	public DetailedAppRegistrationResource info(@PathVariable("type") ApplicationType type,
 			@PathVariable("name") String name) {
-		if (!this.appRegistryService.appExist(name, type)) {
-			throw new NoSuchAppRegistrationException(name, type);
-		}
-		if (this.appRegistryService.getDefaultApp(name, type) == null) {
-			throw new RuntimeException(String.format("No default version exists for the app [%s:%s]", name, type));
-		}
-		String defaultVersion = this.appRegistryService.getDefaultApp(name, type).getVersion();
-		return info(type, name, defaultVersion);
+		AppRegistration registration = appRegistryService.findDefault(type, name);
+		return getDetailedAppRegistrationResource(registration);
 	}
 
 	/**

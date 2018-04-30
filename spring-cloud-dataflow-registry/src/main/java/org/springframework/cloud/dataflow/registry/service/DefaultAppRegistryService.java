@@ -183,4 +183,21 @@ public class DefaultAppRegistryService extends AbstractAppRegistryCommon impleme
 	public boolean appExist(String name, ApplicationType type, String version) {
 		return find(name, type, version) != null;
 	}
+
+	@Override
+	public AppRegistration findDefault(ApplicationType type, String name) {
+		if (!this.appExist(name, type)) {
+			throw new NoSuchAppRegistrationException(name, type);
+		}
+		if (this.getDefaultApp(name, type) == null) {
+			throw new RuntimeException(String.format("No default version exists for the app [%s:%s]", name, type));
+		}
+		String defaultVersion = this.getDefaultApp(name, type).getVersion();
+		AppRegistration registration = find(name, type, defaultVersion);
+		if (registration == null) {
+			throw new NoSuchAppRegistrationException(name, type, defaultVersion);
+		}
+		return registration;
+	}
+
 }

@@ -23,10 +23,12 @@ import org.springframework.cloud.dataflow.registry.domain.AppRegistration;
 import org.springframework.cloud.dataflow.registry.support.NoSuchAppRegistrationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Tzolov
  */
+@Transactional
 public interface AppRegistryService extends AppRegistryCommon {
 
 	/**
@@ -84,5 +86,10 @@ public interface AppRegistryService extends AppRegistryCommon {
 	/**
 	 * @return returns all {@link AppRegistration} versions for given name and type. Uses the pagination.
 	 */
+	@Transactional(readOnly=true)
 	Page<AppRegistration> findAllByTypeAndNameIsLike(ApplicationType type, String name, Pageable pageable);
+
+	@Transactional(readOnly=true)
+	AppRegistration findDefault(ApplicationType type, String name);
+
 }

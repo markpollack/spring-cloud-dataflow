@@ -22,6 +22,7 @@ import org.springframework.cloud.dataflow.core.StreamDefinition;
 import org.springframework.cloud.dataflow.core.StreamDeployment;
 import org.springframework.cloud.dataflow.server.controller.support.InvalidStreamDefinitionException;
 import org.springframework.cloud.deployer.spi.app.DeploymentState;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Provide deploy, undeploy, info and state operations on the stream.
@@ -30,6 +31,7 @@ import org.springframework.cloud.deployer.spi.app.DeploymentState;
  * @author Ilayaperumal Gopinathan
  * @author Christian Tzolov
  */
+@Transactional
 public interface StreamService {
 
 	/**
@@ -75,4 +77,6 @@ public interface StreamService {
 	 * @return the stream deployment information
 	 */
 	StreamDeployment info(String streamName);
+
+	StreamDefinition findOne(String name);
 }
