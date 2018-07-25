@@ -111,8 +111,15 @@ public class DefaultSkipperStreamService extends AbstractStreamService implement
 				.filter(mapEntry -> !mapEntry.getKey().startsWith(SkipperStream.SKIPPER_KEY_PREFIX))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-		List<AppDeploymentRequest> appDeploymentRequests = this.appDeploymentRequestCreator
-				.createRequests(streamDefinition, deploymentPropertiesToUse);
+		List<AppDeploymentRequest> appDeploymentRequests;
+		// TODO asser value of boolean
+		if (skipperDeploymentProperties.containsKey(SkipperStream.SKIPPER_GENERATE_PROPERTIES)) {
+			appDeploymentRequests = this.appDeploymentRequestCreator
+					.createRequests(streamDefinition, deploymentPropertiesToUse, false);
+		} else {
+			appDeploymentRequests = this.appDeploymentRequestCreator
+					.createRequests(streamDefinition, deploymentPropertiesToUse);
+		}
 
 		DeploymentPropertiesUtils.validateSkipperDeploymentProperties(deploymentPropertiesToUse);
 

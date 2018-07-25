@@ -46,7 +46,7 @@ public interface StreamService {
 	 * @throws InvalidStreamDefinitionException if there are errors in parsing the stream DSL,
 	 * resolving the name, or type of applications in the stream
 	 */
-	StreamDefinition createStream(String streamName, String dsl, boolean deploy);
+	StreamDefinition createStream(String streamName, String dsl, boolean deploy, boolean appTypeIsApp);
 
 	/**
 	 * Deploys the stream with the user provided deployment properties.

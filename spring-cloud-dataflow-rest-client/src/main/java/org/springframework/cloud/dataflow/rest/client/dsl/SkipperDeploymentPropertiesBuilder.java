@@ -98,6 +98,11 @@ public class SkipperDeploymentPropertiesBuilder extends AbstractPropertiesBuilde
 		return this;
 	}
 
+	public SkipperDeploymentPropertiesBuilder generateProperties(boolean generateProperties) {
+		this.deploymentProperties.put(SkipperStream.SKIPPER_GENERATE_PROPERTIES, String.valueOf(generateProperties));
+		return this;
+	}
+
 	/**
 	 * Sets the repo name platform to be used by skipper
 	 * @param repoName

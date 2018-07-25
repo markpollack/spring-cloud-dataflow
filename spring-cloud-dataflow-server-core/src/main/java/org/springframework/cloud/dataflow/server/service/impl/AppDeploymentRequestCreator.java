@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,7 @@ import org.springframework.cloud.dataflow.core.StreamDefinition;
 import org.springframework.cloud.dataflow.core.StreamPropertyKeys;
 import org.springframework.cloud.dataflow.registry.AppRegistryCommon;
 import org.springframework.cloud.dataflow.registry.domain.AppRegistration;
+import org.springframework.cloud.dataflow.rest.SkipperStream;
 import org.springframework.cloud.dataflow.rest.util.DeploymentPropertiesUtils;
 import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
 import org.springframework.cloud.dataflow.server.config.apps.CommonApplicationProperties;
@@ -134,6 +136,11 @@ public class AppDeploymentRequestCreator {
 		return null;
 	}
 
+	public List<AppDeploymentRequest> createRequests(StreamDefinition streamDefinition,
+			Map<String, String> streamDeploymentProperties) {
+		return this.createRequests(streamDefinition, streamDeploymentProperties, true);
+	}
+
 	/**
 	 * Create a list of {@link AppDeploymentRequest}s from the provided
 	 * {@link StreamDefinition} and map of deployment properties.
@@ -142,7 +149,7 @@ public class AppDeploymentRequestCreator {
 	 * @return list of AppDeploymentRequests
 	 */
 	public List<AppDeploymentRequest> createRequests(StreamDefinition streamDefinition,
-			Map<String, String> streamDeploymentProperties) {
+			Map<String, String> streamDeploymentProperties, boolean generateProperties) {
 		List<AppDeploymentRequest> appDeploymentRequests = new ArrayList<>();
 		if (streamDeploymentProperties == null) {
 			streamDeploymentProperties = Collections.emptyMap();
@@ -152,10 +159,25 @@ public class AppDeploymentRequestCreator {
 		boolean isDownStreamAppPartitioned = false;
 		while (iterator.hasNext()) {
 			StreamAppDefinition currentApp = iterator.next();
-			ApplicationType type = DataFlowServerUtil.determineApplicationType(currentApp);
-			AppRegistration appRegistration = this.appRegistry.find(currentApp.getRegisteredAppName(), type);
+			AppRegistration appRegistration;
+			ApplicationType applicationType;
+			if (!generateProperties) {
+				applicationType = ApplicationType.app;
+				appRegistration = this.appRegistry.find(currentApp.getRegisteredAppName(), ApplicationType.app);
+				// Create application properties map without any binding properties
+				Map<String, String> propertiesToUse = currentApp.getProperties().entrySet().stream()
+						.filter(mapEntry -> !mapEntry.getKey().startsWith(BindingPropertyKeys.BINDING_KEY_PREFIX))
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				currentApp = new StreamAppDefinition(currentApp.getRegisteredAppName(), currentApp.getName(),
+						currentApp.getStreamName(), propertiesToUse);
+
+			}
+			else {
+				applicationType = DataFlowServerUtil.determineApplicationType(currentApp);
+				appRegistration = this.appRegistry.find(currentApp.getRegisteredAppName(), applicationType);
+			}
 			Assert.notNull(appRegistration, String.format("no application '%s' of type '%s' exists in the registry",
-					currentApp.getName(), type));
+					currentApp.getName(), applicationType));
 
 			Map<String, String> appDeployTimeProperties = extractAppProperties(currentApp, streamDeploymentProperties);
 			Map<String, String> deployerDeploymentProperties = DeploymentPropertiesUtils
@@ -196,9 +218,11 @@ public class AppDeploymentRequestCreator {
 			Resource metadataResource = this.appRegistry.getAppMetadataResource(appRegistration);
 
 			// add properties needed for metrics system
+
+			// TODO removing adding these generated properties has other side effects....
 			appDeployTimeProperties.put(DataFlowPropertyKeys.STREAM_NAME, currentApp.getStreamName());
 			appDeployTimeProperties.put(DataFlowPropertyKeys.STREAM_APP_LABEL, currentApp.getName());
-			appDeployTimeProperties.put(DataFlowPropertyKeys.STREAM_APP_TYPE, type.toString());
+			appDeployTimeProperties.put(DataFlowPropertyKeys.STREAM_APP_TYPE, applicationType.toString());
 			StringBuilder sb = new StringBuilder().append(currentApp.getStreamName()).append(".")
 					.append(currentApp.getName()).append(".").append("${spring.cloud.application.guid}");
 			appDeployTimeProperties.put(StreamPropertyKeys.METRICS_KEY, sb.toString());
@@ -231,8 +255,12 @@ public class AppDeploymentRequestCreator {
 	/* default */ Map<String, String> extractAppProperties(StreamAppDefinition appDefinition,
 			Map<String, String> streamDeploymentProperties) {
 		Map<String, String> appDeploymentProperties = new HashMap<>();
-		// add common properties first
-		appDeploymentProperties.putAll(this.commonApplicationProperties.getStream());
+
+		// add common properties first unless opting out of property generation
+		// TODO add value check
+		if (!streamDeploymentProperties.containsKey(SkipperStream.SKIPPER_GENERATE_PROPERTIES)) {
+			appDeploymentProperties.putAll(this.commonApplicationProperties.getStream());
+		}
 		// add properties with wild card prefix
 		String wildCardProducerPropertyPrefix = "app.*.producer.";
 		String wildCardConsumerPropertyPrefix = "app.*.consumer.";

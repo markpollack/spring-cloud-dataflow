@@ -32,7 +32,7 @@ public class StreamDefinitionControllerTests {
 	@Test
 	public void validateStreamSaveOutsideOfMVC() throws Exception {
 		StreamService streamService = mock(StreamService.class);
-		when(streamService.createStream("foo", "foo|bar", false))
+		when(streamService.createStream("foo", "foo|bar", false, false))
 				.thenReturn(new StreamDefinition("foo", "foo|bar"));
 
 		StreamDefinitionController controller = new StreamDefinitionController(streamService);

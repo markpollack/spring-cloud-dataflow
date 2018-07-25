@@ -91,19 +91,24 @@ public abstract class AbstractStreamService implements StreamService {
 		this.appRegistry = appRegistry;
 	}
 
-	public StreamDefinition createStream(String streamName, String dsl, boolean deploy) {
+	public StreamDefinition createStream(String streamName, String dsl, boolean deploy, boolean appTypeisApp) {
 		StreamDefinition streamDefinition = createStreamDefinition(streamName, dsl);
 
 		List<String> errorMessages = new ArrayList<>();
 
 		for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
 			final String appName = streamAppDefinition.getRegisteredAppName();
+			ApplicationType applicationType;
+			if (appTypeisApp == true) {
+				applicationType = ApplicationType.app;
+			} else {
+				applicationType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
+			}
 			try {
-				final ApplicationType appType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-				if (!appRegistry.appExist(appName, appType)) {
+				if (!appRegistry.appExist(appName, applicationType)) {
 					errorMessages.add(
 							String.format("Application name '%s' with type '%s' does not exist in the app registry.",
-									appName, appType));
+									appName, applicationType));
 				}
 			}
 			catch (CannotDetermineApplicationTypeException e) {
@@ -124,9 +129,11 @@ public abstract class AbstractStreamService implements StreamService {
 		}
 
 		return streamDefinition;
+
 	}
 
-	private StreamDefinition createStreamDefinition(String streamName, String dsl) {
+	public StreamDefinition createStreamDefinition(String streamName, String dsl) {
+
 		try {
 			return new StreamDefinition(streamName, dsl);
 		}
