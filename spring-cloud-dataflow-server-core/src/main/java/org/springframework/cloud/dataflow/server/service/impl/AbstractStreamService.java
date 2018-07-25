@@ -32,7 +32,6 @@ import org.springframework.cloud.dataflow.core.dsl.ParseException;
 import org.springframework.cloud.dataflow.core.dsl.StreamNode;
 import org.springframework.cloud.dataflow.core.dsl.StreamParser;
 import org.springframework.cloud.dataflow.registry.AppRegistryCommon;
-import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
 import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployedException;
 import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployingException;
 import org.springframework.cloud.dataflow.server.controller.support.InvalidStreamDefinitionException;
@@ -93,17 +92,16 @@ public abstract class AbstractStreamService implements StreamService {
 
 	public StreamDefinition createStream(String streamName, String dsl, boolean deploy) {
 		StreamDefinition streamDefinition = createStreamDefinition(streamName, dsl);
-
 		List<String> errorMessages = new ArrayList<>();
 
 		for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
 			final String appName = streamAppDefinition.getRegisteredAppName();
+			ApplicationType applicationType = streamAppDefinition.getApplicationType();
 			try {
-				final ApplicationType appType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-				if (!appRegistry.appExist(appName, appType)) {
+				if (!appRegistry.appExist(appName, applicationType)) {
 					errorMessages.add(
 							String.format("Application name '%s' with type '%s' does not exist in the app registry.",
-									appName, appType));
+									appName, applicationType));
 				}
 			}
 			catch (CannotDetermineApplicationTypeException e) {
@@ -124,9 +122,11 @@ public abstract class AbstractStreamService implements StreamService {
 		}
 
 		return streamDefinition;
+
 	}
 
-	private StreamDefinition createStreamDefinition(String streamName, String dsl) {
+	public StreamDefinition createStreamDefinition(String streamName, String dsl) {
+
 		try {
 			return new StreamDefinition(streamName, dsl);
 		}

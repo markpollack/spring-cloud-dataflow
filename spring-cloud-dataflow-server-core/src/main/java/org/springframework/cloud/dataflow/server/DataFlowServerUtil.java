@@ -41,6 +41,7 @@ public class DataFlowServerUtil {
 	 */
 	public static ApplicationType determineApplicationType(StreamAppDefinition appDefinition) {
 		// Parser has already taken care of source/sink destinations, etc
+
 		boolean hasOutput = appDefinition.getProperties().containsKey(BindingPropertyKeys.OUTPUT_DESTINATION);
 		boolean hasInput = appDefinition.getProperties().containsKey(BindingPropertyKeys.INPUT_DESTINATION);
 		if (hasInput && hasOutput) {
