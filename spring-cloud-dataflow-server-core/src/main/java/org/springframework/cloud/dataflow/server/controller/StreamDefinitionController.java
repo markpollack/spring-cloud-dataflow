@@ -161,8 +161,7 @@ public class StreamDefinitionController {
 	public StreamDefinitionResource save(@RequestParam("name") String name, @RequestParam("definition") String dsl,
 			@RequestParam(value = "deploy", defaultValue = "false") boolean deploy) {
 
-		// TODO pass in 'appTypeisApp' as an option.
-		StreamDefinition streamDefinition = this.streamService.createStream(name, dsl, deploy, true);
+		StreamDefinition streamDefinition = this.streamService.createStream(name, dsl, deploy);
 		return new Assembler(new PageImpl<>(Collections.singletonList(streamDefinition))).toResource(streamDefinition);
 	}
 

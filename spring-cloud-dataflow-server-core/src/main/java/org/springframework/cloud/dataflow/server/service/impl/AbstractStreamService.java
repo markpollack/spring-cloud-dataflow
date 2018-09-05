@@ -32,7 +32,6 @@ import org.springframework.cloud.dataflow.core.dsl.ParseException;
 import org.springframework.cloud.dataflow.core.dsl.StreamNode;
 import org.springframework.cloud.dataflow.core.dsl.StreamParser;
 import org.springframework.cloud.dataflow.registry.AppRegistryCommon;
-import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
 import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployedException;
 import org.springframework.cloud.dataflow.server.controller.StreamAlreadyDeployingException;
 import org.springframework.cloud.dataflow.server.controller.support.InvalidStreamDefinitionException;
@@ -91,19 +90,13 @@ public abstract class AbstractStreamService implements StreamService {
 		this.appRegistry = appRegistry;
 	}
 
-	public StreamDefinition createStream(String streamName, String dsl, boolean deploy, boolean appTypeisApp) {
+	public StreamDefinition createStream(String streamName, String dsl, boolean deploy) {
 		StreamDefinition streamDefinition = createStreamDefinition(streamName, dsl);
-
 		List<String> errorMessages = new ArrayList<>();
 
 		for (StreamAppDefinition streamAppDefinition : streamDefinition.getAppDefinitions()) {
 			final String appName = streamAppDefinition.getRegisteredAppName();
-			ApplicationType applicationType;
-			if (appTypeisApp == true) {
-				applicationType = ApplicationType.app;
-			} else {
-				applicationType = DataFlowServerUtil.determineApplicationType(streamAppDefinition);
-			}
+			ApplicationType applicationType = streamAppDefinition.getApplicationType();
 			try {
 				if (!appRegistry.appExist(appName, applicationType)) {
 					errorMessages.add(

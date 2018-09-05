@@ -169,7 +169,7 @@ public class AppDeploymentRequestCreator {
 						.filter(mapEntry -> !mapEntry.getKey().startsWith(BindingPropertyKeys.BINDING_KEY_PREFIX))
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 				currentApp = new StreamAppDefinition(currentApp.getRegisteredAppName(), currentApp.getName(),
-						currentApp.getStreamName(), propertiesToUse);
+						applicationType, currentApp.getStreamName(), propertiesToUse);
 
 			}
 			else {
