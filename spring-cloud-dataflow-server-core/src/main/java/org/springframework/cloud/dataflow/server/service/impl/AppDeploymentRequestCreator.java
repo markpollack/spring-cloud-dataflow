@@ -36,7 +36,6 @@ import org.springframework.cloud.dataflow.core.StreamPropertyKeys;
 import org.springframework.cloud.dataflow.registry.AppRegistryCommon;
 import org.springframework.cloud.dataflow.registry.domain.AppRegistration;
 import org.springframework.cloud.dataflow.rest.util.DeploymentPropertiesUtils;
-import org.springframework.cloud.dataflow.server.DataFlowServerUtil;
 import org.springframework.cloud.dataflow.server.config.apps.CommonApplicationProperties;
 import org.springframework.cloud.dataflow.server.controller.WhitelistProperties;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
@@ -87,7 +86,7 @@ public class AppDeploymentRequestCreator {
 		Iterator<StreamAppDefinition> iterator = streamDefinition.getDeploymentOrderIterator();
 		while (iterator.hasNext()) {
 			StreamAppDefinition currentApp = iterator.next();
-			ApplicationType type = DataFlowServerUtil.determineApplicationType(currentApp);
+			ApplicationType type = currentApp.getApplicationType();
 			AppRegistration appRegistration = this.appRegistry.find(currentApp.getRegisteredAppName(), type);
 			Assert.notNull(appRegistration,
 					String.format("no application '%s' of type '%s' exists in the registry",
