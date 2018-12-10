@@ -60,6 +60,7 @@ import org.springframework.cloud.task.repository.support.TaskRepositoryInitializ
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.map.repository.config.EnableMapRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.StringUtils;
@@ -76,7 +77,9 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnTasksEnabled
 @EnableConfigurationProperties({ TaskConfigurationProperties.class, CommonApplicationProperties.class,
-		DockerValidatorProperties.class, LocalPlatformProperties.class})
+		DockerValidatorProperties.class, LocalPlatformProperties.class
+})
+@EnableMapRepositories(basePackages = "org.springframework.cloud.dataflow.server.job")
 @EnableTransactionManagement
 public class TaskConfiguration {
 
@@ -86,24 +89,16 @@ public class TaskConfiguration {
 	@Value("${spring.cloud.dataflow.server.uri:}")
 	private String dataflowServerUri;
 
-	@Bean
-	@ConditionalOnProperty(value = "spring.cloud.dataflow.task.enableLocalPlatform", matchIfMissing = true)
-	public TaskPlatform localTaskPlatform(LocalPlatformProperties localPlatformProperties) {
-		List<Launcher> launchers = new ArrayList<>();
-		Map<String, LocalDeployerProperties> localDeployerPropertiesMap = localPlatformProperties.getAccounts();
-		if (localDeployerPropertiesMap.isEmpty()) {
-			localDeployerPropertiesMap.put("default", new LocalDeployerProperties());
-		}
-		for (Map.Entry<String, LocalDeployerProperties> entry : localDeployerPropertiesMap
-				.entrySet()) {
-			LocalTaskLauncher localTaskLauncher = new LocalTaskLauncher(entry.getValue());
-			Launcher launcher = new Launcher(entry.getKey(), "local", localTaskLauncher);
-			launcher.setDescription(prettyPrintLocalDeployerProperties(entry.getValue()));
-			launchers.add(launcher);
-		}
-
-		return new TaskPlatform("Local", launchers);
-	}
+	// TODO - GH-2627 had added before rebase
+	//	@Bean
+	//	public TaskExplorerFactoryBean taskExplorerFactoryBean(DataSource dataSource) {
+	//		return new TaskExplorerFactoryBean(dataSource);
+	//	}
+	//
+	//	@Bean
+	//	public TaskRepository taskRepository(DataSource dataSource) {
+	//		return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean(dataSource));
+	//	}
 
 	@Bean
 	public LauncherInitializationService launcherInitializationService(
@@ -112,7 +107,20 @@ public class TaskConfiguration {
 		return new LauncherInitializationService(launcherRepository, platforms);
 	}
 
-
+	@Bean
+	@ConditionalOnProperty(value = "spring.cloud.dataflow.task.enableLocalPlatform", matchIfMissing = true)
+	public TaskPlatform localTaskPlatform(LocalPlatformProperties localPlatformProperties) {
+		List<Launcher> launchers = new ArrayList<>();
+		Map<String, LocalDeployerProperties> localDeployerPropertiesMap = localPlatformProperties.getAccounts();
+		for (Map.Entry<String, LocalDeployerProperties> entry : localDeployerPropertiesMap
+				.entrySet()) {
+			LocalTaskLauncher localTaskLauncher = new LocalTaskLauncher(entry.getValue());
+			Launcher launcher = new Launcher(entry.getKey(), "local", localTaskLauncher);
+			launcher.setDescription(prettyPrintLocalDeployerProperties(entry.getValue()));
+			launchers.add(launcher);
+		}
+		return new TaskPlatform("Local", launchers);
+	}
 
 	private String prettyPrintLocalDeployerProperties(LocalDeployerProperties localDeployerProperties) {
 		StringBuilder builder = new StringBuilder();
