@@ -5,27 +5,6 @@ info:
     version: "@project.version@"
 logging:
   config: classpath:logback-scdf-local.xml
-#spring:
-#  cloud:
-#    dataflow:
-#      task:
-#        platform:
-#          cloudfoundry:
-#            accounts:
-#              cf-dev:
-#                connection:
-#                  url: https://api.sys.huron.cf-app.com
-#                  org: mpollack
-#                  space: test
-#                  domain: app.huron.cf-app.com
-#                  username: admin
-#                  password: A2jPYRersh8WBjKEOrIumT_fp8oYb0eh
-#                  skipSslValidation: true
-#                deployment:
-#                  memory: 2048m
-#                  disk: 2048m
-#                  services: mysql
-#                  deleteRoutes: false
 #server:
 #  port: 8443
 #  ssl:
