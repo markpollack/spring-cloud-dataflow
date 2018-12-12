@@ -89,17 +89,6 @@ public class TaskConfiguration {
 	@Value("${spring.cloud.dataflow.server.uri:}")
 	private String dataflowServerUri;
 
-	// TODO - GH-2627 had added before rebase
-	//	@Bean
-	//	public TaskExplorerFactoryBean taskExplorerFactoryBean(DataSource dataSource) {
-	//		return new TaskExplorerFactoryBean(dataSource);
-	//	}
-	//
-	//	@Bean
-	//	public TaskRepository taskRepository(DataSource dataSource) {
-	//		return new SimpleTaskRepository(new TaskExecutionDaoFactoryBean(dataSource));
-	//	}
-
 	@Bean
 	public LauncherInitializationService launcherInitializationService(
 			LauncherRepository launcherRepository,
