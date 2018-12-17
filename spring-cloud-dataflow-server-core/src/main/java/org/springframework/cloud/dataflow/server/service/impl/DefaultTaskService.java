@@ -373,7 +373,7 @@ public class DefaultTaskService implements TaskService {
 	}
 
 	private void destroyTask(TaskDefinition taskDefinition) {
-		// TODO GH-
+		// TODO GH-2678
 		TaskLauncher taskLauncher = this.launcherRepository.findByName("default").getTaskLauncher();
 		taskLauncher.destroy(taskDefinition.getName());
 		taskDefinitionRepository.deleteById(taskDefinition.getName());

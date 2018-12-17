@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
@@ -42,7 +43,7 @@ import org.springframework.util.StringUtils;
  */
 public class CloudFoundryDataflowAuthoritiesExtractor implements AuthoritiesExtractor {
 
-	private static final org.slf4j.Logger logger = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(CloudFoundryDataflowAuthoritiesExtractor.class);
 
 	private final CloudFoundrySecurityService cloudFoundrySecurityService;

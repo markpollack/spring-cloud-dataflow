@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymen
  * @author Mark Pollack
  * @author Ilayaperumal Gopinathan
  * @author Donovan Muller
+ *
+ * @since 2.0
  */
 @ConfigurationProperties("spring.cloud.dataflow.task.platform.cloudfoundry")
 public class CloudFoundryPlatformProperties {

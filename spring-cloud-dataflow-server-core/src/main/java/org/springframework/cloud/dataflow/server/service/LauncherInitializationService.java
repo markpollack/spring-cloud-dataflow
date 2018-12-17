@@ -96,6 +96,6 @@ public class LauncherInitializationService {
 		for (TaskPlatform platform : this.taskPlatforms) {
 			taskLauncherCount = taskLauncherCount + platform.getLaunchers().size();
 		}
-		return (taskLauncherCount == 0) ? true : false;
+		return (taskLauncherCount == 0);
 	}
 }
