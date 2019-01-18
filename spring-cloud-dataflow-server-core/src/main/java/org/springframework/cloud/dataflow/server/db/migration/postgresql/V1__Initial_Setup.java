@@ -218,6 +218,11 @@ public class V1__Initial_Setup extends AbstractInitialSetupMigration {
 	}
 
 	@Override
+	public List<SqlCommand> createTaskDeploymentTable() {
+		return null;
+	}
+
+	@Override
 	public List<SqlCommand> createAuditRecordsTable() {
 		return Arrays.asList(
 				SqlCommand.from(CREATE_AUDIT_RECORDS_TABLE));

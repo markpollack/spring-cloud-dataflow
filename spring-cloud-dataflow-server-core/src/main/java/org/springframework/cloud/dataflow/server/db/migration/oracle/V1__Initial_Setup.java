@@ -23,7 +23,7 @@ import org.springframework.cloud.dataflow.server.db.migration.AbstractInitialSet
 import org.springframework.cloud.dataflow.server.db.migration.SqlCommand;
 
 /**
- * Initial schema setup for {@code postgres}.
+ * Initial schema setup for {@code orace}.
  *
  * @author Janne Valkealahti
  *
@@ -215,6 +215,11 @@ public class V1__Initial_Setup extends AbstractInitialSetupMigration {
 	public List<SqlCommand> createAppRegistrationTable() {
 		return Arrays.asList(
 				SqlCommand.from(CREATE_APP_REGISTRATION_TABLE));
+	}
+
+	@Override
+	public List<SqlCommand> createTaskDeploymentTable() {
+		return null;
 	}
 
 	@Override

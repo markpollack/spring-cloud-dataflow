@@ -28,11 +28,13 @@ import org.springframework.cloud.dataflow.core.AuditActionType;
 import org.springframework.cloud.dataflow.core.AuditOperationType;
 import org.springframework.cloud.dataflow.core.Launcher;
 import org.springframework.cloud.dataflow.core.TaskDefinition;
+import org.springframework.cloud.dataflow.core.TaskDeployment;
 import org.springframework.cloud.dataflow.rest.support.ArgumentSanitizer;
 import org.springframework.cloud.dataflow.rest.util.DeploymentPropertiesUtils;
 import org.springframework.cloud.dataflow.server.config.apps.CommonApplicationProperties;
 import org.springframework.cloud.dataflow.server.controller.WhitelistProperties;
 import org.springframework.cloud.dataflow.server.job.LauncherRepository;
+import org.springframework.cloud.dataflow.server.repository.TaskDeploymentRepository;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionInfoService;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionService;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
@@ -83,6 +85,8 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 
 	private final TaskExecutionInfoService taskExecutionInfoService;
 
+	private final TaskDeploymentRepository taskDeploymentRepository;
+
 	private final ArgumentSanitizer argumentSanitizer = new ArgumentSanitizer();
 
 	public static final String TASK_DEFINITION_DSL_TEXT = "taskDefinitionDslText";
@@ -104,7 +108,8 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 			AuditRecordService auditRecordService,
 			String dataflowServerUri, CommonApplicationProperties commonApplicationProperties,
 			TaskRepository taskRepository,
-			TaskExecutionInfoService taskExecutionInfoService) {
+			TaskExecutionInfoService taskExecutionInfoService,
+			TaskDeploymentRepository taskDeploymentRepository) {
 		Assert.notNull(launcherRepository, "LauncherRepository must not be null");
 		Assert.notNull(metaDataResolver, "metaDataResolver must not be null");
 		Assert.notNull(auditRecordService, "auditRecordService must not be null");
@@ -112,6 +117,7 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 		Assert.notNull(taskExecutionInfoService, "TaskDefinitionRetriever must not be null");
 		Assert.notNull(taskRepository, "TaskRepository must not be null");
 		Assert.notNull(taskExecutionInfoService, "TaskExecutionInfoService must not be null");
+		Assert.notNull(taskDeploymentRepository, "TaskDeploymentRepository must not be null");
 
 		this.launcherRepository = launcherRepository;
 		this.whitelistProperties = new WhitelistProperties(metaDataResolver);
@@ -120,16 +126,31 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 		this.commonApplicationProperties = commonApplicationProperties;
 		this.taskRepository = taskRepository;
 		this.taskExecutionInfoService = taskExecutionInfoService;
+		this.taskDeploymentRepository = taskDeploymentRepository;
 	}
 
 	@Override
-	public long executeTask(String taskName, Map<String, String> taskDeploymentProperties,
-			List<String> commandLineArgs, String platformName) {
+	public long executeTask(String taskName, Map<String, String> taskDeploymentProperties, List<String> commandLineArgs) {
 
 		if (taskExecutionInfoService.maxConcurrentExecutionsReached()) {
 			throw new IllegalStateException(String.format(
 					"The maximum concurrent task executions [%d] is at its limit.",
 					taskExecutionInfoService.getMaximumConcurrentTasks()));
+		}
+
+		String platformName = taskDeploymentProperties.get("spring.cloud.dataflow.task.platformName");
+		taskDeploymentProperties.remove("spring.cloud.dataflow.task.platformName");
+
+		DeploymentPropertiesUtils.validateDeploymentProperties(taskDeploymentProperties);
+
+		TaskDeployment existingTaskDeployment =
+				taskDeploymentRepository.findTopByTaskDefinitionNameOrderByCreatedOnAsc(taskName);
+		if (existingTaskDeployment != null) {
+			if (!existingTaskDeployment.getPlatformName().equals(platformName)) {
+				throw new IllegalStateException(String.format(
+						"Task definition [%s] has already been deployed on platfrom [%s]",
+						taskName, existingTaskDeployment.getPlatformName()));
+			}
 		}
 
 		TaskExecutionInformation taskExecutionInformation = taskExecutionInfoService
@@ -172,6 +193,12 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 			throw new IllegalStateException("Deployment ID is null for the task:" + taskName);
 		}
 		this.updateExternalExecutionId(taskExecution.getExecutionId(), id);
+
+		TaskDeployment taskDeployment = new TaskDeployment();
+		taskDeployment.setTaskDeploymentId(id);
+		taskDeployment.setPlatformName(platformName);
+		taskDeployment.setTaskDefinitionName(taskName);
+		this.taskDeploymentRepository.save(taskDeployment);
 
 		this.auditRecordService.populateAndSaveAuditRecordUsingMapData(
 				AuditOperationType.TASK, AuditActionType.DEPLOY,

@@ -46,6 +46,7 @@ import org.springframework.cloud.dataflow.server.job.LauncherRepository;
 import org.springframework.cloud.dataflow.server.repository.DuplicateTaskException;
 import org.springframework.cloud.dataflow.server.repository.NoSuchTaskDefinitionException;
 import org.springframework.cloud.dataflow.server.repository.TaskDefinitionRepository;
+import org.springframework.cloud.dataflow.server.repository.TaskDeploymentRepository;
 import org.springframework.cloud.dataflow.server.service.TaskDeleteService;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionInfoService;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionService;
@@ -165,8 +166,7 @@ public abstract class DefaultTaskExecutionServiceTests {
 			initializeSuccessfulRegistry(appRegistry);
 			when(taskLauncher.launch(any())).thenReturn("0");
 			this.launcherRepository.save(new Launcher("local", "default", taskLauncher));
-			assertEquals(1L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(),
-					"default"));
+			assertEquals(1L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>()));
 		}
 
 		@Test
@@ -175,10 +175,8 @@ public abstract class DefaultTaskExecutionServiceTests {
 			initializeSuccessfulRegistry(appRegistry);
 			when(taskLauncher.launch(any())).thenReturn("0");
 			this.launcherRepository.save(new Launcher("local", "default", taskLauncher));
-			assertEquals(1L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(),
-					"default"));
-			assertEquals(2L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(),
-					"default"));
+			assertEquals(1L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>()));
+			assertEquals(2L, this.taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>()));
 		}
 
 		@Test
@@ -189,14 +187,13 @@ public abstract class DefaultTaskExecutionServiceTests {
 			this.launcherRepository.save(new Launcher("local", "default", taskLauncher));
 			assertEquals(10, taskExecutionInfoService.getMaximumConcurrentTasks());
 			for (long i = 1; i <= taskExecutionInfoService.getMaximumConcurrentTasks(); i++) {
-				assertEquals(i, taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(),
-						"default"));
+				assertEquals(i, taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>()));
 			}
 
 			thrown.expect(IllegalStateException.class);
 			thrown.expectMessage("The maximum concurrent task executions [10] is at its limit.");
 
-			taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(), "default");
+			taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>());
 		}
 
 		@Test
@@ -207,7 +204,7 @@ public abstract class DefaultTaskExecutionServiceTests {
 			when(this.taskLauncher.launch(any())).thenReturn(null);
 			this.launcherRepository.save(new Launcher("local", "default", taskLauncher));
 			try {
-				taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(), "default");
+				taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>());
 			}
 			catch (IllegalStateException ise) {
 				errorCaught = true;
@@ -231,9 +228,9 @@ public abstract class DefaultTaskExecutionServiceTests {
 					mock(LauncherRepository.class), this.metadataResolver,
 					auditRecordService, null, this.commonApplicationProperties,
 					taskRepository,
-					taskExecutionInfoService);
+					taskExecutionInfoService, mock(TaskDeploymentRepository.class));
 			try {
-				taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(), "default");
+				taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>());
 			}
 			catch (NoSuchTaskDefinitionException ise) {
 				errorCaught = true;
@@ -309,8 +306,7 @@ public abstract class DefaultTaskExecutionServiceTests {
 			properties.put("app.seqTask.AAA.timestamp.format", "YYYY");
 			properties.put("deployer.seqTask.AAA.memory", "1240m");
 			properties.put("app.composed-task-runner.interval-time-between-checks", "1000");
-			assertEquals(1L, this.taskExecutionService.executeTask("seqTask", properties, new LinkedList<>(),
-					"default"));
+			assertEquals(1L, this.taskExecutionService.executeTask("seqTask", properties, new LinkedList<>()));
 			ArgumentCaptor<AppDeploymentRequest> argumentCaptor = ArgumentCaptor.forClass(AppDeploymentRequest.class);
 			verify(this.taskLauncher, atLeast(1)).launch(argumentCaptor.capture());
 
@@ -339,8 +335,7 @@ public abstract class DefaultTaskExecutionServiceTests {
 			Map<String, String> properties = new HashMap<>();
 			properties.put("app.seqTask.t1.timestamp.format", "YYYY");
 			properties.put("app.composed-task-runner.interval-time-between-checks", "1000");
-			assertEquals(1L, this.taskExecutionService.executeTask("seqTask", properties, new LinkedList<>(),
-					"default"));
+			assertEquals(1L, this.taskExecutionService.executeTask("seqTask", properties, new LinkedList<>()));
 			ArgumentCaptor<AppDeploymentRequest> argumentCaptor = ArgumentCaptor.forClass(AppDeploymentRequest.class);
 			verify(this.taskLauncher, atLeast(1)).launch(argumentCaptor.capture());
 

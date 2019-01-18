@@ -89,7 +89,7 @@ public class TaskCommands implements CommandMarker {
 
 	private static final String EXECUTION_LIST = "task execution list";
 
-	private static final String PLATFORM_OPTION = "platformName";
+	private static final String PLATFORM_NAME = "platformName";
 
 	@Autowired
 	protected UserInput userInput;
@@ -182,7 +182,7 @@ public class TaskCommands implements CommandMarker {
 			@CliOption(key = {
 					ARGUMENTS_OPTION }, help = "the commandline arguments for this launch") String arguments,
 			@CliOption(key = {
-					PLATFORM_OPTION }, help = "the platform name to use for this launch",
+					PLATFORM_NAME}, help = "the platform name to use for this launch",
 					unspecifiedDefaultValue = "default") String platformName)
 			throws IOException {
 		int which = Assertions.atMostOneOf(PROPERTIES_OPTION, properties, PROPERTIES_FILE_OPTION, propertiesFile);
@@ -194,6 +194,9 @@ public class TaskCommands implements CommandMarker {
 			argumentsToUse.add(arguments);
 		}
 		DeploymentPropertiesUtils.validateDeploymentProperties(propertiesToUse);
+		if (StringUtils.hasText(platformName)) {
+			propertiesToUse.put("spring.cloud.dataflow.task.platformName", platformName);
+		}
 		taskOperations().launch(name, propertiesToUse, argumentsToUse);
 		return String.format("Launched task '%s'", name);
 	}
