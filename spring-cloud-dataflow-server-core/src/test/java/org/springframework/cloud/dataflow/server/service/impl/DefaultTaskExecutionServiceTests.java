@@ -46,6 +46,7 @@ import org.springframework.cloud.dataflow.server.job.LauncherRepository;
 import org.springframework.cloud.dataflow.server.repository.DuplicateTaskException;
 import org.springframework.cloud.dataflow.server.repository.NoSuchTaskDefinitionException;
 import org.springframework.cloud.dataflow.server.repository.TaskDefinitionRepository;
+import org.springframework.cloud.dataflow.server.repository.TaskDeploymentRepository;
 import org.springframework.cloud.dataflow.server.service.TaskDeleteService;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionInfoService;
 import org.springframework.cloud.dataflow.server.service.TaskExecutionService;
@@ -231,7 +232,7 @@ public abstract class DefaultTaskExecutionServiceTests {
 					mock(LauncherRepository.class), this.metadataResolver,
 					auditRecordService, null, this.commonApplicationProperties,
 					taskRepository,
-					taskExecutionInfoService);
+					taskExecutionInfoService, mock(TaskDeploymentRepository.class));
 			try {
 				taskExecutionService.executeTask(TASK_NAME_ORIG, new HashMap<>(), new LinkedList<>(), "default");
 			}

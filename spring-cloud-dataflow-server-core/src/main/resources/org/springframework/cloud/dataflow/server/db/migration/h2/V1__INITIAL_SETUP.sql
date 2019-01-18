@@ -1,5 +1,15 @@
 create sequence hibernate_sequence start with 1 increment by 1;
 
+create table task_deployment (
+  id bigint not null,
+  object_version bigint,
+  task_id varchar(255) not null,
+  task_name varchar(255) not null,
+  platform_name varchar(255) not null
+);
+
+create index idx_rel_name on task_deployment (platform_name);
+
 create table app_registration (
   id bigint not null,
   object_version bigint,
