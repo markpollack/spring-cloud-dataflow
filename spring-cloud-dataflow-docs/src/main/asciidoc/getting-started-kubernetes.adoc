@@ -147,51 +147,6 @@ kubectl create -f src/kubernetes/mysql/
 You can use `kubectl get all -l app=mysql` to verify that the deployment, pod, and service resources are running.
 You can use `kubectl delete all,pvc,secrets -l app=mysql` to clean up afterwards.
 +
-. Deploy Redis.
-+
-The Redis service is used for the analytics functionality.
-Run the following command to start the Redis service:
-+
-====
-[source,bash]
-----
-kubectl create -f src/kubernetes/redis/
-----
-====
-+
-[NOTE]
-====
-If you do not need the analytics functionality, you can turn this feature off by setting `SPRING_CLOUD_DATAFLOW_FEATURES_ANALYTICS_ENABLED` to `false` in the `src/kubernetes/server/server-deployment.yaml` file.
-If you do not install the Redis service, you should also remove the Redis configuration settings from the following files depending on your message broker:
-
-* RabbitMQ: `src/kubernetes/server/server-config-rabbit.yaml`
-* Kafka: `src/kubernetes/server/server-config-kafka.yaml`
-====
-+
-You can use `kubectl get all -l app=redis` to verify that the deployment, pod, and service resources are running.
-You can use `kubectl delete all -l app=redis` to clean up afterwards.
-+
-. Deploy the Metrics Collector.
-+
-The Metrics Collector provides message rates for all deployed stream applications.
-These message rates are visible in the Dashboard UI.
-Run one of the following commands (depending on your message broker) to start the Metrics Collector:
-+
-* RabbitMQ: `kubectl create -f src/kubernetes/metrics/metrics-deployment-rabbit.yaml`
-* Kafka: `kubectl create -f src/kubernetes/metrics/metrics-deployment-kafka.yaml`
-+
-Create the metrics service:
-+
-====
-[source,bash]
-----
-$ kubectl create -f src/kubernetes/metrics/metrics-svc.yaml
-----
-====
-+
-You can use `kubectl get all -l app=metrics` to verify that the deployment, pod, and service resources are running.
-You can use `kubectl delete all -l app=metrics` to clean up afterwards.
-+
 . Create Role Bindings and Service account
 +
 IMPORTANT: Since version 1.9, the latest releases of Kubernetes have enabled https://kubernetes.io/docs/admin/authorization/rbac/[RBAC] on the api-server.

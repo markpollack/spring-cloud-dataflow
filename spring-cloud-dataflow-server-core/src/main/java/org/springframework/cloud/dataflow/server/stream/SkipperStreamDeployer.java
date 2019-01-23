@@ -378,6 +378,7 @@ public class SkipperStreamDeployer implements StreamDeployer {
 		packageMetadata.setVersion(packageVersion);
 		packageMetadata.setMaintainer(SkipperStream.SKIPPER_DEFAULT_MAINTAINER);
 
+
 		pkg.setMetadata(packageMetadata);
 
 		ConfigValues configValues = new ConfigValues();
@@ -387,6 +388,7 @@ public class SkipperStreamDeployer implements StreamDeployer {
 
 		// Add metadata
 		metadataMap.put("name", packageName);
+		metadataMap.put("streamName", "streamName")
 
 		// Add spec
 		String resourceWithoutVersion = this.appRegistryService.getResourceWithoutVersion(appDeploymentRequest.getResource());
