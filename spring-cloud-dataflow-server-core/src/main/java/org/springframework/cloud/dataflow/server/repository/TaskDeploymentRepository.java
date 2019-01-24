@@ -19,11 +19,15 @@ import org.springframework.cloud.dataflow.core.TaskDeployment;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Mark Pollack
  */
 @Transactional
 public interface TaskDeploymentRepository extends PagingAndSortingRepository<TaskDeployment, Long> {
 
-	TaskDeployment findByTaskId(Long taskId);
+	TaskDeployment findByTaskDeploymentId(Long taskId);
+
+	TaskDeployment findTopByTaskDefinitionNameOrderByCreatedOnAsc(String taskDefinitionName);
 }

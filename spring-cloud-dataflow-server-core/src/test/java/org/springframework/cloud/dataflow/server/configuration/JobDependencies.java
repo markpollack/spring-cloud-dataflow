@@ -186,14 +186,19 @@ public class JobDependencies {
 
 	@Bean
 	public TaskJobService taskJobExecutionRepository(JobService jobService, TaskExplorer taskExplorer,
-			TaskDefinitionRepository taskDefinitionRepository, TaskExecutionService taskExecutionService) {
-		return new DefaultTaskJobService(jobService, taskExplorer, taskDefinitionRepository, taskExecutionService);
+			TaskDefinitionRepository taskDefinitionRepository, TaskExecutionService taskExecutionService,
+													 TaskDeploymentRepository taskDeploymentRepository) {
+		return new DefaultTaskJobService(jobService, taskExplorer, taskDefinitionRepository, taskExecutionService,
+				taskDeploymentRepository);
 	}
 
 	@Bean
 	public TaskDeleteService deleteTaskService(TaskExplorer taskExplorer, LauncherRepository launcherRepository,
-			TaskDefinitionRepository taskDefinitionRepository, AuditRecordService auditRecordService) {
+			TaskDefinitionRepository taskDefinitionRepository,
+			TaskDeploymentRepository taskDeploymentRepository,
+			AuditRecordService auditRecordService) {
 		return new DefaultTaskDeleteService(taskExplorer, launcherRepository, taskDefinitionRepository,
+				taskDeploymentRepository,
 				auditRecordService);
 	}
 

@@ -15,38 +15,49 @@
  */
 package org.springframework.cloud.dataflow.core;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 /**
  * @author Mark Pollack
  */
 @Entity
 @Table(name = "TaskDeployment")
+@EntityListeners(AuditingEntityListener.class)
 public class TaskDeployment extends AbstractEntity {
 
 	@NotNull
-	private String taskId;
-
-
-	//TODO require somewhere that platformName and taskName are unique.
+	@Column(name = "task_deployment_id")
+	private String taskDeploymentId;
 
 	@NotNull
+	@Column(name = "platform_name")
 	private String platformName;
 
 	@NotNull
-	private String taskName;
+	@Column(name = "task_definition_name")
+	private String taskDefinitionName;
+
+	@CreatedDate
+	@Column(name = "created_on")
+	private Instant createdOn;
 
 	public TaskDeployment() {
 	}
 
-	public String getTaskId() {
-		return taskId;
+	public String getTaskDeploymentId() {
+		return taskDeploymentId;
 	}
 
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
+	public void setTaskDeploymentId(String taskDeploymentId) {
+		this.taskDeploymentId = taskDeploymentId;
 	}
 
 	public String getPlatformName() {
@@ -57,11 +68,19 @@ public class TaskDeployment extends AbstractEntity {
 		this.platformName = platformName;
 	}
 
-	public String getTaskName() {
-		return taskName;
+	public String getTaskDefinitionName() {
+		return taskDefinitionName;
 	}
 
-	public void setTaskName(String taskName) {
-		this.taskName = taskName;
+	public void setTaskDefinitionName(String taskDefinitionName) {
+		this.taskDefinitionName = taskDefinitionName;
+	}
+
+	public Instant getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Instant createdOn) {
+		this.createdOn = createdOn;
 	}
 }

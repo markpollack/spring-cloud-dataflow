@@ -98,7 +98,7 @@ public class DefaultTaskDeleteService implements TaskDeleteService {
 		Assert.notNull(taskExecution, "There was no task execution with id " + id);
 		String launchId = taskExecution.getExternalExecutionId();
 		Assert.hasLength(launchId, "The TaskExecution for id " + id + " did not have an externalExecutionId");
-		TaskDeployment taskDeployment = this.taskDeploymentRepository.findByTaskId(id);
+		TaskDeployment taskDeployment = this.taskDeploymentRepository.findByTaskDeploymentId(id);
 		if (taskDeployment == null) {
 			throw new IllegalStateException("Did not find TaskDeployment for taskName, taskId "
 					+ taskExecution.getTaskName() + ", " + id);
@@ -170,16 +170,19 @@ public class DefaultTaskDeleteService implements TaskDeleteService {
 	}
 
 	private void destroyTask(TaskDefinition taskDefinition) {
-		// TODO GH-2678 -
-		Launcher launcher = launcherRepository.findByName("default");
-		if (launcher != null) {
-			TaskLauncher taskLauncher = launcher.getTaskLauncher();
-			taskLauncher.destroy(taskDefinition.getName());
-			taskDefinitionRepository.deleteById(taskDefinition.getName());
+		TaskDeployment taskDeployment =
+				this.taskDeploymentRepository.findTopByTaskDefinitionNameOrderByCreatedOnAsc(taskDefinition.getTaskName());
+		if (taskDeployment != null) {
+			Launcher launcher = launcherRepository.findByName(taskDeployment.getPlatformName());
+			if (launcher != null) {
+				TaskLauncher taskLauncher = launcher.getTaskLauncher();
+				taskLauncher.destroy(taskDefinition.getName());
+				taskDefinitionRepository.deleteById(taskDefinition.getName());
+			}
 		}
 		else {
-			logger.info("Could destory task definition " +
-					taskDefinition.getTaskName() + ". Did not find a task launcher named 'default'");
+			logger.info("Did not destory task definition " +
+					taskDefinition.getTaskName() + ". Did not find a previoiusly launced task to delete.");
 		}
 	}
 }

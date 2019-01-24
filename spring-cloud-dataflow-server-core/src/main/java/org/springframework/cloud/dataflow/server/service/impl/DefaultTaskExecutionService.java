@@ -139,6 +139,16 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 					taskExecutionInfoService.getMaximumConcurrentTasks()));
 		}
 
+		TaskDeployment existingTaskDeployment =
+				taskDeploymentRepository.findTopByTaskDefinitionNameOrderByCreatedOnAsc(taskName);
+		if (existingTaskDeployment != null) {
+			if (!existingTaskDeployment.getPlatformName().equals(platformName)) {
+				throw new IllegalStateException(String.format(
+						"Task definition [%s] has already been deployed on platfrom [%s]",
+						taskName, existingTaskDeployment.getPlatformName()));
+			}
+		}
+
 		TaskExecutionInformation taskExecutionInformation = taskExecutionInfoService
 				.findTaskExecutionInformation(taskName, taskDeploymentProperties);
 		TaskDefinition taskDefinition = taskExecutionInformation.getTaskDefinition();
@@ -181,8 +191,9 @@ public class DefaultTaskExecutionService implements TaskExecutionService {
 		this.updateExternalExecutionId(taskExecution.getExecutionId(), id);
 
 		TaskDeployment taskDeployment = new TaskDeployment();
-		taskDeployment.setTaskId(id);
+		taskDeployment.setTaskDeploymentId(id);
 		taskDeployment.setPlatformName(platformName);
+		taskDeployment.setTaskDefinitionName(taskName);
 		this.taskDeploymentRepository.save(taskDeployment);
 
 		this.auditRecordService.populateAndSaveAuditRecordUsingMapData(
