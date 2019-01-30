@@ -56,20 +56,20 @@ public class LocalProfileApplicationListenerTest {
 	@Test
 	public void shouldEnableLocalProfile() {
 		localProfileApplicationListener.onApplicationEvent(event);
-		verify(environment).addActiveProfile(LocalProfileApplicationListener.LOCAL_PROFILE_NAME);
+		verify(environment).addActiveProfile("local");
 	}
 
 	@Test
 	public void shouldNotEnableLocalProfileRunningOnKubernetes() {
-		when(environment.containsProperty(LocalProfileApplicationListener.KUBERNETES_SERVICE_HOST)).thenReturn(true);
+		when(environment.containsProperty("kubernetes_service_host")).thenReturn(true);
 		localProfileApplicationListener.onApplicationEvent(event);
-		verify(environment, never()).addActiveProfile(LocalProfileApplicationListener.LOCAL_PROFILE_NAME);
+		verify(environment, never()).addActiveProfile("local");
 	}
 
 	@Test
 	public void shouldNotEnableLocalProfileRunningOnCloudFoundry() {
-		when(environment.containsProperty(LocalProfileApplicationListener.VCAP_APPLICATION)).thenReturn(true);
+		when(environment.containsProperty("VCAP_APPLICATION")).thenReturn(true);
 		localProfileApplicationListener.onApplicationEvent(event);
-		verify(environment, never()).addActiveProfile(LocalProfileApplicationListener.LOCAL_PROFILE_NAME);
+		verify(environment, never()).addActiveProfile("local");
 	}
 }

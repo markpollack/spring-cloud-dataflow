@@ -17,8 +17,10 @@
 package org.springframework.cloud.dataflow.autoconfigure.local;
 
 import java.util.Arrays;
+import java.util.ServiceLoader;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.cloud.dataflow.server.config.CloudProfileProvider;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -31,13 +33,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class LocalProfileApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
-	private static final String VCAP_SERVICES = "VCAP_SERVICES";
-
-	protected static final String LOCAL_PROFILE_NAME = "local";
-
-	protected static final String VCAP_APPLICATION = "VCAP_APPLICATION";
-
-	protected static final String KUBERNETES_SERVICE_HOST = "kubernetes_service_host";
 
 	private ConfigurableEnvironment environment;
 
@@ -45,24 +40,25 @@ public class LocalProfileApplicationListener
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		this.environment = event.getEnvironment();
 
-		if (isLocalServer()) {
-			if (!Arrays.asList(environment.getActiveProfiles()).contains(LOCAL_PROFILE_NAME)) {
-				environment.addActiveProfile(LOCAL_PROFILE_NAME);
+		Iterable<CloudProfileProvider> cloudProfileProviders = ServiceLoader.load(CloudProfileProvider.class);
+		boolean addedCloudProfile = false;
+		for (CloudProfileProvider cloudProfileProvider : cloudProfileProviders) {
+			if (cloudProfileProvider != null) {
+				if (cloudProfileProvider.isCloudPlatform(environment)) {
+					String profileToAdd = cloudProfileProvider.getCloudProfile();
+					if (!Arrays.asList(environment.getActiveProfiles()).contains(profileToAdd)) {
+						environment.addActiveProfile(profileToAdd);
+						addedCloudProfile = true;
+					}
+				}
 			}
 		}
+		if (!addedCloudProfile) {
+			environment.addActiveProfile("local");
+		}
+
 	}
 
-	private boolean isLocalServer() {
-		return !isKubernetes() && !isCloudFoundry();
-	}
-
-	private boolean isKubernetes() {
-		return environment.containsProperty(KUBERNETES_SERVICE_HOST);
-	}
-
-	private boolean isCloudFoundry() {
-		return environment.containsProperty(VCAP_APPLICATION) || environment.containsProperty(VCAP_SERVICES);
-	}
 
 	@Override
 	public int getOrder() {
