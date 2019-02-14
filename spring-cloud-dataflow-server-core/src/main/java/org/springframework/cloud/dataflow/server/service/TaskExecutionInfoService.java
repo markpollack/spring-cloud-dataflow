@@ -16,12 +16,14 @@
 
 package org.springframework.cloud.dataflow.server.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.cloud.dataflow.server.service.impl.TaskExecutionInformation;
+import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 
 /**
- * Return the TaskExecutionInformation object givne the task name and deployment
+ * Return the TaskExecutionInformation object given the task name and deployment
  * properties.
  *
  * @author Daniel Serleg
@@ -36,4 +38,5 @@ public interface TaskExecutionInfoService {
 	TaskExecutionInformation findTaskExecutionInformation(String taskName,
 			Map<String, String> taskDeploymentProperties);
 
+	List<AppDeploymentRequest> createRequests(String taskName, String dslText);
 }
